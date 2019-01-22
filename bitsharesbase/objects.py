@@ -29,7 +29,7 @@ from .objecttypes import object_type
 from .operationids import operations
 
 
-default_prefix = "BTS"
+default_prefix = "ECHO"
 
 
 class Operation(GrapheneOperation):

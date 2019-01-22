@@ -11,7 +11,7 @@ from graphenebase.account import PrivateKey as GPHPrivateKey
 from graphenebase.account import PublicKey as GPHPublicKey
 from graphenebase.account import Prefix
 
-default_prefix = "BTS"
+default_prefix = "ECHO"
 
 
 class PasswordKey(GPHPasswordKey):

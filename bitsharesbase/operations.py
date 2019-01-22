@@ -48,7 +48,7 @@ from .objects import (
 from .operationids import operations
 
 
-default_prefix = "BTS"
+default_prefix = "ECHO"
 class_idmap = {}
 class_namemap = {}
 
