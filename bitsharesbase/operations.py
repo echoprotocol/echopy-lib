@@ -841,4 +841,31 @@ class Bid_collateral(GrapheneObject):
         )
 
 
+class Create_contract(GrapheneObject):
+    '''
+    def detail(self, *args, **kwargs):
+        # New pygraphene interface!
+    '''
+    def __init__(self, *args, **kwargs):
+        if isArgsThisClass(self, args):
+            self.data = args[0].data
+        else:
+            if len(args) == 1 and len(kwargs) == 0:
+                kwargs = args[0]
+            super().__init__(
+                OrderedDict(
+                    [
+                        ("fee", Asset(kwargs["fee"])),
+                        ("registrar", ObjectId(kwargs["registrar"], "account")),
+                        ("value", Asset(kwargs["value"])),
+                        ("gasPrice", Uint64(kwargs['gasPrice'])),
+                        ("gas", Uint64(kwargs['gas'])),
+                        ("code", String(kwargs['code'])),
+                        ("supported_asset_id", Optional(ObjectId(kwargs["supported_asset_id"], "asset"))),
+                        ("eth_accuracy", Bool(bool(kwargs["eth_accuracy"]))),
+                    ]
+                )
+            )
+
+
 fill_classmaps()
