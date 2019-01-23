@@ -869,3 +869,25 @@ class Create_contract(GrapheneObject):
 
 
 fill_classmaps()
+
+class Call_contract(GrapheneObject):
+    def __init__(self, *args, **kwargs):
+            if isArgsThisClass(self, args):
+                self.data = args[0].data
+            else:
+                if len(args) == 1 and len(kwargs) == 0:
+                    kwargs = args[0]
+                super().__init__(
+                    OrderedDict(
+                        [
+                            ("fee", Asset(kwargs["fee"])),
+                            ("registrar", ObjectId(kwargs["registrar"], "account")),
+                            ("value", Asset(kwargs["value"])),
+                            ("gasPrice", Uint64(kwargs["gasPrice"])),
+                            ("gas", Uint64(kwargs["gas"])),
+                            ("code", String(kwargs["code"])),
+                            ("callee", ObjectId(kwargs["callee"], "contract")),
+                        ]
+                    )
+                )
+fill_classmaps()

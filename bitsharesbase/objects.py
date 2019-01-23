@@ -57,6 +57,10 @@ def AccountId(asset):
     return ObjectId(asset, "account")
 
 
+def ContractId(asset):
+    return ObjectId(asset, "contract")
+
+
 class Memo(GrapheneObject):
     def __init__(self, *args, **kwargs):
         if isArgsThisClass(self, args):

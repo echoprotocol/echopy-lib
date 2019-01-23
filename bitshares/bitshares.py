@@ -1350,3 +1350,25 @@ class BitShares(AbstractGrapheneChain):
 
         )
         return self.finalizeOp(op, registrar, "active", **kwargs)
+        
+    def call_contract(self, code, callee, registrar=None, value_amount=0, gas=10e6, **kwargs):
+        if not registrar and self.config["default_account"]:
+            registrar = self.config["default_account"]
+        if not registrar:
+            raise ValueError(
+                "Not registrar account given. Define it with "
+                + "registrar=x, or set the default_account using uptick"
+            )
+        registrar = Account(registrar, blockchain_instance=self)
+        op = operations.Call_contract(
+            **{
+                "fee": {"amount": 0, "asset_id": "1.3.0"},
+                "registrar": registrar["id"],
+                "value": {"amount": value_amount, "asset_id": "1.3.0"},
+                "gasPrice": 0,
+                "gas": gas,
+                "code": code,
+                "callee": callee,
+            }
+        )
+        return self.finalizeOp(op, registrar, "active", **kwargs)
