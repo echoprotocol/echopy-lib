@@ -868,8 +868,6 @@ class Create_contract(GrapheneObject):
             )
 
 
-fill_classmaps()
-
 class Call_contract(GrapheneObject):
     def __init__(self, *args, **kwargs):
             if isArgsThisClass(self, args):
@@ -890,4 +888,5 @@ class Call_contract(GrapheneObject):
                         ]
                     )
                 )
+
 fill_classmaps()
