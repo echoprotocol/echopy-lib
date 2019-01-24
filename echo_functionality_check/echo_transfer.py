@@ -19,5 +19,4 @@ echonet.wallet.unlock('qwe')
 
 echonet.transfer("qweasd123", 1, "ECHO", account="test10123223")
 
-
 pprint(echonet.broadcast())
