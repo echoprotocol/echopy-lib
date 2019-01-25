@@ -5,8 +5,8 @@ import logging
 
 from binascii import hexlify
 
-from graphenebase import bip38
-from graphenebase.aes import AESCipher
+from echobase import bip38
+from echobase.aes import AESCipher
 
 from .exceptions import WrongMasterPasswordException, WalletLocked
 

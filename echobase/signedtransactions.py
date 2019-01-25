@@ -11,7 +11,7 @@ from binascii import hexlify, unhexlify
 from collections import OrderedDict
 from .account import PublicKey
 from .types import Array, Set, Signature, PointInTime, Uint16, Uint32
-from .objects import GrapheneObject, Operation
+from .objects import EchoObject, Operation
 from .chains import known_chains
 
 log = logging.getLogger(__name__)
@@ -30,7 +30,7 @@ class MissingSignatureForKey(Exception):
     pass
 
 
-class Signed_Transaction(GrapheneObject):
+class Signed_Transaction(EchoObject):
     """ Create a signed transaction and offer method to create the
         signature
 
@@ -43,7 +43,7 @@ class Signed_Transaction(GrapheneObject):
 
     known_chains = known_chains
     default_prefix = "ECHO"
-    operation_klass = Operation
+    operation_class = Operation
 
     def detail(self, *args, **kwargs):
         if "signatures" not in kwargs:  # pragma: no branch
@@ -54,9 +54,9 @@ class Signed_Transaction(GrapheneObject):
             )
 
         ops = kwargs.get("operations", [])
-        opklass = self.getOperationKlass()
-        if all([not isinstance(a, opklass) for a in ops]):
-            kwargs["operations"] = Array([opklass(a) for a in ops])
+        opclass = self.get_operation_class()
+        if all([not isinstance(a, opclass) for a in ops]):
+            kwargs["operations"] = Array([opclass(a) for a in ops])
         else:
             kwargs["operations"] = Array(ops)
 
@@ -77,8 +77,8 @@ class Signed_Transaction(GrapheneObject):
     def get_default_prefix(self):
         return self.default_prefix
 
-    def getOperationKlass(self):
-        return self.operation_klass
+    def get_operation_class(self):
+        return self.operation_class
 
     @property
     def id(self):

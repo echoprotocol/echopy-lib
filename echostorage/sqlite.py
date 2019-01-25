@@ -37,7 +37,7 @@ class SQLiteFile:
 
     def __init__(self, *args, **kwargs):
         appauthor = "Fabian Schuh"
-        appname = kwargs.get("appname", "graphene")
+        appname = kwargs.get("appname", "echo")
         data_dir = kwargs.get("data_dir", user_data_dir(appname, appauthor))
 
         if "profile" in kwargs:

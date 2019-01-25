@@ -12,7 +12,7 @@ from .exceptions import RPCError, UnauthorizedError, RPCConnection
 log = logging.getLogger(__name__)
 
 
-class GrapheneAPI(object):
+class EchoAPI(object):
     """ Graphene JSON-HTTP-RPC API
 
         This class serves as an abstraction layer for easy use of the

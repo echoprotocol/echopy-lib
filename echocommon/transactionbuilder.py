@@ -10,7 +10,7 @@ from .exceptions import (
 )
 from .utils import formatTimeFromNow
 from .instance import AbstractBlockchainInstanceProvider
-from graphenebase.objects import Asset
+from echobase.objects import Asset
 
 log = logging.getLogger(__name__)
 

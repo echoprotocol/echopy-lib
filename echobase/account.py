@@ -196,7 +196,7 @@ class Address(Prefix):
         return bytes(self._address)
 
 
-class GrapheneAddress(Address):
+class EchoAddress(Address):
     """ Graphene Addresses are different. Hence we have a different class
     """
 
@@ -358,7 +358,7 @@ class PublicKey(Prefix):
     def address(self):
         """ Obtain a GrapheneAddress from a public key
         """
-        return GrapheneAddress.from_pubkey(repr(self), prefix=self.prefix)
+        return EchoAddress.from_pubkey(repr(self), prefix=self.prefix)
 
 
 class PrivateKey(Prefix):

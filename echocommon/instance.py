@@ -66,8 +66,8 @@ class AbstractBlockchainInstanceProvider:
             instance that can be reused by multiple classes.
         """
         if not SharedInstance.instance:
-            klass = self.get_instance_class()
-            SharedInstance.instance = klass(**SharedInstance.config)
+            class_ = self.get_instance_class()
+            SharedInstance.instance = class_(**SharedInstance.config)
         return SharedInstance.instance
 
     @staticmethod

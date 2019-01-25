@@ -3,14 +3,14 @@ import os
 import mock
 import yaml
 
-# Graphene API
-from grapheneapi import exceptions
-from grapheneapi.api import Api, Websocket, Http
+# Echo API
+from echoapi import exceptions
+from echoapi.api import Api, Websocket, Http
 
-# Graphenebase
-import graphenebase.ecdsa as ecdsa
-from graphenebase.aes import AESCipher
-from graphenebase.base58 import (
+# Echobase
+import echobase.ecdsa as ecdsa
+from echobase.aes import AESCipher
+from echobase.base58 import (
     Base58,
     base58decode,
     base58encode,
@@ -22,68 +22,68 @@ from graphenebase.base58 import (
     b58decode,
     b58encode,
 )
-from graphenebase import types, utils
-from graphenebase.transactions import formatTimeFromNow, timeformat
-from graphenebase.operations import Account_create
-from graphenebase.signedtransactions import Signed_Transaction, MissingSignatureForKey
-from graphenebase.account import (
+from echobase import types, utils
+from echobase.transactions import formatTimeFromNow, timeformat
+from echobase.operations import Account_create
+from echobase.signedtransactions import Signed_Transaction, MissingSignatureForKey
+from echobase.account import (
     BrainKey,
     Address,
     PublicKey,
     PrivateKey,
     PasswordKey,
-    GrapheneAddress,
+    EchoAddress,
     BitcoinAddress,
 )
-from graphenebase.objects import Operation, GrapheneObject
-from graphenebase.operations import Newdemooepration, Newdemooepration2, Demooepration
-from graphenebase.operationids import ops, operations, getOperationNameForId
+from echobase.objects import Operation, EchoObject
+from echobase.operations import Newdemooepration, Newdemooepration2, Demooepration
+from echobase.operationids import ops, operations, getOperationNameForId
 
-from graphenebase import bip38
-from graphenebase.bip38 import encrypt, decrypt
-from graphenebase.transactions import getBlockParams
+from echobase import bip38
+from echobase.bip38 import encrypt, decrypt
+from echobase.transactions import getBlockParams
 
-# Graphenestorage
-from graphenestorage.exceptions import (
+# Echostorage
+from echostorage.exceptions import (
     WrongMasterPasswordException,
     KeyAlreadyInStoreException,
     WalletLocked,
 )
-import graphenestorage as storage
-from graphenestorage.interfaces import (
+import echostorage as storage
+from echostorage.interfaces import (
     StoreInterface,
     KeyInterface,
     ConfigInterface,
     EncryptedKeyInterface,
 )
-from graphenestorage.sqlite import SQLiteStore
+from echostorage.sqlite import SQLiteStore
 
 
 # Common stuff
 
-from graphenecommon.instance import (
+from echocommon.instance import (
     BlockchainInstance as GBlockchainInstance,
     SharedInstance as GSharedInstance,
 )
-from graphenecommon.amount import Amount as GAmount
-from graphenecommon.account import Account as GAccount, AccountUpdate as GAccountUpdate
-from graphenecommon.asset import Asset as GAsset
-from graphenecommon.committee import Committee as GCommittee
-from graphenecommon.block import Block as GBlock, BlockHeader as GBlockHeader
-from graphenecommon.message import Message as GMessage
-from graphenecommon.blockchainobject import ObjectCache, BlockchainObject
-from graphenecommon.price import Price as GPrice
-from graphenecommon.wallet import Wallet as GWallet
-from graphenecommon.worker import Worker as GWorker, Workers as GWorkers
-from graphenecommon.witness import Witness as GWitness, Witnesses as GWitnesss
-from graphenecommon.chain import AbstractGrapheneChain
+from echocommon.amount import Amount as GAmount
+from echocommon.account import Account as GAccount, AccountUpdate as GAccountUpdate
+from echocommon.asset import Asset as GAsset
+from echocommon.committee import Committee as GCommittee
+from echocommon.block import Block as GBlock, BlockHeader as GBlockHeader
+from echocommon.message import Message as GMessage
+from echocommon.blockchainobject import ObjectCache, BlockchainObject
+from echocommon.price import Price as GPrice
+from echocommon.wallet import Wallet as GWallet
+from echocommon.worker import Worker as GWorker, Workers as GWorkers
+from echocommon.witness import Witness as GWitness, Witnesses as GWitnesss
+from echocommon.chain import AbstractEchoChain
 
 
 class SharedInstance(GSharedInstance):
     pass
 
 
-class Chain(AbstractGrapheneChain):
+class Chain(AbstractEchoChain):
     prefix = "GPH"
 
     def __init__(self, *args, **kwargs):
@@ -229,7 +229,7 @@ class Price(GPrice):
 @BlockchainInstance.inject
 class Wallet(GWallet):
     def define_classes(self):
-        self.default_key_store_app_name = "graphene"
+        self.default_key_store_app_name = "echo"
         self.privatekey_class = PrivateKey
 
 

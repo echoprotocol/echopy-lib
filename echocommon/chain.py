@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 import logging
-from graphenestorage import SqliteConfigurationStore
+from echostorage import SqliteConfigurationStore
 from .instance import SharedInstance
 
 log = logging.getLogger(__name__)
 
 
-class AbstractGrapheneChain:
+class AbstractEchoChain:
     def define_classes(self):
         raise NotImplementedError
 

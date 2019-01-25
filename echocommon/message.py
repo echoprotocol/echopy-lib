@@ -5,7 +5,7 @@ import re
 
 from binascii import hexlify, unhexlify
 
-from graphenebase.ecdsa import sign_message, verify_message
+from echobase.ecdsa import sign_message, verify_message
 
 from .exceptions import (
     AccountDoesNotExistsException,
@@ -24,10 +24,10 @@ class Message(AbstractBlockchainInstanceProvider):
     """
 
     MESSAGE_SPLIT = (
-        "-----BEGIN GRAPHENE SIGNED MESSAGE-----",
+        "-----BEGIN ECHO SIGNED MESSAGE-----",
         "-----BEGIN META-----",
         "-----BEGIN SIGNATURE-----",
-        "-----END GRAPHENE SIGNED MESSAGE-----",
+        "-----END ECHO SIGNED MESSAGE-----",
     )
 
     # This is the message that is actually signed

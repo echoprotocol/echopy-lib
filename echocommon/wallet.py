@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from graphenestorage import InRamPlainKeyStore, SqliteEncryptedKeyStore
-from graphenecommon.exceptions import (
+from echostorage import InRamPlainKeyStore, SqliteEncryptedKeyStore
+from echocommon.exceptions import (
     InvalidWifError,
     KeyAlreadyInStoreException,
     KeyNotFound,

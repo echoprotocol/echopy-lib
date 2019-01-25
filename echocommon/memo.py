@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import random
-from graphenebase import memo
+from echobase import memo
 from .exceptions import KeyNotFound, MissingKeyError
 from .instance import AbstractBlockchainInstanceProvider
 

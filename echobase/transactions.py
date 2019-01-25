@@ -11,7 +11,7 @@ from datetime import datetime
 from .account import PublicKey
 from .chains import known_chains
 from .signedtransactions import Signed_Transaction
-from .objects import GrapheneObject, isArgsThisClass, Operation
+from .objects import EchoObject, isArgsThisClass, Operation
 
 timeformat = "%Y-%m-%dT%H:%M:%S%Z"
 
