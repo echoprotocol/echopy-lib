@@ -42,7 +42,7 @@ class Signed_Transaction(GrapheneObject):
     """
 
     known_chains = known_chains
-    default_prefix = "GPH"
+    default_prefix = "ECHO"
     operation_klass = Operation
 
     def detail(self, *args, **kwargs):

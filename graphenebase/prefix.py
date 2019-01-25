@@ -4,7 +4,7 @@ class Prefix:
         The prefix is used to link a public key to a specific blockchain.
     """
 
-    prefix = "GPH"
+    prefix = "ECHO"
 
     def set_prefix(self, prefix):
         if prefix:
