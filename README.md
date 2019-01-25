@@ -88,6 +88,130 @@ Visit the [pygraphenelib website](http://docs.pygraphenelib.com/en/latest/) for 
 | witness_update | <ul><li>[ ] </li></ul>  |
 | worker_create | <ul><li>[ ] </li></ul>  |
 
+## Current status of Apis methods
+
+### Login API 
+
+| Methods | Status |
+| --- | --- | 
+| login | <ul><li>[ ] </li></ul>  |
+| network_broadcast | <ul><li>[ ] </li></ul>  |
+| database | <ul><li>[ ] </li></ul>  |
+| history | <ul><li>[ ] </li></ul>  |
+| crypto | <ul><li>[ ] </li></ul>  |
+
+### Asset API
+
+| Methods | Status |
+| --- | --- | 
+| get_asset_holders | <ul><li>[ ] </li></ul>  |
+| get_asset_holders_count | <ul><li>[ ] </li></ul>  |
+| get_all_asset_holders | <ul><li>[ ] </li></ul>  |
+
+### Database API
+
+| Methods | Status |
+| --- | --- | 
+| get_objects | <ul><li>[ ] </li></ul>  |
+| set_subscribe_callback | <ul><li>[ ] </li></ul>  |
+| set_pending_transaction_callback | <ul><li>[ ] </li></ul>  |
+| set_block_applied_callback | <ul><li>[ ] </li></ul>  |
+| cancel_all_subscriptions | <ul><li>[ ] </li></ul>  |
+| get_block_header | <ul><li>[ ] </li></ul>  |
+| get_block | <ul><li>[ ] </li></ul>  |
+| get_transaction | <ul><li>[ ] </li></ul>  |
+| get_recent_transaction_by_id | <ul><li>[ ] </li></ul>  |
+| get_chain_properties | <ul><li>[ ] </li></ul>  |
+| get_global_properties | <ul><li>[ ] </li></ul>  |
+| get_config | <ul><li>[ ] </li></ul>  |
+| get_chain_id | <ul><li>[ ] </li></ul>  |
+| get_dynamic_global_properties | <ul><li>[ ] </li></ul>  |
+| get_key_references | <ul><li>[ ] </li></ul>  |
+| get_accounts | <ul><li>[ ] </li></ul>  |
+| get_full_accounts | <ul><li>[ ] </li></ul>  |
+| get_account_by_name | <ul><li>[ ] </li></ul>  |
+| get_account_references | <ul><li>[ ] </li></ul>  |
+| lookup_account_names | <ul><li>[ ] </li></ul>  |
+| lookup_accounts | <ul><li>[ ] </li></ul>  |
+| get_account_count | <ul><li>[ ] </li></ul>  |
+| get_account_balances | <ul><li>[ ] </li></ul>  |
+| get_named_account_balances | <ul><li>[ ] </li></ul>  |
+| get_balance_objects | <ul><li>[ ] </li></ul>  |
+| get_vested_balances | <ul><li>[ ] </li></ul>  |
+| get_vesting_balances | <ul><li>[ ] </li></ul>  |
+| get_assets | <ul><li>[ ] </li></ul>  |
+| list_assets | <ul><li>[ ] </li></ul>  |
+| lookup_asset_symbols | <ul><li>[ ] </li></ul>  |
+| get_order_book | <ul><li>[ ] </li></ul>  |
+| get_limit_orders | <ul><li>[ ] </li></ul>  |
+| get_call_orders | <ul><li>[ ] </li></ul>  |
+| get_settle_orders | <ul><li>[ ] </li></ul>  |
+| get_margin_positions | <ul><li>[ ] </li></ul>  |
+| subscribe_to_market | <ul><li>[ ] </li></ul>  |
+| unsubscribe_from_market | <ul><li>[ ] </li></ul>  |
+| get_ticker | <ul><li>[ ] </li></ul>  |
+| get_24_volume | <ul><li>[ ] </li></ul>  |
+| get_trade_history | <ul><li>[ ] </li></ul>  |
+| get_witnesses | <ul><li>[ ] </li></ul>  |
+| get_witness_by_account | <ul><li>[ ] </li></ul>  |
+| lookup_witness_accounts | <ul><li>[ ] </li></ul>  |
+| get_witness_count | <ul><li>[ ] </li></ul>  |
+| get_committee_members | <ul><li>[ ] </li></ul>  |
+| get_committee_member_by_account | <ul><li>[ ] </li></ul>  |
+| lookup_committee_member_accounts | <ul><li>[ ] </li></ul>  |
+| get_workers_by_account | <ul><li>[ ] </li></ul>  |
+| lookup_vote_ids | <ul><li>[ ] </li></ul>  |
+| get_transaction_hex | <ul><li>[ ] </li></ul>  |
+| get_required_signatures | <ul><li>[ ] </li></ul>  |
+| get_potential_signatures | <ul><li>[ ] </li></ul>  |
+| get_potential_address_signatures | <ul><li>[ ] </li></ul>  |
+| verify_authority | <ul><li>[ ] </li></ul>  |
+| verify_account_authority | <ul><li>[ ] </li></ul>  |
+| validate_transaction | <ul><li>[ ] </li></ul>  |
+| get_required_fees | <ul><li>[ ] </li></ul>  |
+| get_proposed_transactions | <ul><li>[ ] </li></ul>  |
+| get_all_contracts | <ul><li>[ ] </li></ul>  |
+| get_contract_logs | <ul><li>[ ] </li></ul>  |
+| subscribe_contract_logs | <ul><li>[ ] </li></ul>  |
+| get_contract_result | <ul><li>[ ] </li></ul>  |
+| get_contract | <ul><li>[ ] </li></ul>  |
+| call_contract_no_changing_state | <ul><li>[ ] </li></ul>  |
+| get_contracts | <ul><li>[ ] </li></ul>  |
+| get_contract_balances | <ul><li>[ ] </li></ul>  |
+
+### Network broadcast API
+
+| Methods | Status |
+| --- | --- | 
+| broadcast_transaction | <ul><li>[ ] </li></ul>  |
+| broadcast_block | <ul><li>[ ] </li></ul>  |
+| broadcast_transaction_with_callback | <ul><li>[ ] </li></ul>  |
+| broadcast_transaction_synchronous | <ul><li>[ ] </li></ul>  |
+
+### History API
+
+| Methods | Status |
+| --- | --- | 
+| get_account_history | <ul><li>[ ] </li></ul>  |
+| get_relative_account_history | <ul><li>[ ] </li></ul>  |
+| get_account_history_operations | <ul><li>[ ] </li></ul>  |
+| get_contract_history | <ul><li>[ ] </li></ul>  |
+
+### Network broadcast API
+
+| Methods | Status |
+| --- | --- | 
+| broadcast_transaction | <ul><li>[ ] </li></ul>  |
+| broadcast_block | <ul><li>[ ] </li></ul>  |
+| broadcast_transaction_with_callback | <ul><li>[ ] </li></ul>  |
+| broadcast_transaction_synchronous | <ul><li>[ ] </li></ul>  |
+
+### Registration API
+
+| Methods | Status |
+| --- | --- | 
+| register_account | <ul><li>[ ] </li></ul>  |
+
 
 ## Contributing
 
