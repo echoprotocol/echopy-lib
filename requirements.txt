@@ -1,7 +1,8 @@
-graphenelib>=1.1.0
-pycryptodome
-websockets
-appdirs
-Events
-scrypt
 pyyaml
+dateutils
+ecdsa
+requests
+websocket-client
+pylibscrypt
+pycryptodome
+appdirs

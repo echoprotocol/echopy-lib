@@ -1,14 +1,6 @@
 # -*- coding: utf-8 -*-
 import unittest
-import mock
-from pprint import pprint
-from bitshares import BitShares
-from bitshares.account import Account
-from bitshares.amount import Amount
-from bitshares.asset import Asset
-from bitshares.instance import set_shared_bitshares_instance
-from bitsharesbase.operationids import getOperationNameForId
-from .fixtures import fixture_data, bitshares
+from .fixtures import fixture_data, Account, AccountUpdate, getOperationNameForId
 
 
 class Testcases(unittest.TestCase):
@@ -16,87 +8,24 @@ class Testcases(unittest.TestCase):
         fixture_data()
 
     def test_account(self):
-        pprint(Account._cache)
         Account("init0")
-        Account("1.2.3")
+        Account("1.2.101")
         account = Account("init0", full=True)
         self.assertEqual(account.name, "init0")
         self.assertEqual(account["name"], account.name)
         self.assertEqual(account["id"], "1.2.100")
-        self.assertIsInstance(account.balance("1.3.0"), Amount)
-        # self.assertIsInstance(account.balance({"symbol": symbol}), Amount)
-        self.assertIsInstance(account.balances, list)
+        self.assertEqual(str(account), "<Account init0>")
+        account = Account("1.2.100")
+        self.assertEqual(str(account), "<Account 1.2.100>")
         for h in account.history(limit=1):
             pass
-
-        # BlockchainObjects method
-        account.cached = False
-        self.assertTrue(account.items())
-        account.cached = False
-        self.assertIn("id", account)
-        account.cached = False
-        self.assertEqual(account["id"], "1.2.90742")
-        self.assertEqual(str(account), "<Account 1.2.90742>")
         self.assertIsInstance(Account(account), Account)
 
     def test_account_upgrade(self):
         account = Account("init0")
-        pprint(account)
-        tx = account.upgrade()
-        ops = tx["operations"]
-        op = ops[0][1]
-        self.assertEqual(len(ops), 1)
-        self.assertEqual(getOperationNameForId(ops[0][0]), "account_upgrade")
-        self.assertTrue(op["upgrade_to_lifetime_member"])
-        self.assertEqual(op["account_to_upgrade"], "1.2.100")
-
-    def test_openorders(self):
-        account = Account("init0")
-        self.assertIsInstance(account.openorders, list)
-
-    def test_calls(self):
-        account = Account("init0")
-        self.assertIsInstance(account.callpositions, dict)
-
-    def test_whitelist(self):
-        from bitsharesbase.operations import Account_whitelist
-
-        account = Account("init0")
-        tx = account.whitelist("committee-account")
-        self.assertEqual(len(tx["operations"]), 1)
-        self.assertEqual(tx["operations"][0][0], 7)
-        self.assertEqual(tx["operations"][0][1]["authorizing_account"], account["id"])
-        self.assertEqual(
-            tx["operations"][0][1]["new_listing"], Account_whitelist.white_listed
-        )
-
-    def test_blacklist(self):
-        from bitsharesbase.operations import Account_whitelist
-
-        account = Account("init0")
-        tx = account.blacklist("committee-account")
-        self.assertEqual(len(tx["operations"]), 1)
-        self.assertEqual(tx["operations"][0][0], 7)
-        self.assertEqual(tx["operations"][0][1]["authorizing_account"], account["id"])
-        self.assertEqual(
-            tx["operations"][0][1]["new_listing"], Account_whitelist.black_listed
-        )
-
-    def test_unlist(self):
-        from bitsharesbase.operations import Account_whitelist
-
-        account = Account("init0")
-        tx = account.nolist("committee-account")
-        self.assertEqual(len(tx["operations"]), 1)
-        self.assertEqual(tx["operations"][0][0], 7)
-        self.assertEqual(tx["operations"][0][1]["authorizing_account"], account["id"])
-        self.assertEqual(
-            tx["operations"][0][1]["new_listing"], Account_whitelist.no_listing
-        )
+        account.upgrade()
 
     def test_accountupdate(self):
-        from bitshares.account import AccountUpdate
-
         t = {
             "id": "2.6.29",
             "lifetime_fees_paid": "44261516129",
@@ -110,9 +39,3 @@ class Testcases(unittest.TestCase):
         update = AccountUpdate(t)
         self.assertEqual(update["owner"], "1.2.100")
         self.assertIsInstance(update.account, Account)
-        update.__repr__()
-
-        update = AccountUpdate("committee-account")
-        self.assertEqual(update["owner"], "1.2.0")
-        self.assertIsInstance(update.account, Account)
-        update.__repr__()
