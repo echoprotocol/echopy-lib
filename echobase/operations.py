@@ -25,20 +25,20 @@ from .types import (
 )
 
 from .objects import (
-    AccountCreateExtensions,
+    # AccountCreateExtensions,
     AccountOptions,
     Asset,
     AssetOptions,
     BitAssetOptions,
-    CallOrderExtension,
+    # CallOrderExtension,
     Memo,
     ObjectId,
     Operation,
     Permission,
     Price,
     PriceFeed,
-    SpecialAuthority,
-    Worker_initializer,
+    # SpecialAuthority,
+    # Worker_initializer,
     isArgsThisClass,
 )
 
@@ -101,5 +101,219 @@ class Account_create(EchoObject):
                 ("active", Permission(kwargs["active"], prefix=prefix)),
                 ("options", AccountOptions(kwargs["options"], prefix=prefix)),
                 ("extensions", Set([])),
+            ]
+        )
+
+
+class Account_update(EchoObject):
+    def detail(self, *args, **kwargs):
+        prefix = kwargs.get("prefix", default_prefix)
+        return OrderedDict(
+            [
+                ("fee", Asset(kwargs["fee"])),
+                ("account", ObjectId(kwargs["account"], "account")),
+                ("owner", Optional(Permission(kwargs["owner"], prefix=prefix))),
+                ("active", Optional(Permission(kwargs["active"], prefix=prefix))),
+                ("new_options", Optional(AccountOptions(kwargs["new_options"], prefix=prefix))),
+                ("extensions", Optional(Set([]))),
+            ]
+        )
+
+
+class Account_whitelist(EchoObject):
+    def detail(self, *args, **kwargs):
+        return OrderedDict(
+            [
+                ("fee", Asset(kwargs["fee"])),
+                ("authorizing_account", ObjectId(kwargs["authorizing_account"], "account")),
+                ("new_listing", Uint8(kwargs["new_listing"])),
+                ("extensions", Optional(Set([]))),
+            ]
+        )
+
+
+class Assert(EchoObject):
+    def detail(self, *args, **kwargs):
+        return OrderedDict(
+            [
+                ("fee", Asset(kwargs["fee"])),
+                ("fee_paying_account", ObjectId(kwargs["fee_paying_account"], "account")),
+                ("predicates", Array(kwargs["predicates"])),
+                ("required_auths", Set(ObjectId(kwargs["required_auths"], "account"))),
+                ("extensions", Optional(Set([]))),
+            ]
+        )
+
+
+class Asset_create(EchoObject):
+    def detail(self, *args, **kwargs):
+        prefix = kwargs.get("prefix", default_prefix)
+        return OrderedDict(
+            [
+                ("fee", Asset(kwargs["fee"])),
+                ("issuer", ObjectId(kwargs["issuer"], "account")),
+                ("symbol", String(kwargs["symbol"])),
+                ("precision", Uint8(kwargs["precision"])),
+                ("common_options", AssetOptions(kwargs["asset"], prefix=prefix)),
+                ("bitasset_opts", Optional(BitAssetOptions(kwargs["bitasset_opts"], prefix=prefix))),
+                ("is_prediction_market", Bool(kwargs["is_prediction_market"])),
+                ("extensions", Optional(Set([]))),
+            ]
+        )
+
+
+class Asset_update(EchoObject):
+    def detail(self, *args, **kwargs):
+        return OrderedDict(
+            [
+                ("fee", Asset(kwargs["fee"])),
+                ("issuer", ObjectId(kwargs["issuer"], "account")),
+                ("asset_to_update", ObjectId(kwargs["asset_to_update"], "asset")),
+                ("new_issuer", Optional(ObjectId(kwargs["new_issuer"], "account"))),
+                ("new_options", AssetOptions(kwargs["new_options"])),
+                ("extensions", Optional(Set([]))),
+            ]
+        )
+
+
+class Asset_update_bitasset(EchoObject):
+    def detail(self, *args, **kwargs):
+        prefix = kwargs.get("prefix", default_prefix)
+
+        return OrderedDict(
+            [
+                ("fee", Asset(kwargs["fee"])),
+                ("issuer", ObjectId(kwargs["issuer"], "account")),
+                ("asset_to_update", ObjectId(kwargs["asset_to_update"], "asset")),
+                ("new_options", BitAssetOptions(kwargs["new_options"], prefix=prefix)),
+                ("extensions", Optional(Set([]))),
+            ]
+        )
+
+
+class Asset_update_fee_producer(EchoObject):
+    def detail(self, *args, **kwargs):
+        return OrderedDict(
+            [
+                ("fee", Asset(kwargs["fee"])),
+                ("issuer", ObjectId(kwargs["issuer"], "account")),
+                ("asset_to_update", ObjectId(kwargs["asset_to_update"], "asset")),
+                ("new_feed_producers", Set(ObjectId(kwargs["new_feed_producers"], "account"))),
+                ("extensions", Optional(Set([]))),
+            ]
+        )
+
+
+class Asset_issue(EchoObject):
+    def detail(self, *args, **kwargs):
+        return OrderedDict(
+            [
+                ("fee", Asset(kwargs["fee"])),
+                ("issuer", ObjectId(kwargs["issuer"], "account")),
+                ("asset_to_issue", Asset(kwargs["asset_to_issue"])),
+                ("issue_to_account", ObjectId(kwargs["issue_to_account"], "account")),
+                ("memo", Optional(Memo(kwargs["memo"]))),
+                ("extensions", Optional(Set([]))),
+            ]
+        )
+
+
+class Asset_reverse(EchoObject):
+    def detail(self, *args, **kwargs):
+        return OrderedDict(
+            [
+                ("fee", Asset(kwargs["fee"])),
+                ("payer", ObjectId(kwargs["payer"], "account")),
+                ("amount_to_reserve", Asset(kwargs["asset"])),
+                ("extensions", Optional(Set([]))),
+            ]
+        )
+
+
+class Asset_fund_fee_pool(EchoObject):
+    def details(self, *args, **kwargs):
+        return OrderedDict(
+            [
+                ("fee", Asset(kwargs["fee"])),
+                ("from_account", ObjectId(kwargs["from_account"], "account")),
+                ("asset_id", ObjectId(kwargs["asset_id"], "asset")),
+                ("amount", Int64(kwargs["amount"])),
+                ("extensions", Optional(Set([]))),
+            ]
+        )
+
+
+class Asset_settle(EchoObject):
+    def detail(self, *args, **kwargs):
+        return OrderedDict(
+            [
+                ("fee", Asset(kwargs["fee"])),
+                ("account", ObjectId(kwargs["account"], "account")),
+                ("amount", Asset(kwargs["asset"])),
+                ("extensions", Optional(Set([]))),
+            ]
+        )
+
+
+class Asset_global_settle(EchoObject):
+    def detail(self, *args, **kwargs):
+        return OrderedDict(
+            [
+                ("fee", Asset(kwargs["fee"])),
+                ("issuer", ObjectId(kwargs["issuer"], "account")),
+                ("asset_to_settle", ObjectId(kwargs["asset_to_settle"], "asset")),
+                ("settle_price", Price(kwargs["settle_price"])),
+                ("extensions", Optional(Set([]))),
+            ]
+        )
+
+
+class Asset_publish_feed(EchoObject):
+    def detail(self, *args, **kwargs):
+        return OrderedDict(
+            [
+                ("fee", Asset(kwargs["fee"])),
+                ("publisher", ObjectId(kwargs["publisher"], "account")),
+                ("asset_id", ObjectId(kwargs["asset_id"], "asset")),
+                ("feed", PriceFeed(kwargs["feed"])),
+                ("extensions", Optional(Set([]))),
+            ]
+        )
+
+
+class Asset_settle_cancel(EchoObject):
+    def detail(self, *args, **kwargs):
+        return OrderedDict(
+            [
+                ("fee", Asset(kwargs["fee"])),
+                ("settlement", ObjectId(kwargs["settlement"], "FORCE_SETTLEMENT")),
+                ("account", ObjectId(kwargs["account"], "account")),
+                ("amount", Asset(kwargs["amount"])),
+                ("extensions", Optional(Set([]))),
+            ]
+        )
+
+
+class Asset_claim_fees(EchoObject):
+    def detail(self, *args, **kwargs):
+        return OrderedDict(
+            [
+                ("fee", Asset(kwargs["fee"])),
+                ("issuer", ObjectId(kwargs["issuer"], "account")),
+                ("amount_to_claim", Asset(kwargs["amount_to_claim"])),
+                ("extensions", Optional(Set([]))),
+            ]
+        )
+
+
+class Balance_claim(EchoObject):
+    def detail(self, *args, **kwargs):
+        return OrderedDict(
+            [
+                ("fee", Asset(kwargs["fee"])),
+                ("deposit_to_account", ObjectId(kwargs["deposit_to_account"], "account")),
+                ("balance_to_claim", ObjectId(kwargs["balance_to_claim"], "account")),
+                ("balance_owner_key", PublicKey(kwargs["balance_owner_key"])),
+                ("total_claimed", Asset["total_claimed"]),
             ]
         )

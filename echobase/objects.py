@@ -234,23 +234,23 @@ class ObjectId(ObjectIdParent):
 
     object_types = object_type
 
-
+"""
 class AssetId(ObjectId):
-    """
-    """
+    "1""
+    "1""
     super().__init__(object_str="asset")
 
 
 class AccountId(ObjectId):
-    """
-    """
+    "1""
+    "1""
     super().__init__(object_str="account")
 
 
 class ContractId(ObjectId):
-    """
-    """
+
     super().__init__(object_str="contract")
+"""
 
 
 class Memo(EchoObject):
