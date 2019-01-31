@@ -354,3 +354,48 @@ class Transfer_from_blind(EchoObject):
                 ("inputs", Array(kwargs["blindInput"])),
             ]
         )
+
+
+def Proposal_create(EchoObject):
+    def detail(self, *args, **kwargs):
+        return OrderedDict(
+            [
+                ("fee", Asset(kwargs["fee"])),
+                ("fee_paying_account", ObjectId(kwargs["fee_paying_account"], "account")),
+                ("expiration_time", PointInTime(kwargs["expiration_time"])),
+                ("proposed_ops", Array(Static_variant(kwargs["proposed_ops"]))),
+                ("review_period_seconds", Optional(Uint32(kwargs["review_period_seconds"]))),
+                ("extensions", Optional(Set([]))),
+            ]
+        )
+
+
+def Proposal_update(EchoObject):
+    def detail(self, *args, **kwargs):
+        return OrderedDict(
+            [
+                ("fee", Asset(kwargs["fee"])),
+                ("fee_paying_account", ObjectId(kwargs["fee_paying_account"], "account")),
+                ("proposal", ObjectId(kwargs["proposal"], "proposal")),
+                ("active_approvals_to_add", Set(ObjectId(kwargs["active_approvals_to_add"], "account"))),
+                ("active_approvals_to_remove", Set(ObjectId(kwargs["active_approvals_to_remove"], "account"))),
+                ("owner_approvals_to_add", Set(ObjectId(kwargs["owner_approvals_to_add"], "account"))),
+                ("owner_approvals_to_remove", Set(ObjectId(kwargs["owner_approvals_to_remove"], "account"))),
+                ("key_approvals_to_add", Set(PublicKey(kwargs["key_approvals_to_add"]))),
+                ("key_approvals_to_remove", Set(PublicKey(kwargs["key_approvals_to_remove"]))),
+                ("extensions", Optional(Set([]))),
+            ]
+        )
+
+
+def Proposal_delete(EchoObject):
+    def detail(self, *args, **kwargs):
+        return OrderedDict(
+            [
+                ("fee", Asset(kwargs["fee"])),
+                ("fee_paying_account", ObjectId(kwargs["fee_paying_account"], "account")),
+                ("using_owner_authority", Bool(kwargs["using_owner_authority"])),
+                ("proposal", ObjectId(kwargs["proposal"], "proposal")),
+                ("extensions", Optional(Set([]))),
+            ]
+        )
