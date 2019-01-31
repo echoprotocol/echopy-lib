@@ -236,14 +236,11 @@ class ObjectId(ObjectIdParent):
 
 """
 class AssetId(ObjectId):
-    "1""
-    "1""
     super().__init__(object_str="asset")
 
 
 class AccountId(ObjectId):
-    "1""
-    "1""
+
     super().__init__(object_str="account")
 
 
