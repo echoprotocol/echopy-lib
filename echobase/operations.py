@@ -314,6 +314,43 @@ class Balance_claim(EchoObject):
                 ("deposit_to_account", ObjectId(kwargs["deposit_to_account"], "account")),
                 ("balance_to_claim", ObjectId(kwargs["balance_to_claim"], "account")),
                 ("balance_owner_key", PublicKey(kwargs["balance_owner_key"])),
-                ("total_claimed", Asset["total_claimed"]),
+                ("total_claimed", Asset(kwargs["total_claimed"])),
+            ]
+        )
+
+
+def Transfer_to_blind(EchoObject):
+    def detail(self, *args, **kwargs):
+        return OrderedDict(
+            [
+                ("fee", Asset(kwargs["fee"])),
+                ("amount", Asset(kwargs["amount"])),
+                ("from", ObjectId(kwargs["from"], "account")),
+                ("blinding_factor", Bytes(32)),
+                ("outputs", Array(kwargs["blindOutput"])),
+            ]
+        )
+
+
+class Blind_transfer(EchoObject):
+    def detail(self, *args, **kwargs):
+        return OrderedDict(
+            [
+                ("fee", Asset(kwargs["asset"])),
+                ("inputs", Array(kwargs["blindInput"])),
+                ("outputs", Array(kwargs["blindOutput"])),
+            ]
+        )
+
+
+class Transfer_from_blind(EchoObject):
+    def detail(self, *args, **kwargs):
+        return OrderedDict(
+            [
+                ("fee", Asset(kwargs["asset"])),
+                ("amount", Asset(kwargs["amount"])),
+                ("to", ObjectId(kwargs["to"], "account")),
+                ("blinding_factor", Bytes(32)),
+                ("inputs", Array(kwargs["blindInput"])),
             ]
         )
