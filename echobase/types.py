@@ -6,7 +6,11 @@ from .validation import (
     is_Uint64,
     is_Uint32,
     is_Uint16,
-    is_Uint8
+    is_Uint8,
+    is_Int16,
+    is_Int64,
+    is_string,
+    is_ripemd160
 )
 from calendar import timegm
 from binascii import hexlify, unhexlify
@@ -68,6 +72,8 @@ class Uint8:
 class Int16:
     def __init__(self, d):
         self.data = int(d)
+        if not is_Int16(self.data):
+            raise ValueError("Error while writing value to Int16.")
 
     def __bytes__(self):
         return struct.pack("<h", int(self.data))
@@ -129,6 +135,8 @@ class Varint32:
 class Int64:
     def __init__(self, d):
         self.data = int(d)
+        if not is_Int16(self.data):
+            raise ValueError("Error while writing value to Int16.")
 
     def __bytes__(self):
         return struct.pack("<q", self.data)
@@ -140,6 +148,8 @@ class Int64:
 class String:
     def __init__(self, d):
         self.data = d
+        if not is_string(self.data):
+            raise ValueError("Value is not a string.")
 
     def __bytes__(self):
         if self.data:
@@ -174,7 +184,7 @@ class Hash(Bytes):
 
 class Ripemd160(Hash):
     def __init__(self, a):
-        assert len(a) == 40, "Require 40 char long hex"
+        assert is_ripemd160(a), "Require 40 char long hex"
         super().__init__(a)
 
 

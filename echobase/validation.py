@@ -34,143 +34,147 @@ def is_object_id(v):
     return bool(idRegex.match(v) and len(v.split('.')) == 3)
 
 
-def isString(v):
+def is_string(v):
     if type(v) != str:
         raise ValueError("Entered value is not string")
 
 
 def is_account_id(v):
-    if isString(v):
+    if is_string(v):
         return bool(accountIdRegex.match(v))
 
 
 def is_asset_id(v):
-    if isString(v):
+    if is_string(v):
         return bool(assetIdRegex.match(v))
 
 
 def is_forse_settlement_id(v):
-    if isString(v):
+    if is_string(v):
         return bool(forceSettlementIdRegex.match(v))
 
 
 def is_committee_member_id(v):
-    if isString(v):
+    if is_string(v):
         return bool(committeeMemberIdRegex.match(v))
 
 
 def is_witness_id(v):
-    if isString(v):
+    if is_string(v):
         return bool(witnessIdRegex.match(v))
 
 
 def is_limit_order_id(v):
-    if isString(v):
+    if is_string(v):
         return bool(limitOrderIdRegex.match(v))
 
 
 def is_call_order_id(v):
-    if isString(v):
+    if is_string(v):
         return bool(callOrderIdRegex.match(v))
 
 
 def is_custom_id(v):
-    if isString(v):
+    if is_string(v):
         return bool(customIdRegex.match(v))
 
 
 def is_proposal_id(v):
-    if isString(v):
+    if is_string(v):
         return bool(proposalIdRegex.match(v))
 
 
 def is_operation_history_id(v):
-    if isString(v):
+    if is_string(v):
         return bool(operationHistoryIdRegex.match(v))
 
 
 def is_withdraw_permission_id(v):
-    if isString(v):
+    if is_string(v):
         return bool(withdrawPermissionIdRegex.match(v))
 
 
 def is_vesting_balance_id(v):
-    if isString(v):
+    if is_string(v):
         return bool(vestingBalanceIdRegex.match(v))
 
 
 def is_worker_id(v):
-    if isString(v):
+    if is_string(v):
         return bool(workerIdRegex.match(v))
 
 
 def is_balance_id(v):
-    if isString(v):
+    if is_string(v):
         return bool(balanceIdRegex.match(v))
 
 
 def is_contract_id(v):
-    if isString(v):
+    if is_string(v):
         return bool(contractIdRegex.match(v))
 
 
 def is_contract_result_id(v):
-    if isString(v):
+    if is_string(v):
         return bool(contractResultIdRegex.match(v))
 
 
 def is_dynamic_global_object_id(v):
-    if isString(v):
+    if is_string(v):
         return bool(dynamicGlobalObjectIdRegex.match(v))
 
 
 def is_dynamic_asset_data_id(v):
-    if isString(v):
+    if is_string(v):
         return bool(dynamicAssetDataIdRegex.match(v))
 
 
 def is_bit_asset_id(v):
-    if isString(v):
+    if is_string(v):
         return bool(bitAssetIdRegex.match(v))
 
 
 def is_account_balance_id(v):
-    if isString(v):
+    if is_string(v):
         return bool(accountBalanceIdRegex.match(v))
 
 
 def is_account_statistics_id(v):
-    if isString(v):
+    if is_string(v):
         return bool(accountStatisticsIdRegex.match(v))
 
 
 def is_transaction_id(v):
-    if isString(v):
+    if is_string(v):
         return bool(transactionIdRegex.match(v))
 
 
 def is_block_summary_id(v):
-    if isString(v):
+    if is_string(v):
         return bool(blockSummaryIdRegex.match(v))
 
 
 def is_account_transaction_history_id(v):
-    if isString(v):
+    if is_string(v):
         return bool(accountTransactionHistoryIdRegex.match(v))
 
 
 def is_hex(v):
-    if isString(v):
+    if is_string(v):
         return bool(hexRegex.match(v))
 
 
 def is_bytecode(v):
-    if isString(v):
+    if is_string(v):
         return bool(bytecodeRegex.match(v))
 
 
+def is_bytes(v, length):
+    return is_hex(v) and len(v) == length * 2
+
+
 def is_vote_id(v):
-    if isString(v):
+    if is_string(v):
         return bool(voteIdTypeRegex.match(v))
 
 
@@ -204,12 +208,16 @@ def isInt(v, x):
         return bool(abs(int(v)))
     except:
         raise ValueError("Value is not integer")
-    if v < 0 or v > 2**x:
+    if abs(int(v)) > 2**x:
         raise ValueError("Entered value is greater than this type may contain")
 
 
 def is_Int64(v):
     return isInt(v, 64)
+
+
+def is_Int16(v):
+    return isInt(v, 16)
 
 
 def is_asset_name(v):
@@ -220,7 +228,7 @@ NAME_MAX_LENGTH = 63
 
 
 def is_account_name(v):
-    if not isString(v):
+    if not is_string(v):
         return False
     if v is None:
         return False
@@ -233,6 +241,10 @@ def is_account_name(v):
         if not bool(re.match('^[a-z][a-z0-9-]*[a-z\d]$', label)) or bool(re.match('.*--.*', label)):
             return False
     return True
+
+
+def is_ripemd160(v):
+    return is_hex(v) and len(v) == 40
 
 
 def check_account_name(value):
@@ -255,7 +267,7 @@ def check_account_name(value):
 
 
 def is_echo_rand_key(v, echoRandPrefix='DET'):
-    if not isString(v) or len(v) != 44 + len(echoRandPrefix):
+    if not is_string(v) or len(v) != 44 + len(echoRandPrefix):
         return False
     prefix = v[0:len(echoRandPrefix)]
     return echoRandPrefix == prefix
