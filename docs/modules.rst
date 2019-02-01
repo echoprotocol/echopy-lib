@@ -1,9 +1,10 @@
-python-bitshares
-================
+python-graphene
+===============
 
 .. toctree::
    :maxdepth: 6
 
-   bitshares
-   bitsharesapi
-   bitsharesbase
+   grapheneapi
+   graphenebase
+   graphenecommon
+   graphenestorage

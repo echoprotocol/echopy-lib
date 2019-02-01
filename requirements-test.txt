@@ -1,10 +1,13 @@
-# Unit testing
+autobahn>=0.14
+pycrypto==2.6.1
+scrypt>=0.7.1
+secp256k1
 pytest
-pytest-mock
 coverage
 mock
 
 # Code style
-# black
+
+# black   # not available pre 3.6
 isort
 pre-commit

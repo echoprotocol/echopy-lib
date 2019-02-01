@@ -1,20 +1,11 @@
+# -*- coding: utf-8 -*-
+import mock
 import time
 import unittest
-from bitshares import BitShares, exceptions
-from bitshares.instance import set_shared_bitshares_instance
-from bitshares.blockchainobject import ObjectCache
+from .fixtures import ObjectCache, Account
 
 
 class Testcases(unittest.TestCase):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.bts = BitShares(
-            nobroadcast=True,
-        )
-        set_shared_bitshares_instance(self.bts)
-
     def test_cache(self):
         cache = ObjectCache(default_expiration=1)
         self.assertEqual(str(cache), "ObjectCache(n=0, default_expiration=1)")
@@ -31,3 +22,16 @@ class Testcases(unittest.TestCase):
 
         # Get
         self.assertEqual(cache.get("foo", "New"), "New")
+
+    def test_lazy_loading(self):
+        a = Account("unittest", lazy=True)
+        self.assertFalse(a._fetched)
+        self.assertTrue(a._lazy)
+        with mock.patch.object(Account, "refresh") as mocked_os:
+            try:
+                # Should call refresh as we are lazy here and don't have that
+                # object cached/fetched
+                a["name"]
+            except Exception:
+                pass
+            mocked_os.assert_called_once()

@@ -2,22 +2,29 @@
 Installation
 ************
 
-Installation
+Dependencies
 ############
+
+::
+
+    $ sudo apt-get install libffi-dev libssl-dev python-dev
+
+
+Install Library
+###############
 
 Install with `pip`:
 
 ::
 
-    $ sudo apt-get install libffi-dev libssl-dev python3-dev
-    $ pip3 install bitshares
+    $ pip3 install graphenelib
 
 Manual installation:
 
 ::
 
-    $ git clone https://github.com/xeroc/python-bitshares/
-    $ cd python-bitshares
+    $ git clone https://github.com/xeroc/python-graphenlib/
+    $ cd python-graphenlib
     $ python3 setup.py install --user
 
 Upgrade
@@ -25,4 +32,4 @@ Upgrade
 
 ::
 
-   $ pip3 install bitshares --user --upgrade
+   $ pip install --user --upgrade graphenelib

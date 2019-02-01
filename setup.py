@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 from setuptools import setup
@@ -13,13 +13,13 @@ except LookupError:
     ascii = codecs.lookup("ascii")
     codecs.register(lambda name, enc=ascii: {True: enc}.get(name == "mbcs"))
 
-VERSION = "0.3.0rc1"
-URL = "https://github.com/bitshares/python-bitshares"
+VERSION = "1.1.8"
+URL = "https://github.com/xeroc/python-graphenelib"
 
 setup(
-    name="bitshares",
+    name="graphenelib",
     version=VERSION,
-    description="Python library for bitshares",
+    description="Python library for graphene-based blockchains",
     long_description=open("README.md").read(),
     download_url="{}/tarball/{}".format(URL, VERSION),
     author="Fabian Schuh",
@@ -27,16 +27,14 @@ setup(
     maintainer="Fabian Schuh",
     maintainer_email="Fabian@chainsquad.com",
     url=URL,
-    keywords=["bitshares", "library", "api", "rpc"],
-    packages=["bitshares", "bitsharesapi", "bitsharesbase"],
+    keywords=["graphene", "api", "rpc", "ecdsa", "secp256k1"],
+    packages=["grapheneapi", "graphenebase", "graphenestorage", "graphenecommon"],
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3",
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
-        "Intended Audience :: Financial and Insurance Industry",
-        "Topic :: Office/Business :: Financial",
     ],
     install_requires=open("requirements.txt").readlines(),
     setup_requires=["pytest-runner"],
