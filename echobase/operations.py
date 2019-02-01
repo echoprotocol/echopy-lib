@@ -399,3 +399,34 @@ def Proposal_delete(EchoObject):
                 ("extensions", Optional(Set([]))),
             ]
         )
+
+
+def Create_contract(EchoObject):
+    def detail(self, *args, **kwargs):
+        return OrderedDict(
+            [
+                ("fee", Asset(kwargs["fee"])),
+                ("registrar", ObjectId(kwargs["registrar"])),
+                ("value", Asset(kwargs["value"])),
+                ("gasPrice", Uint64(kwargs["gasPrice"])),
+                ("gas", Uint64(kwargs["gas"])),
+                ("code", String(kwargs["code"])),
+                ("eth_accuracy", Bool(kwargs["eth_accuracy"])),
+                ("supported_asset_id", Optional(ObjectId(Asset(kwargs["supported_asset_id"])))),
+            ]
+        )
+
+
+def Call_contract(EchoObject):
+    def detail(self, *args, **kwargs):
+        return OrderedDict(
+            [
+                ("fee", Asset(kwargs["fee"])),
+                ("registrar", ObjectId(kwargs["registrar"], "account")),
+                ("value", Asset(kwargs["value"])),
+                ("gasPrice", Uint64(kwargs["gasPrice"])),
+                ("gas", Uint64(kwargs["gas"])),
+                ("code", String(kwargs["code"])),
+                ("callee", ObjectId(kwargs["callee"], "contract")),
+            ]
+        )
