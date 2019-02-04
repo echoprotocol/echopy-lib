@@ -231,7 +231,7 @@ class Asset_reverse(EchoObject):
 
 
 class Asset_fund_fee_pool(EchoObject):
-    def details(self, *args, **kwargs):
+    def detail(self, *args, **kwargs):
         return OrderedDict(
             [
                 ("fee", Asset(kwargs["fee"])),
