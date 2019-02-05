@@ -3,10 +3,14 @@ import json
 import struct
 import time
 from .validation import (
-    is_Uint64,
-    is_Uint32,
-    is_Uint16,
-    is_Uint8
+    is_uint64,
+    is_uint32,
+    is_uint16,
+    is_uint8,
+    is_int64,
+    is_bytes,
+    is_string,
+    is_ripemd160
 )
 from calendar import timegm
 from binascii import hexlify, unhexlify
@@ -55,8 +59,6 @@ def JsonObj(data):
 class Uint8:
     def __init__(self, d):
         self.data = int(d)
-        if not is_Uint8(self.data):
-            raise ValueError("Error while writing value to Uint8.")
 
     def __bytes__(self):
         return struct.pack("<B", self.data)
@@ -65,22 +67,9 @@ class Uint8:
         return "%d" % self.data
 
 
-class Int16:
-    def __init__(self, d):
-        self.data = int(d)
-
-    def __bytes__(self):
-        return struct.pack("<h", int(self.data))
-
-    def __str__(self):
-        return "%d" % self.data
-
-
 class Uint16:
     def __init__(self, d):
         self.data = int(d)
-        if not is_Uint16(self.data):
-            raise ValueError("Error while writing value to Uint16.")
 
     def __bytes__(self):
         return struct.pack("<H", self.data)
@@ -92,8 +81,6 @@ class Uint16:
 class Uint32:
     def __init__(self, d):
         self.data = int(d)
-        if not is_Uint32(self.data):
-            raise ValueError("Error while writing value to Uint32.")
 
     def __bytes__(self):
         return struct.pack("<I", self.data)
@@ -105,22 +92,9 @@ class Uint32:
 class Uint64:
     def __init__(self, d):
         self.data = int(d)
-        if not is_Uint64(self.data):
-            raise ValueError("Error while writing value to Uint64.")
 
     def __bytes__(self):
         return struct.pack("<Q", self.data)
-
-    def __str__(self):
-        return "%d" % self.data
-
-
-class Varint32:
-    def __init__(self, d):
-        self.data = int(d)
-
-    def __bytes__(self):
-        return varint(self.data)
 
     def __str__(self):
         return "%d" % self.data
@@ -132,6 +106,17 @@ class Int64:
 
     def __bytes__(self):
         return struct.pack("<q", self.data)
+
+    def __str__(self):
+        return "%d" % self.data
+
+
+class Varint32:
+    def __init__(self, d):
+        self.data = int(d)
+
+    def __bytes__(self):
+        return varint(self.data)
 
     def __str__(self):
         return "%d" % self.data

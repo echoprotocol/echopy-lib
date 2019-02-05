@@ -174,42 +174,44 @@ def is_vote_id(v):
         return bool(voteIdTypeRegex.match(v))
 
 
-def isUint(v, x):
-    try:
-        return bool(int(v))
-    except:
-        raise ValueError("Value is not integer")
-    if v < 0 or v > 2**x:
-        raise ValueError("entered value is greater than this type may contain")
-
-
-def is_Uint64(v):
-    return isUint(v, 64)
-
-
-def is_Uint32(v):
-    return isUint(v, 32)
-
-
-def is_Uint16(v):
-    return isUint(v, 16)
-
-
-def is_Uint8(v):
-    return isUint(v, 8)
-
-
-def isInt(v, x):
-    try:
-        return bool(abs(int(v)))
-    except:
-        raise ValueError("Value is not integer")
-    if v < 0 or v > 2**x:
+def is_uint(v, x):
+    v = int(v)
+    if v < 0 or v >= 2**x:
         raise ValueError("Entered value is greater than this type may contain")
+    try:
+        return bool(v)
+    except:
+        raise ValueError("Value is not integer")
 
 
-def is_Int64(v):
-    return isInt(v, 64)
+def is_int(v, x):
+    v = abs(int(v))
+    if v > 2**x:
+        raise ValueError("Entered value is greater than this type may contain")
+    try:
+        return bool(v)
+    except:
+        raise ValueError("Value is not integer")
+
+
+def is_uint8(v):
+    return is_uint(v, 8)
+
+
+def is_uint16(v):
+    return is_uint(v, 16)
+
+
+def is_uint32(v):
+    return is_uint(v, 32)
+
+
+def is_uint64(v):
+    return is_uint(v, 64)
+
+
+def is_int64(v):
+    return is_int(v, 64)
 
 
 def is_asset_name(v):
@@ -255,7 +257,7 @@ def check_account_name(value):
 
 
 def is_operation_id(v):
-    return is_Uint8(v) and v < 49
+    return is_uint8(v) and v < 49
 
 
 def is_bytes(v, length):
