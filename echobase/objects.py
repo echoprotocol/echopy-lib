@@ -4,7 +4,6 @@ import json
 from collections import OrderedDict
 from echobase.types import (
     Uint8,
-    Int16,
     Uint16,
     Uint32,
     Uint64,

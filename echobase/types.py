@@ -3,12 +3,12 @@ import json
 import struct
 import time
 from .validation import (
-    is_Uint64,
-    is_Uint32,
-    is_Uint16,
-    is_Uint8,
-    is_Int16,
-    is_Int64,
+    is_uint64,
+    is_uint32,
+    is_uint16,
+    is_uint8,
+    is_int64,
+    is_bytes,
     is_string,
     is_ripemd160
 )
@@ -59,8 +59,6 @@ def JsonObj(data):
 class Uint8:
     def __init__(self, d):
         self.data = int(d)
-        if not is_Uint8(self.data):
-            raise ValueError("Error while writing value to Uint8.")
 
     def __bytes__(self):
         return struct.pack("<B", self.data)
@@ -69,24 +67,9 @@ class Uint8:
         return "%d" % self.data
 
 
-class Int16:
-    def __init__(self, d):
-        self.data = int(d)
-        if not is_Int16(self.data):
-            raise ValueError("Error while writing value to Int16.")
-
-    def __bytes__(self):
-        return struct.pack("<h", int(self.data))
-
-    def __str__(self):
-        return "%d" % self.data
-
-
 class Uint16:
     def __init__(self, d):
         self.data = int(d)
-        if not is_Uint16(self.data):
-            raise ValueError("Error while writing value to Uint16.")
 
     def __bytes__(self):
         return struct.pack("<H", self.data)
@@ -98,8 +81,6 @@ class Uint16:
 class Uint32:
     def __init__(self, d):
         self.data = int(d)
-        if not is_Uint32(self.data):
-            raise ValueError("Error while writing value to Uint32.")
 
     def __bytes__(self):
         return struct.pack("<I", self.data)
@@ -111,11 +92,20 @@ class Uint32:
 class Uint64:
     def __init__(self, d):
         self.data = int(d)
-        if not is_Uint64(self.data):
-            raise ValueError("Error while writing value to Uint64.")
 
     def __bytes__(self):
         return struct.pack("<Q", self.data)
+
+    def __str__(self):
+        return "%d" % self.data
+
+
+class Int64:
+    def __init__(self, d):
+        self.data = int(d)
+
+    def __bytes__(self):
+        return struct.pack("<q", self.data)
 
     def __str__(self):
         return "%d" % self.data
@@ -132,24 +122,9 @@ class Varint32:
         return "%d" % self.data
 
 
-class Int64:
-    def __init__(self, d):
-        self.data = int(d)
-        if not is_Int16(self.data):
-            raise ValueError("Error while writing value to Int16.")
-
-    def __bytes__(self):
-        return struct.pack("<q", self.data)
-
-    def __str__(self):
-        return "%d" % self.data
-
-
 class String:
     def __init__(self, d):
         self.data = d
-        if not is_string(self.data):
-            raise ValueError("Value is not a string.")
 
     def __bytes__(self):
         if self.data:
@@ -184,7 +159,7 @@ class Hash(Bytes):
 
 class Ripemd160(Hash):
     def __init__(self, a):
-        assert is_ripemd160(a), "Require 40 char long hex"
+        assert len(a) == 40, "Require 40 char long hex"
         super().__init__(a)
 
 

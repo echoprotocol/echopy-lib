@@ -178,46 +178,44 @@ def is_vote_id(v):
         return bool(voteIdTypeRegex.match(v))
 
 
-def isUint(v, x):
-    try:
-        return bool(int(v))
-    except:
-        raise ValueError("Value is not integer")
-    if v < 0 or v > 2**x:
-        raise ValueError("entered value is greater than this type may contain")
-
-
-def is_Uint64(v):
-    return isUint(v, 64)
-
-
-def is_Uint32(v):
-    return isUint(v, 32)
-
-
-def is_Uint16(v):
-    return isUint(v, 16)
-
-
-def is_Uint8(v):
-    return isUint(v, 8)
-
-
-def isInt(v, x):
-    try:
-        return bool(abs(int(v)))
-    except:
-        raise ValueError("Value is not integer")
-    if abs(int(v)) > 2**x:
+def is_uint(v, x):
+    v = int(v)
+    if v < 0 or v >= 2**x:
         raise ValueError("Entered value is greater than this type may contain")
+    try:
+        return bool(v)
+    except:
+        raise ValueError("Value is not integer")
 
 
-def is_Int64(v):
-    return isInt(v, 64)
+def is_int(v, x):
+    v = abs(int(v))
+    if v > 2**x:
+        raise ValueError("Entered value is greater than this type may contain")
+    try:
+        return bool(v)
+    except:
+        raise ValueError("Value is not integer")
 
 
-def is_Int16(v):
-    return isInt(v, 16)
+def is_uint8(v):
+    return is_uint(v, 8)
+
+
+def is_uint16(v):
+    return is_uint(v, 16)
+
+
+def is_uint32(v):
+    return is_uint(v, 32)
+
+
+def is_uint64(v):
+    return is_uint(v, 64)
+
+
+def is_int64(v):
+    return is_int(v, 64)
 
 
 def is_asset_name(v):
@@ -266,8 +264,31 @@ def check_account_name(value):
     return 0
 
 
+def is_operation_id(v):
+    return is_uint8(v) and v < 49
+
+
+def is_bytes(v, length):
+    return is_hex(v) and len(v) == length * 2
+
+
+def is_ripemd160(v):
+    return is_hex(v) and len(v) == 40
+
+
 def is_echo_rand_key(v, echoRandPrefix='DET'):
+<<<<<<< HEAD
     if not is_string(v) or len(v) != 44 + len(echoRandPrefix):
+=======
+    if not is_string(v) or len(v) != 44 + len(echoRandPrefix):  # config.ECHORAND_KEY_LENGTH = 44
+>>>>>>> feature-ECHOT-16
         return False
     prefix = v[0:len(echoRandPrefix)]
     return echoRandPrefix == prefix
+
+
+def is_public_key(v, addressPrefix="ECHO"):
+    if is_string(v) or len(v) != 44 + len(addressPrefix):  # config.ECHORAND_KEY_LENGTH = 44
+        return False
+    prefix = v[0:len(addressPrefix)]
+    return addressPrefix == prefix
