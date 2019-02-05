@@ -268,20 +268,8 @@ def is_operation_id(v):
     return is_uint8(v) and v < 49
 
 
-def is_bytes(v, length):
-    return is_hex(v) and len(v) == length * 2
-
-
-def is_ripemd160(v):
-    return is_hex(v) and len(v) == 40
-
-
 def is_echo_rand_key(v, echoRandPrefix='DET'):
-<<<<<<< HEAD
-    if not is_string(v) or len(v) != 44 + len(echoRandPrefix):
-=======
     if not is_string(v) or len(v) != 44 + len(echoRandPrefix):  # config.ECHORAND_KEY_LENGTH = 44
->>>>>>> feature-ECHOT-16
         return False
     prefix = v[0:len(echoRandPrefix)]
     return echoRandPrefix == prefix
