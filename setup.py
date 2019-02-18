@@ -3,41 +3,29 @@
 
 from setuptools import setup
 
-# Work around mbcs bug in distutils.
-# http://bugs.python.org/issue10945
-import codecs
-
-try:
-    codecs.lookup("mbcs")
-except LookupError:
-    ascii = codecs.lookup("ascii")
-    codecs.register(lambda name, enc=ascii: {True: enc}.get(name == "mbcs"))
-
-VERSION = "1.1.8"
-URL = "https://github.com/xeroc/python-graphenelib"
+VERSION = "0.1.0"
+URL = "https://gitlab.pixelplex.by/645.echo/echopy-lib" # FIX IT
 
 setup(
-    name="graphenelib",
+    name="echopy-lib",
     version=VERSION,
-    description="Python library for graphene-based blockchains",
+    description="Python library for ECHO blockchain",
     long_description=open("README.md").read(),
-    download_url="{}/tarball/{}".format(URL, VERSION),
-    author="Fabian Schuh",
-    author_email="Fabian@chainsquad.com",
-    maintainer="Fabian Schuh",
-    maintainer_email="Fabian@chainsquad.com",
+    download_url="{}/tarball/{}".format(URL, VERSION), # FIX IT
+    license='MIT',
+    author="PixelPlex inc",
+    author_email="dev@pixelplex.io",
     url=URL,
-    keywords=["graphene", "api", "rpc", "ecdsa", "secp256k1"],
-    packages=["grapheneapi", "graphenebase", "graphenestorage", "graphenecommon"],
+    keywords=["echo", "blockchain", "api", "rpc"],
+    packages=["echoapi", "echobase", "echo"],
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3",
-        "Development Status :: 5 - Production/Stable",
+        "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
     ],
     install_requires=open("requirements.txt").readlines(),
-    setup_requires=["pytest-runner"],
-    tests_require=["pytest"],
     include_package_data=True,
+
 )
