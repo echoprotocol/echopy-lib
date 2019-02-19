@@ -96,7 +96,6 @@ class Rpc:
             raise ValueError("Client returned invalid format. Expected JSON!")
 
         log.debug(json.dumps(query))
-
         if "error" in ret:  # pragma: no cover
             if "detail" in ret["error"]:
                 raise RPCError(ret["error"]["detail"])
@@ -109,8 +108,7 @@ class Rpc:
         """ Map all methods to RPC calls and pass through the arguments
         """
 
-        def method(*args, **kwargs):
-
+        def method(params, *args, **kwargs):
             # Sepcify the api to talk to
             if "api_id" not in kwargs:  # pragma: no cover
                 if "api" in kwargs:
@@ -128,7 +126,7 @@ class Rpc:
 
             query = {
                 "method": "call",
-                "params": [api_id, name, list(args)],
+                "params": [api_id, name, params],
                 "jsonrpc": "2.0",
                 "id": self.get_request_id(),
             }
