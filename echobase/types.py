@@ -209,7 +209,7 @@ class PointInTime:
         self.data = d
 
     def __bytes__(self):
-        return struct.pack("<I", timegm(time.strptime((self.data + "UTC"), timeformat)))
+        return struct.pack("<I", timegm(time.strptime((str(self.data) + "UTC"), timeformat)))
 
     def __str__(self):
         return self.data
@@ -239,7 +239,7 @@ class Set(Array):  # Set = Array
         super().__init__(d)
 
 
-class Fixed_array:
+class FixedArray:
     pass
 
 
@@ -268,7 +268,7 @@ class Optional:
         return not bool(bytes(self.data))
 
 
-class Static_variant:
+class StaticVariant:
     def __init__(self, d, type_id):
         self.data = d
         self.type_id = type_id

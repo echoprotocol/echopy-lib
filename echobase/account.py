@@ -21,7 +21,7 @@ class PasswordKey(Prefix):
         passphrase only.
     """
 
-    def __init__(self, account, password, role="active", prefix=None):
+    def __init__(self, account, password, role="active", prefix='ECHO'):
         self.set_prefix(prefix)
         self.account = account
         self.role = role
@@ -65,7 +65,7 @@ class BrainKey(Prefix):
 
     """
 
-    def __init__(self, brainkey=None, sequence=0, prefix=None):
+    def __init__(self, brainkey=None, sequence=0, prefix='ECHO'):
         self.set_prefix(prefix)
         if not brainkey:
             self.brainkey = BrainKey.suggest()
@@ -150,12 +150,12 @@ class Address(Prefix):
 
     """
 
-    def __init__(self, address, prefix=None):
+    def __init__(self, address, prefix='ECHO'):
         self.set_prefix(prefix)
         self._address = Base58(address, prefix=self.prefix)
 
     @classmethod
-    def from_pubkey(cls, pubkey, compressed=True, version=56, prefix=None):
+    def from_pubkey(cls, pubkey, compressed=True, version=56, prefix='ECHO'):
         """ Load an address provided the public key.
 
             Version: 56 => PTS
@@ -201,7 +201,7 @@ class EchoAddress(Address):
     """
 
     @classmethod
-    def from_pubkey(cls, pubkey, compressed=True, version=56, prefix=None):
+    def from_pubkey(cls, pubkey, compressed=True, version=56, prefix='ECHO'):
         # Ensure this is a public key
         pubkey = PublicKey(pubkey, prefix=prefix or Prefix.prefix)
         if compressed:
@@ -233,7 +233,7 @@ class PublicKey(Prefix):
 
     """
 
-    def __init__(self, pk, prefix=None):
+    def __init__(self, pk, prefix='ECHO'):
         self.set_prefix(prefix)
         if isinstance(pk, PublicKey):
             pk = format(pk, self.prefix)
@@ -304,7 +304,7 @@ class PublicKey(Prefix):
         return tweakaddPubkey(self, digest256)
 
     @classmethod
-    def from_privkey(cls, privkey, prefix=None):
+    def from_privkey(cls, privkey, prefix='ECHO'):
         """ Derive uncompressed public key """
         privkey = PrivateKey(privkey, prefix=prefix or Prefix.prefix)
         secret = unhexlify(repr(privkey))
@@ -385,7 +385,7 @@ class PrivateKey(Prefix):
 
     """
 
-    def __init__(self, wif=None, prefix=None):
+    def __init__(self, wif=None, prefix='ECHO'):
         self.set_prefix(prefix)
         if wif is None:
             import os
@@ -477,7 +477,7 @@ class PrivateKey(Prefix):
 
 class BitcoinAddress(Address):
     @classmethod
-    def from_pubkey(cls, pubkey, compressed=False, version=56, prefix=None):
+    def from_pubkey(cls, pubkey, compressed=False, version=56, prefix='ECHO'):
         # Ensure this is a public key
         pubkey = PublicKey(pubkey)
         if compressed:

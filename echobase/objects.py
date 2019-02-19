@@ -17,15 +17,15 @@ from echobase.types import (
     Signature,
     Bool,
     Set,
-    Fixed_array,
+    FixedArray,
     Optional,
-    Static_variant,
+    StaticVariant,
     Map,
     Id,
     VoteId,
     JsonObj,
 )
-from echobase.types import ObjectId as ObjectIdParent
+from .types import ObjectId as ObjectIdParent
 from .chains import known_chains
 from .objecttypes import object_type
 from .account import PublicKey
@@ -192,8 +192,11 @@ class EchoObject(OrderedDict):
     def __json__(self):
         if len(self) is 0:
             return {}
-        d = {}  # JSON output is *not* ordered
-        for name, value in self.items():
+
+        d = OrderedDict([])
+        for k in self.keys():
+            value = self[k]
+            name = k
             if isinstance(value, Optional) and value.isempty():
                 continue
 
@@ -208,6 +211,11 @@ class EchoObject(OrderedDict):
 
     def __str__(self):
         return json.dumps(self.__json__())
+
+    def add_fee(self, ordered_dict, kwargs):
+        if 'fee' in kwargs:
+            ordered_dict.update({"fee": Asset(kwargs["fee"])})
+            ordered_dict.move_to_end("fee", last=False)
 
     # Legacy support
     @property
@@ -256,7 +264,7 @@ class Memo(EchoObject):
         else:
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
-            prefix = kwargs.pop("prefix", default_prefix)
+            prefix = default_prefix
             if "message" in kwargs and kwargs["message"]:
                 super().__init__(
                     OrderedDict(
@@ -316,7 +324,7 @@ class Permission(EchoObject):
         if isArgsThisClass(self, args):
             self.data = args[0].data
         else:
-            prefix = kwargs.pop("prefix", default_prefix)
+            prefix = default_prefix
 
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
@@ -352,7 +360,7 @@ class Permission(EchoObject):
 class AccountOptions(EchoObject):
     def __init__(self, *args, **kwargs):
         # Allow for overwrite of prefix
-        prefix = kwargs.pop("prefix", default_prefix)
+        prefix = default_prefix
 
         if isArgsThisClass(self, args):
             self.data = args[0].data
@@ -493,6 +501,153 @@ class Asset(EchoObject):
                     [
                         ("amount", Int64(kwargs["amount"])),
                         ("asset_id", ObjectId(kwargs["asset_id"], "asset")),
+                    ]
+                )
+            )
+
+
+class VestingPolicyInitializer(StaticVariant):
+    def __init__(self, o):
+        class linearVestingPolicyInitializer(EchoObject):
+            def __init__(self, *args, **kwargs):
+                if isArgsThisClass(self, args):
+                    self.data = args[0].data
+                else:
+                    if len(args) == 1 and len(kwargs) == 0:
+                        kwargs = args[0]
+                    super().__init__(
+                        OrderedDict(
+                            [
+                                ("begin_timestamp", PointInTime(kwargs["begin_timestamp"])),
+                                ("vesting_cliff_seconds", Uint32(kwargs["vesting_cliff_seconds"])),
+                                ("vesting_duration_seconds", Uint32(kwargs["vesting_duration_seconds"])),
+                            ]
+                        )
+                    )
+
+        class cddVestingPolicyInitializer(EchoObject):
+            def __init__(self, *args, **kwargs):
+                if isArgsThisClass(self, args):
+                    self.data = args[0].data
+                else:
+                    if len(args) == 1 and len(kwargs) == 0:
+                        kwargs = args[0]
+                    super().__init__(
+                        OrderedDict(
+                            [
+                                ("start_claim", PointInTime(kwargs["start_claim"])),
+                                ("vesting_seconds", Uint32(kwargs["vesting_seconds"])),
+                            ]
+                        )
+                    )
+
+        id = o[0]
+        if id == 0:
+            data = linearVestingPolicyInitializer(o[1])
+        elif id == 1:
+            data = cddVestingPolicyInitializer(o[1])
+        else:
+            raise Exception("Unknown vesting_policy_initializer")
+        super().__init__(data, id)
+
+
+class WorkerInitializer(StaticVariant):
+    def __init__(self, o):
+        class Burn_worker_initializer(EchoObject):
+            def __init__(self, kwargs):
+                super().__init__(OrderedDict([]))
+
+        class Refund_worker_initializer(EchoObject):
+            def __init__(self, kwargs):
+                super().__init__(OrderedDict([]))
+
+        class Vesting_balance_worker_initializer(EchoObject):
+            def __init__(self, *args, **kwargs):
+                if isArgsThisClass(self, args):
+                    self.data = args[0].data
+                else:
+                    if len(args) == 1 and len(kwargs) == 0:
+                        kwargs = args[0]
+                    super().__init__(
+                        OrderedDict(
+                            [
+                                (
+                                    "pay_vesting_period_days",
+                                    Uint16(kwargs["pay_vesting_period_days"]),
+                                )
+                            ]
+                        )
+                    )
+
+        id = o[0]
+        if id == 0:
+            data = Refund_worker_initializer(o[1])
+        elif id == 1:
+            data = Vesting_balance_worker_initializer(o[1])
+        elif id == 2:
+            data = Burn_worker_initializer(o[1])
+        else:
+            raise Exception("Unknown Worker_initializer")
+        super().__init__(data, id)
+
+
+class FeeSchedule(EchoObject):
+    def __init__(self, *args, **kwargs):
+        from .feetypes import Fee_types
+        if isArgsThisClass(self, args):
+            self.data = args[0].data
+        else:
+            if len(args) == 1 and len(kwargs) == 0:
+                kwargs = args[0]
+            super().__init__(
+                OrderedDict(
+                    [
+                        ("parameters", Set([Fee_types(param) for param in kwargs["parameters"]])),
+                        ("scale", Uint32(kwargs["scale"]))
+                    ]
+                )
+            )
+
+
+class ChainParameters(EchoObject):
+    def __init__(self, *args, **kwargs):
+        if isArgsThisClass(self, args):
+            self.data = args[0].data
+        else:
+            if len(args) == 1 and len(kwargs) == 0:
+                kwargs = args[0]
+            super().__init__(
+                OrderedDict(
+                    [
+                        ("current_fees", FeeSchedule(kwargs["current_fees"])),
+                        ("block_interval", Uint8(kwargs["block_interval"])),
+                        ("maintenance_interval", Uint32(kwargs["maintenance_interval"])),
+                        ("maintenance_skip_slots", Uint8(kwargs["maintenance_skip_slots"])),
+                        ("committee_proposal_review_period", Uint32(kwargs["committee_proposal_review_period"])),
+                        ("maximum_transaction_size", Uint32(kwargs["maximum_transaction_size"])),
+                        ("maximum_block_size", Uint32(kwargs["maximum_block_size"])),
+                        ("maximum_time_until_expiration", Uint32(kwargs["maximum_time_until_expiration"])),
+                        ("maximum_proposal_lifetime", Uint32(kwargs["maximum_proposal_lifetime"])),
+                        ("maximum_asset_whitelist_authorities", Uint8(kwargs["maximum_asset_whitelist_authorities"])),
+                        ("maximum_asset_feed_publishers", Uint8(kwargs["maximum_asset_feed_publishers"])),
+                        ("maximum_witness_count", Uint16(kwargs["maximum_witness_count"])),
+                        ("maximum_committee_count", Uint16(kwargs["maximum_committee_count"])),
+                        ("maximum_authority_membership", Uint16(kwargs["maximum_authority_membership"])),
+                        ("reserve_percent_of_fee", Uint16(kwargs["reserve_percent_of_fee"])),
+                        ("network_percent_of_fee", Uint16(kwargs["network_percent_of_fee"])),
+                        ("lifetime_referrer_percent_of_fee", Uint16(kwargs["lifetime_referrer_percent_of_fee"])),
+                        ("cashback_vesting_period_seconds", Uint32(kwargs["cashback_vesting_period_seconds"])),
+                        ("cashback_vesting_threshold", Int64(kwargs["cashback_vesting_threshold"])),
+                        ("count_non_member_votes", Bool(kwargs["count_non_member_votes"])),
+                        ("allow_non_member_whitelists", Bool(kwargs["allow_non_member_whitelists"])),
+                        ("witness_pay_per_block", Int64(kwargs["witness_pay_per_block"])),
+                        ("worker_budget_per_day", Int64(kwargs["worker_budget_per_day"])),
+                        ("max_predicate_opcode", Uint16(kwargs["max_predicate_opcode"])),
+                        ("fee_liquidation_threshold", Int64(kwargs["fee_liquidation_threshold"])),
+                        ("accounts_per_fee_scale", Uint16(kwargs["accounts_per_fee_scale"])),
+                        ("account_fee_scale_bitshifts", Uint8(kwargs["account_fee_scale_bitshifts"])),
+                        ("max_authority_depth", Uint8(kwargs["max_authority_depth"])),
+                        ("extensions", Set([])),
                     ]
                 )
             )

@@ -11,5 +11,5 @@ class NetworkApi:
     def broadcast_transaction_synchronous(self, signed_transaction):
         return self.db.rpcexec('broadcast_transaction_synchronous', [signed_transaction])
 
-    def broadcast_transaction_with_callback(self, callback, signed_transaction):
+    def broadcast_transaction_with_callback(self, signed_transaction, callback):
         return self.db.rpcexec('broadcast_transaction_with_callback', [callback, signed_transaction])

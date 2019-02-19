@@ -36,7 +36,7 @@ def unicodify(data):
     return bytes("".join(r), "utf-8")
 
 
-def formatTime(t):
+def format_time(t):
     """ Properly Format Time for permlinks
     """
     if isinstance(t, (float, int)):
@@ -47,7 +47,7 @@ def formatTime(t):
         raise ValueError("formatTime expects float/int, or datetime")
 
 
-def formatTimeFromNow(secs=0):
+def format_time_from_now(secs=0):
     """ Properly Format Time that is `x` seconds in the future
 
         :param int secs: Seconds to go in the future (`x>0`) or the
@@ -67,4 +67,4 @@ def parse_time(block_time):
 
 
 # Legacy names
-formatTimeString = formatTime
+formatTimeString = format_time
