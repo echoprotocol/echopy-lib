@@ -1,20 +1,22 @@
 from echoapi import Api
 
 from echobase.operations import get_operation_by_id, get_operation_by_name
-
 from echobase.account import PrivateKey, PublicKey
-from echobase.objects import EchoObject, StaticVariant
-
-from collections import OrderedDict
+from echobase.objects import EchoObject, StaticVariant, Asset
+from echobase.ecdsa import sign_message
 from echobase.types import Uint16, Uint32, PointInTime, Array, Optional, Set, Bytes, String
 
+
+from collections import OrderedDict
 from copy import deepcopy, copy
-from echobase.ecdsa import sign_message
 
 from math import ceil
+from codecs import decode
 
-from datetime import timezone
-from datetime import datetime
+
+from datetime import timezone, datetime
+from calendar import timegm
+import time
 
 echo_asset_id = '1.3.0'
 
@@ -151,8 +153,6 @@ class Transaction:
         operations_types = self.operations
         assert operations_types == self._operations
 
-        from echobase.objects import Asset
-
         for index, (op_id, op) in enumerate(operations_types):
             op = op.json()
             if 'fee' not in op:
@@ -232,8 +232,6 @@ class Transaction:
 
         self._ref_block_num = dynamic_global_chain_data['head_block_number'] & 0xffff
 
-        from codecs import decode
-
         def bytes_to_int(bytes):
             result = 0
             for b in bytes:
@@ -245,8 +243,6 @@ class Transaction:
         self._ref_block_prefix = bytes_to_int(little_endian)
 
         if self.expiration is None:
-            from calendar import timegm
-            import time
 
             def seconds_to_iso(sec):
                 iso_result = datetime.fromtimestamp(sec, timezone.utc).replace(microsecond=0).isoformat()
@@ -299,8 +295,8 @@ class Transaction:
         else:
             ops = self.operations
             for i in range(len(ops)):
-                ops[i]["fee"]["asset_id"] = echo_asset_id
-                ops[i]["fee"]["amount"] = 0
+                ops[i][1].update({'fee': Asset({'amount': 0, 'asset_id': echo_asset_id})})
+                ops[i][1].move_to_end('fee', last=False)
 
             transaction_object = TransactionType(
                 ref_block_num=0,
@@ -310,8 +306,8 @@ class Transaction:
                 extensions=[]
             )
 
-        public_keys = self._get_potential_signatures(transaction_object)
-        addresses = self._get_potential_address_signatures(transaction_object)
+        public_keys = self._get_potential_signatures(transaction_object.json())
+        addresses = self._get_potential_address_signatures(transaction_object.json())
 
         return public_keys, addresses
 
