@@ -5,12 +5,18 @@ Python ECHO library can be used to construct, sign and broadcast transactions an
 ---
 ## Installation
 
+### Install with pip3:
+
+    $ sudo apt-get install libffi-dev libssl-dev python-dev python3-dev python3-pip
+    $ pip3 install echopy-lib
 
 ### Manual installation:
 
     $ git clone https://gitlab.pixelplex.by/645.echo/echopy-lib.git
     $ cd echopy-lib
     $ python3 setup.py install
+    or
+    $ pip3 install .
 
 ## Usage
 
