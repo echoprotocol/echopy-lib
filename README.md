@@ -2,7 +2,6 @@
 
 Python ECHO library can be used to construct, sign and broadcast transactions and to easily obtain data from the blockchain via public apis.
 
----
 ## Installation
 
 ### Install with pip3:
