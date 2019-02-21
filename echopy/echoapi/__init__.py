@@ -11,9 +11,11 @@ from .ws_api.network_node_api import NetworkNodeApi
 
 
 class Api:
-    def __init__(self, url):
-        self.ws = WS(url)
+    def __init__(self):
+        self.ws = WS()
 
+    def connect(self, url):
+        self.ws.connect(url)
         self.database = DatabaseApi(self.ws.db_api)
         self.asset = AssetApi(self.ws.asset_api)
         self.network = NetworkApi(self.ws.network_api)
@@ -21,3 +23,11 @@ class Api:
         self.registration = RegistrationApi(self.ws.registration_api)
         self.login = LoginApi(self.ws.login_api)
         self.network_node = NetworkNodeApi(self.ws.network_node_api)
+
+    def disconnect(self):
+        self.ws.disconnect()
+
+__all__ = [
+    "ws",
+    "ws_api"
+]

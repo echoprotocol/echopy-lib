@@ -1,18 +1,16 @@
-from echoapi import Api
+from .echoapi import Api
 
-from echobase.operations import get_operation_by_id, get_operation_by_name
-from echobase.account import PrivateKey, PublicKey
-from echobase.objects import EchoObject, StaticVariant, Asset
-from echobase.ecdsa import sign_message
-from echobase.types import Uint16, Uint32, PointInTime, Array, Optional, Set, Bytes, String
-
+from .echobase.operations import get_operation_by_id, get_operation_by_name
+from .echobase.account import PrivateKey, PublicKey
+from .echobase.objects import EchoObject, StaticVariant, Asset
+from .echobase.types import Uint16, Uint32, PointInTime, Array, Optional, Set, Bytes, String
+from .echobase.ecdsa import sign_message
 
 from collections import OrderedDict
 from copy import deepcopy, copy
 
 from math import ceil
 from codecs import decode
-
 
 from datetime import timezone, datetime
 from calendar import timegm
@@ -72,7 +70,22 @@ class Transaction:
 
     @property
     def operations(self):
-        return self._operations.copy()
+        def depth_copy(op):
+            new_op = copy(op)
+            for key in op.__dict__:
+                new_op[key] = copy(op[key])
+                if hasattr(op[key], '__dict__'):
+                    new_op[key] = depth_copy(op[key])
+            return new_op
+
+        ops = self._operations
+        new_ops = []
+        for op in ops:
+            new_ops.append([])
+            new_ops[-1].append(op[0])
+            new_ops[-1].append(depth_copy(op[1]))
+
+        return new_ops
 
     @property
     def finalized(self):
@@ -293,10 +306,11 @@ class Transaction:
         if self.finalized:
             transaction_object = self.transaction_object
         else:
-            ops = self.operations
-            for i in range(len(ops)):
-                ops[i][1].update({'fee': Asset({'amount': 0, 'asset_id': echo_asset_id})})
-                ops[i][1].move_to_end('fee', last=False)
+            def change_fee(op):
+                op[1].update({'fee': Asset({'amount': 0, 'asset_id': echo_asset_id})})
+                op[1].move_to_end('fee', last=False)
+                return op
+            ops = map(lambda op: change_fee(op), self.operations)
 
             transaction_object = TransactionType(
                 ref_block_num=0,

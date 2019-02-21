@@ -5,10 +5,12 @@ Using transaction builder you can build and broadcast transaction
 #### Transfer
 
 ```python
-from echo import Echo
-from echobase.config import *
+from echopy import Echo
 
-echo = Echo(node='ws://127.0.0.1:9000')
+echo = Echo()
+echo.connect(url='ws://127.0.0.1:9000')
+
+operation_id = echo.config.operation_ids.TRANSFER 
 
 transfer_options = {
     'fee': { # optional, default fee asset: 1.3.0, amount: will be calculated
@@ -30,20 +32,24 @@ transfer_options = {
 }
 
 tx = echo.create_transaction()
-tx.add_operation(name=operations_ids.transfer, props=transfer_options)
+tx.add_operation(name=operation_id, props=transfer_options)
 tx.add_signer('5J95jcWeqxqRK6McNp3MLi5yEzeWCHsNpe72iw9QphXfUwpz84v')
 tx.sign()
-tx.broadcast()
 
+broadcast_result = tx.broadcast()
+
+echo.disconnect()
 ```
 
 #### Create contract
 
 ```python
-from echo import Echo
-from echobase.config import *
+from echopy import Echo
 
-echo = Echo(node='ws://127.0.0.1:9000')
+echo = Echo()
+echo.connect(url='ws://127.0.0.1:9000')
+
+operation_id = echo.config.operation_ids.CREATE_CONTRACT 
 
 bytecode = '...' # contract bytecode 
 constructor_parameters = '...' # constructor parameters
@@ -52,28 +58,30 @@ create_contract_props = {
      # fee optional, default fee asset: 1.3.0, amount: will be calculated
     'registrar': '1.2.20',
     'value': { 'asset_id': '1.3.0', 'amount': 1 }, # transfer asset to contract
-    'gasPrice': 0,
-    'gas': 1e7,
     'code': bytecode + constructor_parameters
     'supported_asset_id': '1.3.0',
     'eth_accuracy': False,
 }
 
 tx = echo.create_transaction()
-tx.add_operation(name=operations_ids.create_contract, props=create_contract_props)
+tx.add_operation(name=operation_id, props=create_contract_props)
 tx.add_signer('5J95jcWeqxqRK6McNp3MLi5yEzeWCHsNpe72iw9QphXfUwpz84v')
 tx.sign()
 
-tx.broadcast()
+broadcast_result = tx.broadcast()
+
+echo.disconnect()
 ```
 
 #### Call contract
 
 ```python
-from echo import Echo
-from echobase.config import *
+from echopy import Echo
 
-echo = Echo(node='ws://127.0.0.1:9000')
+echo = Echo()
+echo.connect(url='ws://127.0.0.1:9000')
+
+operation_id = echo.config.operation_ids.CALL_CONTRACT 
 
 method = '...' # method
 method_parameters = '...' # parameters 
@@ -85,27 +93,29 @@ call_contract_props = {
         'asset_id': '1.3.0',
         'amount': 1,
     },
-    'gasPrice': 0,
-    'gas': 1e7,
     'code': method + method_parameters
     'callee': '1.16.20',
 }
 
 tx = echo.create_transaction()
-tx.add_operation(name=operations_ids.call_contract, props=call_contract_props)
+tx.add_operation(name=operation_id, props=call_contract_props)
 tx.add_signer('5J95jcWeqxqRK6McNp3MLi5yEzeWCHsNpe72iw9QphXfUwpz84v')
 tx.sign()
 
-tx.broadcast()
+broadcast_result = tx.broadcast()
+
+echo.disconnect()
 ```
 
-#### Create asset
+#### Asset create
 
 ```python
-from echo import Echo
-from echobase.config import *
+from echopy import Echo
 
-echo = Echo(node='ws://127.0.0.1:9000')
+echo = Echo()
+echo.connect(url='ws://127.0.0.1:9000')
+
+operation_id = echo.config.operation_ids.ASSET_CREATE
 
 create_asset_props = {
     # fee optional, default fee asset: 1.3.0, amount: will be calculated
@@ -139,25 +149,27 @@ create_asset_props = {
 }
 
 tx = echo.create_transaction()
-tx.add_operation(name=operations_ids.create_asset, props=create_asset_props)
+tx.add_operation(name=operation_id, props=create_asset_props)
 tx.add_signer('5J95jcWeqxqRK6McNp3MLi5yEzeWCHsNpe72iw9QphXfUwpz84v')
 tx.sign()
 
-tx.broadcast()
+broadcast_result = tx.broadcast()
+
+echo.disconnect()
 ```
 
 You can add few operations and signers using this constructions:
 
 ```python
 tx = echo.create_transaction()
-tx.add_operation(operations_ids.transfer, transfer_options)
-tx.add_operation(=operations_ids.call_contract, call_contract_props)
+tx.add_operation(echo.config.operation_ids.TRANSFER , transfer_options)
+tx.add_operation(echo.config.operation_ids.CALL_CONTRACT, call_contract_props)
 tx.add_signer(private_key) #private_key first
 tx.add_signer(private_key) #private_key second
 # or
 tx = echo.create_transaction()
-tx = tx.add_operation(operations_ids.transfer, transfer_options)
-tx = tx.add_operation(=operations_ids.call_contract, call_contract_props)
+tx = tx.add_operation(echo.config.operation_ids.TRANSFER , transfer_options)
+tx = tx.add_operation(echo.config.operation_ids.CALL_CONTRACT, call_contract_props)
 tx = tx.add_signer(private_key) #private_key first
 tx = tx.add_signer(private_key) #private_key second
 
@@ -168,10 +180,10 @@ If you have only one signer you can reduce parts of code:
 
 ```python
 tx = echo.create_transaction()
-tx.add_operation(operations_ids.transfer, transfer_options)
+tx.add_operation(echo.config.operation_ids.TRANSFER , transfer_options)
 # or 
 tx = echo.create_transaction()
-tx = tx.add_operation(operations_ids.transfer, transfer_options)
+tx = tx.add_operation(echo.config.operation_ids.TRANSFER , transfer_options)
 
 broadcast_result = tx.broadcast(private_key)
 ```
@@ -180,12 +192,18 @@ Or sign first and then broadcast:
 
 ```python
 tx = echo.create_transaction()
-tx.add_operation(operations_ids.transfer, transfer_options)
+tx.add_operation(echo.config.operation_ids.TRANSFER , transfer_options)
 tx.sign(private_key)
 # or 
 tx = echo.create_transaction()
-tx = tx.add_operation(operations_ids.transfer, transfer_options)
+tx = tx.add_operation(echo.config.operation_ids.TRANSFER , transfer_options)
 tx = tx.sign(private_key)
 
 broadcast_result = tx.broadcast()
 ```
+
+---
+
+More information about `Operations` can be browsed by <b><a href="https://echo-dev.io/developers/operations/">link</a></b>.
+
+To `Operations` current coverage status look <b>[Operation status](docs/Operations_status.md)</b>.

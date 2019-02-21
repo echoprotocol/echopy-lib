@@ -2,13 +2,10 @@
 
 from .reconnectionwebsocket import ReconnectionWebsocket
 
-# import validate
-# import constants
-
 
 class WS(ReconnectionWebsocket):
-    def __init__(self, urls, user=None, password=None, **kwargs):
-        super().__init__(urls, user, password, **kwargs)
+    def __init__(self, user=None, password=None, **kwargs):
+        super().__init__(user, password, **kwargs)
 
     @property
     def db_api(self):
@@ -37,3 +34,11 @@ class WS(ReconnectionWebsocket):
     @property
     def network_node_api(self):
         return self._network_node
+
+__all__ = [
+    "echoapi",
+    "exceptions",
+    "reconnectionwebsocket",
+    "rpc",
+    "simplewebsocket"
+]

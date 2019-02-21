@@ -2,9 +2,12 @@
 # -*- coding: utf-8 -*-
 
 from setuptools import setup
+import sys
 
 VERSION = "0.1.0"
 URL = "https://gitlab.pixelplex.by/645.echo/echopy-lib" # FIX IT
+current_python_version = sys.version[:5]
+current_requirements_file = "extended_requirements.txt" if int(current_python_version[0]) == 2 or int(current_python_version[2]) <= 5 else "requirements.txt"
 
 setup(
     name="echopy-lib",
@@ -17,7 +20,14 @@ setup(
     author_email="dev@pixelplex.io",
     url=URL,
     keywords=["echo", "blockchain", "api", "rpc"],
-    packages=["echoapi", "echobase", "echo"],
+    packages=[
+        "echopy",
+        "echopy/echobase",
+        "echopy/echobase/config",
+        "echopy/echoapi",
+        "echopy/echoapi/ws",
+        "echopy/echoapi/ws_api"
+    ],
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
@@ -25,7 +35,7 @@ setup(
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
     ],
-    install_requires=open("requirements.txt").readlines(),
+    install_requires=open(current_requirements_file).readlines(),
     include_package_data=True,
 
 )

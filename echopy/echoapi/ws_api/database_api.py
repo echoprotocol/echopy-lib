@@ -197,3 +197,6 @@ class DatabaseApi:
 
     def get_recent_transaction_by_id(self, transaction_id):
         return self.db.rpcexec('get_recent_transaction_by_id', [transaction_id])
+
+    def get_sidechain_transfers(self, reciever):
+        return self.db.rpcexec('get_sidechain_transfers', [reciever])

@@ -3,11 +3,11 @@ from collections import OrderedDict
 
 from .operationids import operations
 from .objects import EchoObject, isArgsThisClass
-from echobase.types import (
+from .types import (
     Uint32,
     Uint64,
 )
-from echobase.types import Static_variant
+from .types import Static_variant
 
 
 class FeeTypes(Static_variant):
@@ -157,7 +157,13 @@ class FeeTypes(Static_variant):
             operations["blind_transfer"]: WithPricePerOutput,
             operations["transfer_from_blind"]: DefaultFee,
             operations["asset_settle_cancel"]: NoFee,
-            operations["asset_claim_fees"]: DefaultFee
+            operations["asset_claim_fees"]: DefaultFee,
+            operations["fba_distribute"]: NoFee,
+            operations["bid_collateral"]: DefaultFee,
+            operations["execute_bid"]: NoFee,
+            operations["create_contract"]: DefaultFee,
+            operations["call_contract"]: DefaultFee,
+            operations["contract_transfer"]: DefaultFee
         }
 
         ops_key, params = o

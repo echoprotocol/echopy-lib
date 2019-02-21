@@ -2,7 +2,7 @@
 import json
 
 from collections import OrderedDict
-from echobase.types import (
+from .types import (
     Uint8,
     Uint16,
     Uint32,
@@ -333,13 +333,13 @@ class Permission(EchoObject):
                 key=lambda x: PublicKey(x[0], prefix=prefix),
                 reverse=False,
             )
-            accountAuths = Map(
+            account_auths = Map(
                 [
                     [ObjectId(e[0], "account"), Uint16(e[1])]
                     for e in kwargs["account_auths"]
                 ]
             )
-            keyAuths = Map(
+            key_auths = Map(
                 [
                     [PublicKey(e[0], prefix=prefix), Uint16(e[1])]
                     for e in kwargs["key_auths"]
@@ -349,8 +349,8 @@ class Permission(EchoObject):
                 OrderedDict(
                     [
                         ("weight_threshold", Uint32(int(kwargs["weight_threshold"]))),
-                        ("account_auths", accountAuths),
-                        ("key_auths", keyAuths),
+                        ("account_auths", account_auths),
+                        ("key_auths", key_auths),
                         ("extensions", Set([])),
                     ]
                 )
@@ -508,7 +508,7 @@ class Asset(EchoObject):
 
 class VestingPolicyInitializer(StaticVariant):
     def __init__(self, o):
-        class linearVestingPolicyInitializer(EchoObject):
+        class LinearVestingPolicyInitializer(EchoObject):
             def __init__(self, *args, **kwargs):
                 if isArgsThisClass(self, args):
                     self.data = args[0].data
@@ -525,7 +525,7 @@ class VestingPolicyInitializer(StaticVariant):
                         )
                     )
 
-        class cddVestingPolicyInitializer(EchoObject):
+        class CddVestingPolicyInitializer(EchoObject):
             def __init__(self, *args, **kwargs):
                 if isArgsThisClass(self, args):
                     self.data = args[0].data
@@ -541,27 +541,27 @@ class VestingPolicyInitializer(StaticVariant):
                         )
                     )
 
-        id = o[0]
-        if id == 0:
-            data = linearVestingPolicyInitializer(o[1])
-        elif id == 1:
-            data = cddVestingPolicyInitializer(o[1])
+        _id = o[0]
+        if _id == 0:
+            data = LinearVestingPolicyInitializer(o[1])
+        elif _id == 1:
+            data = CddVestingPolicyInitializer(o[1])
         else:
             raise Exception("Unknown vesting_policy_initializer")
-        super().__init__(data, id)
+        super().__init__(data, _id)
 
 
 class WorkerInitializer(StaticVariant):
     def __init__(self, o):
-        class Burn_worker_initializer(EchoObject):
+        class BurnWorkerInitializer(EchoObject):
             def __init__(self, kwargs):
                 super().__init__(OrderedDict([]))
 
-        class Refund_worker_initializer(EchoObject):
+        class RefundWorkerInitializer(EchoObject):
             def __init__(self, kwargs):
                 super().__init__(OrderedDict([]))
 
-        class Vesting_balance_worker_initializer(EchoObject):
+        class VestingBalanceWorkerInitializer(EchoObject):
             def __init__(self, *args, **kwargs):
                 if isArgsThisClass(self, args):
                     self.data = args[0].data
@@ -579,13 +579,13 @@ class WorkerInitializer(StaticVariant):
                         )
                     )
 
-        id = o[0]
-        if id == 0:
-            data = Refund_worker_initializer(o[1])
-        elif id == 1:
-            data = Vesting_balance_worker_initializer(o[1])
-        elif id == 2:
-            data = Burn_worker_initializer(o[1])
+        _id = o[0]
+        if _id == 0:
+            data = RefundWorkerInitializer(o[1])
+        elif _id == 1:
+            data = VestingBalanceWorkerInitializer(o[1])
+        elif _id == 2:
+            data = BurnWorkerInitializer(o[1])
         else:
             raise Exception("Unknown Worker_initializer")
         super().__init__(data, id)
@@ -604,6 +604,67 @@ class FeeSchedule(EchoObject):
                     [
                         ("parameters", Set([Fee_types(param) for param in kwargs["parameters"]])),
                         ("scale", Uint32(kwargs["scale"]))
+                    ]
+                )
+            )
+
+class EchorandConfig(EchoObject):
+    def __init__(self, *args, **kwargs):
+        if isArgsThisClass(self, args):
+            self.data = args[0].data
+        else:
+            if len(args) == 1 and len(kwargs) == 0:
+                kwargs = args[0]
+            super().__init__(
+                OrderedDict(
+                    [
+                        ("time_net_1mb", Uint32(kwargs["time_net_1mb"])),
+                        ("time_net_256b", Uint32(kwargs["time_net_256b"])),
+                        ("creator_count", Uint32(kwargs["creator_count"])),
+                        ("verifier_count", Uint32(kwargs["verifier_count"])),
+                        ("ok_treshold", Uint32(kwargs["ok_treshold"])),
+                        ("max_bba_steps", Uint32(kwargs["max_bba_steps"])),
+                        ("gc1_delay", Uint32(kwargs["gc1_delay"]))
+                    ]
+                )
+            )
+
+
+class SidechainConfig(EchoObject):
+    def __init__(self, *args, **kwargs):
+        if isArgsThisClass(self, args):
+            self.data = args[0].data
+        else:
+            if len(args) == 1 and len(kwargs) == 0:
+                kwargs = args[0]
+            super().__init__(
+                OrderedDict(
+                    [
+                        ("echo_contract_id", ObjectId(kwargs["echo_contract_id"], "contract")),
+                        ("echo_vote_method", String(kwargs["echo_vote_method"])),
+                        ("echo_sign_method", String(kwargs["echo_sign_method"])),
+                        ("echo_transfer_topic", String(kwargs["echo_transfer_topic"])),
+                        ("echo_transfer_ready_topic", String(kwargs["echo_transfer_ready_topic"])),
+                        ("eth_contract_address", String(kwargs["eth_contract_address"])),
+                        ("eth_committee_method", String(kwargs["eth_committee_method"])),
+                        ("eth_transfer_topic", String(kwargs["eth_transfer_topic"]))
+                    ]
+                )
+            )
+
+
+class GasPrice(EchoObject):
+    def __init__(self, *args, **kwargs):
+        if isArgsThisClass(self, args):
+            self.data = args[0].data
+        else:
+            if len(args) == 1 and len(kwargs) == 0:
+                kwargs = args[0]
+            super().__init__(
+                OrderedDict(
+                    [
+                        ("price", Uint64(kwargs["price"])),
+                        ("gas_amount", Uint64(kwargs["gas_amount"]))
                     ]
                 )
             )
@@ -647,6 +708,9 @@ class ChainParameters(EchoObject):
                         ("accounts_per_fee_scale", Uint16(kwargs["accounts_per_fee_scale"])),
                         ("account_fee_scale_bitshifts", Uint8(kwargs["account_fee_scale_bitshifts"])),
                         ("max_authority_depth", Uint8(kwargs["max_authority_depth"])),
+                        ("echorand_config", EchorandConfig(kwargs["echorand_config"])),
+                        ("sidechain_config", SidechainConfig(kwargs["sidechain_config"])),
+                        ("gas_price", GasPrice(kwargs["gas_price"])),
                         ("extensions", Set([])),
                     ]
                 )

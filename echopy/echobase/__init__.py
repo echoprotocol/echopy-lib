@@ -8,13 +8,20 @@ from . import transactions as Transactions
 
 __all__ = [
     "account",
+    "aes",
     "base58",
     "bip38",
+    "chains",
+    "ecdsa",
+    "feetypes",
+    "objects",
+    "objecttypes",
+    "operationids",
+    "operations",
+    "prefix",
     "transactions",
     "types",
-    "chains",
-    "objects",
-    "operations",
-    "signedtransactions",
-    "objecttypes",
+    "utils",
+    "validation"
+    "config"
 ]

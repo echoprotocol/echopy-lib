@@ -12,7 +12,7 @@ log = logging.getLogger(__name__)
 
 
 class ReconnectionWebsocket:
-    def __init__(self, urls, user=None, password=None, **kwargs):
+    def __init__(self, user=None, password=None, **kwargs):
 
         # Some internal variables
         self._connections = dict()
@@ -27,31 +27,14 @@ class ReconnectionWebsocket:
         # How often do we accept retries?
         self.num_retries = kwargs.pop("num_retries", 1)
 
-        if not isinstance(urls, list):
-            urls = [urls]
-
-        for url in urls:
-            self._url_counter[url] = 0
-
-        self.url = urls[0]
-        self._active_url = None
-
-        # Let's also be able to deal with infinite connection
-        self.urls = cycle(urls)
+        self.urls = None
         self._cnt_retries = 0
+        self.url = None
 
-        # Connect!
-        self.connect()
+        self._active_url = None
+        self._active_connection = None
 
-    # Get chain parameters
-    @property
-    def chain_params(self):
-        return self.get_network()
-
-    def get_network(self):
-        return self.get_chain_properties()
-
-    def updated_connection(self):
+    def _updated_connection(self):
         if self.url[:2] == "ws":
             return SimpleWebsocket(self.url, **self._kwargs)
         else:
@@ -63,18 +46,38 @@ class ReconnectionWebsocket:
             log.debug(
                 "Updating connection from {} to {}".format(self._active_url, self.url)
             )
-            self._active_connection = self.updated_connection()
+            self._active_connection = self._updated_connection()
             self._active_url = self.url
         return self._active_connection
 
-    def connect(self):
+    def connect(self, url=None):
         try:
+            if self.urls is None and url:
+                urls = [url]
+                self._url_counter[url] = 0
+                self.url = url
+                self._active_url = None
+
+                # Let's also be able to deal with infinite connection
+                self.urls = cycle(urls)
+
             self.connection.connect()
         except Exception as e:
             log.warning(str(e))
             self.error_url()
             self.next()
         self.register_apis()
+
+
+    def disconnect(self):
+        if self.urls is not None:
+            self.connection.disconnect()
+            self._url_counter = Counter()
+            self._active_url = None
+            self.url = None
+            self.urls = None
+            self._active_connection = None
+
 
     def find_next(self):
         """ Find the next url in the list
