@@ -2,7 +2,7 @@ from .echoapi import Api
 
 from .echobase.operations import get_operation_by_id, get_operation_by_name
 from .echobase.account import PrivateKey, PublicKey
-from .echobase.objects import EchoObject, StaticVariant, Asset
+from .echobase.objects import EchoObject, StaticVariant, Asset, ObjectId
 from .echobase.types import Uint16, Uint32, PointInTime, Array, Optional, Set, Bytes, String
 from .echobase.ecdsa import sign_message
 
@@ -169,10 +169,16 @@ class Transaction:
         for index, (op_id, op) in enumerate(operations_types):
             op = op.json()
             if 'fee' not in op:
-                op['fee'] = {}
+                op.update({'fee': OrderedDict()})
+                self._operations[index][1].update({'fee': OrderedDict()})
+                self._operations[index][1].move_to_end('fee', last=False)
 
             if 'asset_id' not in op['fee']:
-                op['fee']['asset_id'] = asset_id
+                op['fee'].update({'asset_id': asset_id})
+                print(self._operations[index][1])
+                self._operations[index][1]['fee'].update({'asset_id': ObjectId(asset_id, 'asset')})
+                self._operations[index][1]['fee'].move_to_end('asset_id', last=True)
+                print(self._operations[index][1])
 
             if ('asset_id' in op['fee']) and ('amount' in op['fee']):
                 continue
