@@ -4,7 +4,7 @@
 from setuptools import setup, find_packages
 import sys
 
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 URL = "https://gitlab.pixelplex.by/645.echo/echopy-lib" # FIX IT
 current_python_version = sys.version[:5]
 current_requirements_file = "extended_requirements.txt" if int(current_python_version[0]) == 2 or int(current_python_version[2]) <= 5 else "requirements.txt"
