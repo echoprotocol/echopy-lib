@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
-import time
 import logging
-import requests
 import urllib
 from .exceptions import RPCError, NumRetriesReached
 
@@ -12,20 +10,6 @@ log = logging.getLogger(__name__)
 class Rpc:
     """ This class allows to call API methods synchronously, without
         callbacks.
-
-        :param str url: A single REST endpoint URL
-        :param int num_retries: Try x times to num_retries to a node on
-               disconnect, -1 for indefinitely
-        :param str proxy: Proxy URL (e.g. socks5://localhost:9050),
-               None by default.
-
-        Usage:
-
-        .. code-block:: python
-
-            ws = GrapheneHTTPRPC("https://api.node.com")
-            print(ws.get_account_count())
-
     """
 
     def __init__(self, url, **kwargs):
@@ -53,7 +37,6 @@ class Rpc:
             else:
                 self.proxy_type = self.proxy_type[0 : len(self.proxy_type) - 1]
         else:
-            # Defaults (tweakable)
             self.proxy_host = options.pop("proxy_host", None)
             self.proxy_port = options.pop("proxy_port", 80)
             self.proxy_type = options.pop("proxy_type", "http")
@@ -92,11 +75,11 @@ class Rpc:
         ret = {}
         try:
             ret = json.loads(query, strict=False)
-        except ValueError:  # pragma: no cover  pragma: no branch
+        except ValueError:
             raise ValueError("Client returned invalid format. Expected JSON!")
 
         log.debug(json.dumps(query))
-        if "error" in ret:  # pragma: no cover
+        if "error" in ret:
             if "detail" in ret["error"]:
                 raise RPCError(ret["error"]["detail"])
             else:
@@ -109,8 +92,7 @@ class Rpc:
         """
 
         def method(params, *args, **kwargs):
-            # Sepcify the api to talk to
-            if "api_id" not in kwargs:  # pragma: no cover
+            if "api_id" not in kwargs:
                 if "api" in kwargs:
                     if kwargs["api"] in self.api_id and self.api_id[kwargs["api"]]:
                         api_id = self.api_id[kwargs["api"]]
@@ -118,10 +100,9 @@ class Rpc:
                         api_id = kwargs["api"]
                 else:
                     api_id = 0
-            else:  # pragma: no cover
+            else:
                 api_id = kwargs["api_id"]
 
-            # let's be able to define the num_retries per query
             self.num_retries = kwargs.get("num_retries", self.num_retries)
 
             query = {

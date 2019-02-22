@@ -17,7 +17,7 @@ except ImportError:
         raise ImportError("Missing dependency: pyCryptodome")
 
 SCRYPT_MODULE = None
-if not SCRYPT_MODULE:  # pragma: no cover
+if not SCRYPT_MODULE:
     try:
         import scrypt
 
@@ -38,28 +38,20 @@ class SaltException(Exception):
 
 
 def _encrypt_xor(a, b, aes):
-    """ Returns encrypt(a ^ b). """
     a = unhexlify("%0.32x" % (int((a), 16) ^ int(hexlify(b), 16)))
     return aes.encrypt(a)
 
 
 def encrypt(privkey, passphrase):
-    """ BIP0038 non-ec-multiply encryption. Returns BIP0038 encrypted privkey.
-
-    :param privkey: Private key
-    :type privkey: Base58
-    :param str passphrase: UTF-8 encoded passphrase for encryption
-    :return: BIP0038 non-ec-multiply encrypted wif key
-    :rtype: Base58
-
+    """ BIP0038 non-ec-multiply encryption. Returns BIP0038 encrypted private key.
     """
     if isinstance(privkey, str):
         privkey = PrivateKey(privkey)
     else:
         privkey = PrivateKey(repr(privkey))
 
-    privkeyhex = repr(privkey)  # hex
-    addr = format(privkey.bitcoin.address, "BTC")
+    privkeyhex = repr(privkey)
+    addr = format(privkey.bitcoin.address, "ECHO")
     a = _bytes(addr)
     salt = hashlib.sha256(hashlib.sha256(a).digest()).digest()[0:4]
     if SCRYPT_MODULE == "scrypt":  # pragma: no cover
@@ -81,30 +73,22 @@ def encrypt(privkey, passphrase):
 
 
 def decrypt(encrypted_privkey, passphrase):
-    """BIP0038 non-ec-multiply decryption. Returns WIF privkey.
-
-    :param Base58 encrypted_privkey: Private key
-    :param str passphrase: UTF-8 encoded passphrase for decryption
-    :return: BIP0038 non-ec-multiply decrypted key
-    :rtype: Base58
-    :raises SaltException: if checksum verification failed (e.g. wrong
-        password)
-
+    """BIP0038 non-ec-multiply decryption. Returns WIF private key.
     """
 
     d = unhexlify(base58decode(encrypted_privkey))
-    d = d[2:]  # remove trailing 0x01 and 0x42
-    flagbyte = d[0:1]  # get flag byte
-    d = d[1:]  # get payload
+    d = d[2:]
+    flagbyte = d[0:1]
+    d = d[1:]
     assert flagbyte == b"\xc0", "Flagbyte has to be 0xc0"
     salt = d[0:4]
     d = d[4:-4]
-    if SCRYPT_MODULE == "scrypt":  # pragma: no cover
+    if SCRYPT_MODULE == "scrypt":
         key = scrypt.hash(passphrase, salt, 16384, 8, 8)
-    elif SCRYPT_MODULE == "pylibscrypt":  # pragma: no cover
+    elif SCRYPT_MODULE == "pylibscrypt":
         key = scrypt.scrypt(bytes(passphrase, "utf-8"), salt, 16384, 8, 8)
     else:
-        raise ValueError("No scrypt module loaded")  # pragma: no cover
+        raise ValueError("No scrypt module loaded")
     derivedhalf1 = key[0:32]
     derivedhalf2 = key[32:64]
     encryptedhalf1 = d[0:16]
@@ -115,11 +99,10 @@ def decrypt(encrypted_privkey, passphrase):
     privraw = decryptedhalf1 + decryptedhalf2
     privraw = "%064x" % (int(hexlify(privraw), 16) ^ int(hexlify(derivedhalf1), 16))
     wif = Base58(privraw)
-    """ Verify Salt """
     privkey = PrivateKey(format(wif, "wif"))
     addr = format(privkey.bitcoin.address, "BTC")
     a = _bytes(addr)
     saltverify = hashlib.sha256(hashlib.sha256(a).digest()).digest()[0:4]
-    if saltverify != salt:  # pragma: no cover
+    if saltverify != salt:
         raise SaltException("checksum verification failed! Password may be incorrect.")
     return wif

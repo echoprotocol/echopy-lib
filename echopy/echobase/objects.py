@@ -34,7 +34,7 @@ from .operationids import operations
 
 
 class Operation(list):
-    """ The superclass for an operation. This class i used to instanciate an
+    """ The superclass for an operation. This class used to instanciate an
         operation, identify the operationid/name and serialize the operation
         into bytes.
     """
@@ -46,12 +46,10 @@ class Operation(list):
     def __init__(self, op, **kwargs):
         list.__init__(self, [0, EchoObject()])
 
-        # Are we dealing with an actual operation as list of opid and payload?
         if isinstance(op, list) and len(op) == 2:
             self._setidanename(op[0])
             self.set(**op[1])
 
-        # Here, we allow to only load the Operation as Template without data
         elif isinstance(op, str) or isinstance(op, int):
             self._setidanename(op)
             if kwargs:
@@ -88,7 +86,7 @@ class Operation(list):
     def set(self, **data):
         try:
             class_ = self._class()
-        except Exception:  # pragma: no cover
+        except Exception:
             raise NotImplementedError("Unimplemented Operation %s" % self.name)
         self.operation = class_(**data)
 
@@ -107,7 +105,7 @@ class Operation(list):
 
     @property
     def class_name(self):
-        return self.name[0].upper() + self.name[1:]  # classname
+        return self.name[0].upper() + self.name[1:]
 
     def _loadEchoObject(self, op):
         assert isinstance(op, EchoObject)
@@ -135,7 +133,6 @@ class Operation(list):
     @property
     def ops(self):
         if callable(self.operations):
-            # Legacy support
             return self.operations()
         else:
             return self.operations
@@ -144,8 +141,6 @@ class Operation(list):
         return self.ops[name]
 
     def getOperationNameForId(self, i):
-        """ Convert an operation id into the corresponding string
-        """
         for key in self.ops:
             if int(self.ops[key]) is int(i):
                 return key
@@ -156,14 +151,7 @@ class Operation(list):
 
 
 class EchoObject(OrderedDict):
-    """ Core abstraction class
-
-        This class is used for any JSON reflected object in ECHO.
-
-        * ``instance.__json__()``: encodes data into json format
-        * ``bytes(instance)``: encodes data into wire format
-        * ``str(instances)``: dumps json object as string
-
+    """ This class is used for any JSON reflected object in ECHO.
     """
 
     def __init__(self, *args, **kwargs):
@@ -175,7 +163,6 @@ class EchoObject(OrderedDict):
             return
 
         elif kwargs and hasattr(self, "detail"):
-            # If I receive kwargs, I need detail() implemented!
             super().__init__(self.detail(*args, **kwargs))
 
     def __bytes__(self):
@@ -217,17 +204,12 @@ class EchoObject(OrderedDict):
             ordered_dict.update({"fee": Asset(kwargs["fee"])})
             ordered_dict.move_to_end("fee", last=False)
 
-    # Legacy support
     @property
-    def data(self):  # pragma: no cover
-        """ Read data explicitly (backwards compatibility)
-        """
+    def data(self):
         return self
 
     @data.setter
-    def data(self, data):  # pragma: no cover
-        """ Set data through a setter (backwards compatibility)
-        """
+    def data(self, data):
         self.update(data)
 
     toJson = __json__
@@ -235,26 +217,7 @@ class EchoObject(OrderedDict):
 
 
 class ObjectId(ObjectIdParent):
-    """ Need to overwrite a few attributes to load proper object_types from
-        bitshares
-    """
-
     object_types = object_type
-
-"""
-class AssetId(ObjectId):
-    super().__init__(object_str="asset")
-
-
-class AccountId(ObjectId):
-
-    super().__init__(object_str="account")
-
-
-class ContractId(ObjectId):
-
-    super().__init__(object_str="contract")
-"""
 
 
 class Memo(EchoObject):
@@ -359,7 +322,6 @@ class Permission(EchoObject):
 
 class AccountOptions(EchoObject):
     def __init__(self, *args, **kwargs):
-        # Allow for overwrite of prefix
         prefix = default_prefix
 
         if isArgsThisClass(self, args):
@@ -367,9 +329,7 @@ class AccountOptions(EchoObject):
         else:
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
-            # remove dublicates
             kwargs["votes"] = list(set(kwargs["votes"]))
-            # Sort votes
             kwargs["votes"] = sorted(
                 kwargs["votes"], key=lambda x: float(x.split(":")[1])
             )
@@ -483,12 +443,10 @@ class BitAssetOptions(EchoObject):
             )
 
 
-# Legacy
 def isArgsThisClass(self, args):
     return len(args) == 1 and type(args[0]).__name__ == type(self).__name__
 
 
-# Common Objects
 class Asset(EchoObject):
     def __init__(self, *args, **kwargs):
         if isArgsThisClass(self, args):

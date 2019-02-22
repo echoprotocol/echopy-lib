@@ -6,12 +6,10 @@ from datetime import datetime, timezone
 timeFormat = "%Y-%m-%dT%H:%M:%S"
 
 
-def _bytes(x):  # pragma: no branch
-    """ Python3 and Python2 compatibility
-    """
+def _bytes(x):
     if sys.version > "3":
         return bytes(x, "utf8")
-    else:  # pragma: no cover
+    else:
         return x.__bytes__()
 
 
@@ -37,8 +35,6 @@ def unicodify(data):
 
 
 def format_time(t):
-    """ Properly Format Time for permlinks
-    """
     if isinstance(t, (float, int)):
         return datetime.utcfromtimestamp(t).strftime(timeFormat)
     elif isinstance(t, datetime):
@@ -48,23 +44,11 @@ def format_time(t):
 
 
 def format_time_from_now(secs=0):
-    """ Properly Format Time that is `x` seconds in the future
-
-        :param int secs: Seconds to go in the future (`x>0`) or the
-                         past (`x<0`)
-        :return: Properly formated time for Graphene (`%Y-%m-%dT%H:%M:%S`)
-        :rtype: str
-
-    """
     return datetime.utcfromtimestamp(time.time() + int(secs)).strftime(timeFormat)
 
 
 def parse_time(block_time):
-    """Take a string representation of time from the blockchain, and parse it
-       into datetime object.
-    """
     return datetime.strptime(block_time, timeFormat).replace(tzinfo=timezone.utc)
 
 
-# Legacy names
 formatTimeString = format_time

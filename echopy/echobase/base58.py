@@ -16,24 +16,6 @@ class Base58(Prefix):
     This class serves as an abstraction layer to deal with base58 encoded
     strings and their corresponding hex and binary representation throughout
     the library.
-
-    :param data: Data to initialize object, e.g. pubkey data, address data, ...
-    :type data: hex, wif, bip38 encrypted wif, base58 string
-    :param str prefix: Prefix to use for Address/PubKey strings (defaults to
-        ``GPH``)
-    :return: Base58 object initialized with ``data``
-    :rtype: Base58
-    :raises ValueError: if data cannot be decoded
-
-    * ``bytes(Base58)``: Returns the raw data
-    * ``str(Base58)``:   Returns the readable ``Base58CheckEncoded`` data.
-    * ``repr(Base58)``:  Gives the hex representation of the data.
-    *  ``format(Base58,_format)`` Formats the instance according to
-        ``_format``:
-        * ``"wif"``: prefixed with ``0x00``. Yields a valid wif key
-        * ``"bts"``: prefixed with ``BTS``
-        * etc.
-
     """
 
     def __init__(self, data, prefix=None):
@@ -44,23 +26,16 @@ class Base58(Prefix):
             self._hex = data
         elif data[0] == "5" or data[0] == "6":
             self._hex = base58CheckDecode(data)
-        elif data[0] == "K" or data[0] == "L":  # pragma: no cover
+        elif data[0] == "K" or data[0] == "L":
             raise NotImplementedError(
                 "Private Keys starting with L or K are not supported!"
             )
         elif data[: len(self.prefix)] == self.prefix:
-            self._hex = gphBase58CheckDecode(data[len(self.prefix) :])
+            self._hex = gphBase58CheckDecode(data[len(self.prefix):])
         else:
             raise ValueError("Error loading Base58 object")
 
     def __format__(self, _format):
-        """ Format output according to argument _format (wif,...)
-
-            :param str _format: Format to use
-            :return: formatted data according to _format
-            :rtype: str
-
-        """
         if _format.upper() == "WIF":
             return base58CheckEncode(0x80, self._hex)
         elif _format.upper() == "ENCWIF":
@@ -71,28 +46,12 @@ class Base58(Prefix):
             return _format.upper() + str(self)
 
     def __repr__(self):
-        """ Returns hex value of object
-
-            :return: Hex string of instance's data
-            :rtype: hex string
-        """
         return self._hex
 
     def __str__(self):
-        """ Return graphene-base58CheckEncoded string of data
-
-            :return: Base58 encoded data
-            :rtype: str
-        """
         return gphBase58CheckEncode(self._hex)
 
     def __bytes__(self):
-        """ Return raw bytes
-
-            :return: Raw bytes of instance
-            :rtype: bytes
-
-        """
         return unhexlify(self._hex)
 
 

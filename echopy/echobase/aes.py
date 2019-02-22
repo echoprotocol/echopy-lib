@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-try:  # pragma: no cover
+try:
     from Cryptodome.Cipher import AES
     from Cryptodome import Random
-except ImportError:  # pragma: no cover
+except ImportError:
     try:
         from Crypto.Cipher import AES
         from Crypto import Random
@@ -36,7 +36,7 @@ class AESCipher(object):
 
     @staticmethod
     def _unpad(s):
-        return s[: -ord(s[len(s) - 1 :])]
+        return s[: -ord(s[len(s) - 1:])]
 
     def encrypt(self, raw):
         raw = self._pad(AESCipher.str_to_bytes(raw))

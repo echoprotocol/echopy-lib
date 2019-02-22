@@ -12,7 +12,6 @@ log = logging.getLogger(__name__)
 class SimpleWebsocket(Rpc):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # We need a lock to ensure thread-safty
         self.__lock = Lock()
 
     def connect(self):
@@ -22,7 +21,7 @@ class SimpleWebsocket(Rpc):
             ssl_defaults = ssl.get_default_verify_paths()
             sslopt_ca_certs = {"ca_certs": ssl_defaults.cafile}
             self.ws = websocket.WebSocket(sslopt=sslopt_ca_certs)
-        else:  # pragma: no cover
+        else:
             self.ws = websocket.WebSocket()
 
         self.ws.connect(
@@ -43,38 +42,22 @@ class SimpleWebsocket(Rpc):
             try:
                 self.ws.close()
                 self.ws = None
-            except Exception:  # pragma: no cover
+            except Exception:
                 pass
 
-    """ RPC Calls
-    """
-
     def rpcexec(self, payload):
-        """ Execute a call by sending the payload
-
-            :param json payload: Payload data
-            :raises ValueError: if the server does not respond in proper JSON
-                format
-        """
-        if not self.ws:  # pragma: no cover
+        if not self.ws:
             self.connect()
 
         log.debug(json.dumps(payload))
 
-        # Mutex/Lock
-        # We need to lock because we need to wait for websocket
-        # response but don't want to allow other threads to send
-        # requests (that might take less time) to disturb
         self.__lock.acquire()
 
-        # Send over websocket
         try:
             self.ws.send(json.dumps(payload, ensure_ascii=False).encode("utf8"))
-            # Receive from websocket
             ret = self.ws.recv()
 
         finally:
-            # Release lock
             self.__lock.release()
 
         return ret

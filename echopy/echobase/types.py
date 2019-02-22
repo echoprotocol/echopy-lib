@@ -21,8 +21,6 @@ timeformat = "%Y-%m-%dT%H:%M:%S%Z"
 
 
 def varint(n):
-    """ Varint encoding
-    """
     data = b""
     while n >= 0x80:
         data += bytes([(n & 0x7F) | 0x80])
@@ -31,9 +29,7 @@ def varint(n):
     return data
 
 
-def varintdecode(data):  # pragma: no cover
-    """ Varint decoding
-    """
+def varintdecode(data):
     shift = 0
     result = 0
     for b in bytes(data):
@@ -45,14 +41,10 @@ def varintdecode(data):  # pragma: no cover
 
 
 def variable_buffer(s):
-    """ Encode variable length buffer
-    """
     return varint(len(s)) + s
 
 
 def JsonObj(data):
-    """ Returns json object from data
-    """
     return json.loads(str(data))
 
 
@@ -226,7 +218,7 @@ class Signature:
         return json.dumps(hexlify(self.data).decode("ascii"))
 
 
-class Bool(Uint8):  # Bool = Uint8
+class Bool(Uint8):
     def __init__(self, d):
         super().__init__(d)
 
@@ -234,7 +226,7 @@ class Bool(Uint8):  # Bool = Uint8
         return json.dumps(True) if self.data else json.dumps(False)
 
 
-class Set(Array):  # Set = Array
+class Set(Array):
     def __init__(self, d):
         super().__init__(d)
 
@@ -325,9 +317,6 @@ class VoteId:
 
 
 class ObjectId:
-    """ Encodes protocol ids - serializes to the *instance* only!
-    """
-
     object_types = object_type
 
     def __init__(self, object_str, type_verify=None):
@@ -350,15 +339,13 @@ class ObjectId:
             raise Exception("Object id is invalid")
 
     def __bytes__(self):
-        return bytes(self.instance)  # only yield instance
+        return bytes(self.instance)
 
     def __str__(self):
         return self.Id
 
 
 class FullObjectId:
-    """ Encodes object ids - serializes to a full object id
-    """
 
     def __init__(self, object_str):
         if len(object_str.split(".")) == 3:
@@ -381,7 +368,6 @@ class FullObjectId:
 
 
 class Enum8(Uint8):
-    # List needs to be provided by super class
     options = []
 
     def __init__(self, selection):
