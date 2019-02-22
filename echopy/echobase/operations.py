@@ -24,19 +24,16 @@ from .types import (
 )
 
 from .objects import (
-    # AccountCreateExtensions,
     AccountOptions,
     Asset,
     AssetOptions,
     BitAssetOptions,
-    # CallOrderExtension,
     Memo,
     ObjectId,
     Operation,
     Permission,
     Price,
     PriceFeed,
-    # SpecialAuthority,
     WorkerInitializer,
     isArgsThisClass,
     VestingPolicyInitializer,
@@ -45,9 +42,9 @@ from .objects import (
 
 from .objects import EchoObject
 from .account import PublicKey
-from .chains import default_prefix
 
 from .operationids import operations
+from functools import partial
 
 
 class_idmap = {}
@@ -55,14 +52,14 @@ class_namemap = {}
 
 
 def snake_to_camel(text):
-    """
+    """ Convert string in snake_case to camelCase
     """
     text_parts = text.split('_')
     return ''.join(word.capitalize() for word in text_parts)
 
 
 def camel_to_snake(text):
-    """
+    """ Convert string in camelCase to snake_case
     """
     import re
     str1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', text)
@@ -70,7 +67,8 @@ def camel_to_snake(text):
 
 
 def fill_classmaps():
-    """
+    """ Fill global dict's for get_operation_by_id and
+        get_operation_by_name methods
     """
     for name, ind in operations.items():
         classname = snake_to_camel(name)
@@ -82,33 +80,37 @@ def fill_classmaps():
 
 
 def get_operation_by_id(op_id):
-    """ Convert an operation id into the corresponding class
+    """ Convert an operation id into the (operation_id, corresponding class)
     """
 
     return (op_id, class_idmap[op_id]) if op_id in class_idmap else (None, None)
 
 
 def get_operation_by_name(op_name):
-    """
+    """ Convert an operation name into the (operation_id, coressponding class)
     """
     _id = class_namemap[op_name]
 
     return _id, class_idmap[_id]
 
 
+def get_optional(param, kwargs, object_class):
+    """ Wrapper for optional params init
+    """
+    result = object_class(kwargs[param]) if param in kwargs else ''
+    return result
+
+
 class Transfer(EchoObject):
     def detail(self, *args, **kwargs):
-        if 'memo' in kwargs:
-            memo = kwargs['memo']
-        else:
-            memo = ''
+        memo = get_optional("memo", kwargs, Memo)
 
         result = OrderedDict(
             [
                 ("from", ObjectId(kwargs["from"], "account")),
                 ("to", ObjectId(kwargs["to"], "account")),
                 ("amount", Asset(kwargs["amount"])),
-                ("memo", Optional(Memo(memo))),
+                ("memo", Optional(memo)),
                 ("extensions", Set([])),
 
             ]
@@ -181,16 +183,15 @@ class FillOrder(EchoObject):
 
 class AccountCreate(EchoObject):
     def detail(self, *args, **kwargs):
-        prefix = kwargs.get("prefix", default_prefix)
         result = OrderedDict(
             [
                 ("registrar", ObjectId(kwargs["registrar"], "account")),
                 ("referrer", ObjectId(kwargs["referrer"], "account")),
                 ("referrer_percent", Uint16(kwargs["referrer_percent"])),
                 ("name", String(kwargs["name"])),
-                ("owner", Permission(kwargs["owner"], prefix=prefix)),
-                ("active", Permission(kwargs["active"], prefix=prefix)),
-                ("options", AccountOptions(kwargs["options"], prefix=prefix)),
+                ("owner", Permission(kwargs["owner"])),
+                ("active", Permission(kwargs["active"])),
+                ("options", AccountOptions(kwargs["options"])),
                 ("extensions", Set([])),
             ]
         )
@@ -201,14 +202,18 @@ class AccountCreate(EchoObject):
 
 class AccountUpdate(EchoObject):
     def detail(self, *args, **kwargs):
-        prefix = kwargs.get("prefix", default_prefix)
+        owner = get_optional("owner", kwargs, Permission)
+        active = get_optional("active", kwargs, Permission)
+        ed_key = get_optional("ed_key", kwargs, Bytes)
+        new_options = get_optional("new_options", kwargs, AccountOptions)
+
         result = OrderedDict(
             [
                 ("account", ObjectId(kwargs["account"], "account")),
-                ("owner", Optional(Permission(kwargs["owner"], prefix=prefix))),
-                ("active", Optional(Permission(kwargs["active"], prefix=prefix))),
-                ("new_options", Optional(AccountOptions(kwargs["new_options"], prefix=prefix))),
-                ("ed_key", Optional(Bytes(kwargs["ed_key"]))),
+                ("owner", Optional(owner)),
+                ("active", Optional(active)),
+                ("ed_key", Optional(ed_key)),
+                ("new_options", Optional(new_options)),
                 ("extensions", Set([])),
             ]
         )
@@ -261,10 +266,8 @@ class AccountTransfer(EchoObject):
 
 class AssetCreate(EchoObject):
     def detail(self, *args, **kwargs):
-        if 'bitasset_opts' in kwargs:
-            bitasset_opts = BitAssetOptions(kwargs['bitasset_opts'])
-        else:
-            bitasset_opts = ''
+        bitasset_opts = get_optional("bitasset_opts", kwargs, BitAssetOptions)
+
         result = OrderedDict(
             [
                 ("issuer", ObjectId(kwargs["issuer"], "account")),
@@ -283,11 +286,13 @@ class AssetCreate(EchoObject):
 
 class AssetUpdate(EchoObject):
     def detail(self, *args, **kwargs):
+        new_issuer = get_optional("new_issuer", kwargs, partial(ObjectId, type_verify="account"))
+
         result = OrderedDict(
             [
                 ("issuer", ObjectId(kwargs["issuer"], "account")),
                 ("asset_to_update", ObjectId(kwargs["asset_to_update"], "asset")),
-                ("new_issuer", Optional(ObjectId(kwargs["new_issuer"], "account"))),
+                ("new_issuer", Optional(new_issuer)),
                 ("new_options", AssetOptions(kwargs["new_options"])),
                 ("extensions", Set([])),
             ]
@@ -299,12 +304,11 @@ class AssetUpdate(EchoObject):
 
 class AssetUpdateBitasset(EchoObject):
     def detail(self, *args, **kwargs):
-        prefix = kwargs.get("prefix", default_prefix)
         result = OrderedDict(
             [
                 ("issuer", ObjectId(kwargs["issuer"], "account")),
                 ("asset_to_update", ObjectId(kwargs["asset_to_update"], "asset")),
-                ("new_options", BitAssetOptions(kwargs["new_options"], prefix=prefix)),
+                ("new_options", BitAssetOptions(kwargs["new_options"])),
                 ("extensions", Set([])),
             ]
         )
@@ -330,12 +334,14 @@ class AssetUpdateFeedProducers(EchoObject):
 
 class AssetIssue(EchoObject):
     def detail(self, *args, **kwargs):
+        memo = get_optional("memo", kwargs, Memo)
+
         result = OrderedDict(
             [
                 ("issuer", ObjectId(kwargs["issuer"], "account")),
                 ("asset_to_issue", Asset(kwargs["asset_to_issue"])),
                 ("issue_to_account", ObjectId(kwargs["issue_to_account"], "account")),
-                ("memo", Optional(Memo(kwargs["memo"]))),
+                ("memo", Optional(memo)),
                 ("extensions", Set([])),
             ]
         )
@@ -433,12 +439,15 @@ class WitnessCreate(EchoObject):
 
 class WitnessUpdate(EchoObject):
     def detail(self, *args, **kwargs):
+        new_url = get_optional("new_url", kwargs, String)
+        new_signing_key = get_optional("new_signing_key", kwargs, PublicKey)
+
         result = OrderedDict(
             [
                 ("witness", ObjectId(kwargs["witness"], "witness")),
                 ("witness_account", ObjectId(kwargs["witness_account"], "account")),
-                ("new_url", Optional(String(kwargs["new_url"]))),
-                ("new_signing_key", Optional(PublicKey(kwargs["new_signing_key"]))),
+                ("new_url", Optional(new_url)),
+                ("new_signing_key", Optional(new_signing_key)),
 
             ]
         )
@@ -449,12 +458,14 @@ class WitnessUpdate(EchoObject):
 
 class ProposalCreate(EchoObject):
     def detail(self, *args, **kwargs):
+        review_period_seconds = get_optional("review_period_seconds", kwargs, Uint32)
+
         result = OrderedDict(
             [
                 ("fee_paying_account", ObjectId(kwargs["fee_paying_account"], "account")),
                 ("expiration_time", PointInTime(kwargs["expiration_time"])),
                 ("proposed_ops", Array(StaticVariant(kwargs["proposed_ops"]))),
-                ("review_period_seconds", Optional(Uint32(kwargs["review_period_seconds"]))),
+                ("review_period_seconds", Optional(review_period_seconds)),
                 ("extensions", Set([])),
             ]
         )
@@ -535,13 +546,15 @@ class WithdrawPermissionUpdate(EchoObject):
 
 class WithdrawPermissionClaim(EchoObject):
     def detail(self, *args, **kwargs):
+        memo = get_optional("memo", kwargs, Memo)
+
         result = OrderedDict(
             [
                 ("withdraw_permission", ObjectId(kwargs["withdraw_permission"], "withdraw_permission")),
                 ("withdraw_from_account", ObjectId(kwargs["withdraw_from_account"], "account")),
                 ("withdraw_to_account", ObjectId(kwargs["withdraw_to_account"], "account")),
                 ("amount_to_withdraw", Asset(kwargs["amount_to_withdraw"])),
-                ("memo", Optional(Memo(kwargs["memo"]))),
+                ("memo", Optional(memo)),
             ]
         )
         self.add_fee(result, kwargs)
@@ -578,11 +591,13 @@ class CommitteeMemberCreate(EchoObject):
 
 class CommitteeMemberUpdate(EchoObject):
     def detail(self, *args, **kwargs):
+        new_url = get_optional("new_url", kwargs, String)
+
         result = OrderedDict(
             [
                 ("committee_member", ObjectId(kwargs["committee_member"], "committee_member")),
                 ("committee_member_account", ObjectId(kwargs["committee_member_account"], "account")),
-                ("new_url", Optional(String(kwargs["new_url"]))),
+                ("new_url", Optional(new_url)),
             ]
         )
         self.add_fee(result, kwargs)
@@ -696,13 +711,15 @@ class BalanceClaim(EchoObject):
 
 class OverrideTransfer(EchoObject):
     def detail(self, *args, **kwargs):
+        memo = get_optional("memo", kwargs, Memo)
+
         result = OrderedDict(
             [
                 ("issuer", ObjectId(kwargs["issuer"], "account")),
                 ("from", ObjectId(kwargs["from"], "account")),
                 ("to", ObjectId(kwargs["to"], "account")),
                 ("amount", Asset(kwargs["amount"])),
-                ("memo", Optional(Memo(kwargs["memo"]))),
+                ("memo", Optional(memo)),
                 ("extensions", Set([])),
             ]
         )
@@ -785,10 +802,7 @@ class AssetClaimFees(EchoObject):
 
 class CreateContract(EchoObject):
     def detail(self, *args, **kwargs):
-        if 'supported_asset_id' in kwargs:
-            supported_asset_id = ObjectId(kwargs['supported_asset_id'], 'asset')
-        else:
-            supported_asset_id = ''
+        supported_asset_id = get_optional("supported_asset_id", kwargs, partial(ObjectId, type_verify="asset"))
 
         result = OrderedDict(
             [
