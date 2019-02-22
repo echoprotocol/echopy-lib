@@ -175,10 +175,8 @@ class Transaction:
 
             if 'asset_id' not in op['fee']:
                 op['fee'].update({'asset_id': asset_id})
-                print(self._operations[index][1])
                 self._operations[index][1]['fee'].update({'asset_id': ObjectId(asset_id, 'asset')})
                 self._operations[index][1]['fee'].move_to_end('asset_id', last=True)
-                print(self._operations[index][1])
 
             if ('asset_id' in op['fee']) and ('amount' in op['fee']):
                 continue
