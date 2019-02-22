@@ -496,14 +496,12 @@ class Asset(EchoObject):
         else:
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
-            super().__init__(
-                OrderedDict(
-                    [
-                        ("amount", Int64(kwargs["amount"])),
-                        ("asset_id", ObjectId(kwargs["asset_id"], "asset")),
-                    ]
-                )
-            )
+            asset = OrderedDict()
+            if 'amount' in kwargs:
+                asset.update({'amount': Int64(kwargs['amount'])})
+            if 'asset_id' in kwargs:
+                asset.update({'asset_id': ObjectId(kwargs['asset_id'], 'asset')})
+            super().__init__(asset)
 
 
 class VestingPolicyInitializer(StaticVariant):
