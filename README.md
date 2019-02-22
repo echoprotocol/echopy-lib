@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Python Library for Graphene
 
 ![](https://img.shields.io/pypi/v/graphenelib.svg?style=for-the-badge)
@@ -5,16 +6,27 @@
 ![](https://img.shields.io/pypi/pyversions/graphenelib.svg?style=for-the-badge)
 ![](https://img.shields.io/pypi/l/graphenelib.svg?style=for-the-badge)
 ![](https://cla-assistant.io/readme/badge/xeroc/python-graphenelib)
+=======
+# Python Library for Echo
 
-**Stable**
+Python ECHO library can be used to construct, sign and broadcast transactions and to easily obtain data from the blockchain via public apis.
+>>>>>>> develop
 
+## Installation
+
+<<<<<<< HEAD
 [![Travis master](https://travis-ci.org/xeroc/python-graphenelib.png?branch=master)](https://travis-ci.org/xeroc/python-graphenelib)
 [![docs master](https://readthedocs.org/projects/python-graphenelib/badge/?version=latest)](http://python-graphenelib.readthedocs.io/en/latest/)
 [![codecov](https://codecov.io/gh/xeroc/python-graphenelib/branch/master/graph/badge.svg)](https://codecov.io/gh/xeroc/python-graphenelib)
 
+=======
+### Install with pip3:
+>>>>>>> develop
 
-**Develop**
+    $ sudo apt-get install libffi-dev libssl-dev python-dev python3-dev python3-pip
+    $ pip3 install echopy-lib
 
+<<<<<<< HEAD
 [![Travis develop](https://travis-ci.org/xeroc/python-graphenelib.png?branch=develop)](https://travis-ci.org/xeroc/python-graphenelib)
 [![docs develop](https://readthedocs.org/projects/python-graphenelib/badge/?version=develop)](http://python-graphenelib.readthedocs.io/en/develop/)
 [![codecov develop](https://codecov.io/gh/xeroc/python-graphenelib/branch/develop/graph/badge.svg)](https://codecov.io/gh/xeroc/python-graphenelib)
@@ -23,15 +35,48 @@
 ## Documentation
 
 Visit the [pygraphenelib website](http://docs.pygraphenelib.com/en/latest/) for in depth documentation on this Python library.
+=======
+### Manual installation:
 
-## Installation
+    $ git clone https://gitlab.pixelplex.by/645.echo/echopy-lib.git
+    $ cd echopy-lib
+    $ python3 setup.py install
+    or
+    $ pip3 install .
 
+## Usage
+
+```python
+from echopy import Echo
+>>>>>>> develop
+
+url = 'ws://127.0.0.1:9000'
+echo = Echo()
+echo.connect(url)
+accounts = echo.api.database.get_objects(['1.2.0'])
+echo.disconnect()
+
+<<<<<<< HEAD
 
 ### Manual installation:
 
     $ git clone https://gitlab.pixelplex.by/645.echo/echopy-lib.git
     $ cd echopy-lib
     $ python3 setup.py install
+=======
+```
+
+
+To see `Api's` usage examples and information: look <b>[section](docs/Api.md)</b>.
+
+To see `Transactions` usage examples and information: look <b>[section](docs/Transaction.md)</b>.
+
+To run `unit tests`:
+
+```python
+python3 -m unittest discover
+```
+>>>>>>> develop
 
 
 ## Current status of operations
@@ -91,14 +136,9 @@ Visit the [pygraphenelib website](http://docs.pygraphenelib.com/en/latest/) for 
 
 ## Contributing
 
-python-bitshares welcomes contributions from anyone and everyone. Please
+echopy-lib welcomes contributions from anyone and everyone. Please
 see our [guidelines for contributing](CONTRIBUTING.md) and the [code of
 conduct](CODE_OF_CONDUCT.md).
-
-### Discussion and Developers
-
-Discussions around development and use of this library can be found in a
-[dedicated Telegram Channel](https://t.me/pybitshares)
 
 ### License
 
