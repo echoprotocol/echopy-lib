@@ -120,12 +120,6 @@ class ReconnectionWebsocket:
     def post_process_exception(self, exception):
         raise exception
 
-    @property
-    def api_id(self):
-        """ This allows to list api_ids, if they have been registered through
-            api_register() -- LEGACY
-        """
-        return self.connection.api_id
 
     def register_apis(self):
         """ This method is called right after connection and has previously

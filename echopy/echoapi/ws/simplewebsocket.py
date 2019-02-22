@@ -12,6 +12,7 @@ log = logging.getLogger(__name__)
 class SimpleWebsocket(Rpc):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # We need a lock to ensure thread-safty
         self.__lock = Lock()
 
     def connect(self):
@@ -45,19 +46,31 @@ class SimpleWebsocket(Rpc):
             except Exception:
                 pass
 
+    """ RPC Calls
+    """
+
     def rpcexec(self, payload):
+        """ Execute a call by sending the payload
+        """
         if not self.ws:
             self.connect()
 
         log.debug(json.dumps(payload))
 
+        # Mutex/Lock
+        # We need to lock because we need to wait for websocket
+        # response but don't want to allow other threads to send
+        # requests (that might take less time) to disturb
         self.__lock.acquire()
 
+        # Send over websocket
         try:
             self.ws.send(json.dumps(payload, ensure_ascii=False).encode("utf8"))
+            # Receive from websocket
             ret = self.ws.recv()
 
         finally:
+            # Release lock
             self.__lock.release()
 
         return ret

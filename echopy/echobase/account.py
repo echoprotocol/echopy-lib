@@ -42,10 +42,8 @@ class PasswordKey(Prefix):
 
 
 class BrainKey(Prefix):
-    """ Keys in ECHO are derived from a seed brain key which is a string of
-        16 words out of a predefined dictionary with 49744 words. It is a
-        simple single-chain key derivation scheme that is not compatible with
-        BIP44 but easy to use.
+    """ Given the brain key, a private key is derived as::
+            privkey = SHA256(SHA512(brainkey + " " + sequence))
 
         Incrementing the sequence number yields a new key that can be
         regenerated given the brain key.
@@ -118,10 +116,6 @@ class BrainKey(Prefix):
 
 class Address(Prefix):
     """ This class serves as an address representation for Public Keys.
-
-        :param str address: Base58 encoded address (defaults to ``None``)
-        :param str pubkey: Base58 encoded pubkey (defaults to ``None``)
-        :param str prefix: Network prefix (defaults to ``ECHO``)
         """
 
     def __init__(self, address, prefix='ECHO'):

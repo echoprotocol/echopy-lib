@@ -24,16 +24,19 @@ from .types import (
 )
 
 from .objects import (
+    # AccountCreateExtensions,
     AccountOptions,
     Asset,
     AssetOptions,
     BitAssetOptions,
+    # CallOrderExtension,
     Memo,
     ObjectId,
     Operation,
     Permission,
     Price,
     PriceFeed,
+    # SpecialAuthority,
     WorkerInitializer,
     isArgsThisClass,
     VestingPolicyInitializer,
@@ -52,17 +55,23 @@ class_namemap = {}
 
 
 def snake_to_camel(text):
+    """
+    """
     text_parts = text.split('_')
     return ''.join(word.capitalize() for word in text_parts)
 
 
 def camel_to_snake(text):
+    """
+    """
     import re
     str1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', text)
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', str1).lower()
 
 
 def fill_classmaps():
+    """
+    """
     for name, ind in operations.items():
         classname = snake_to_camel(name)
         class_namemap[classname] = ind
@@ -73,10 +82,15 @@ def fill_classmaps():
 
 
 def get_operation_by_id(op_id):
+    """ Convert an operation id into the corresponding class
+    """
+
     return (op_id, class_idmap[op_id]) if op_id in class_idmap else (None, None)
 
 
 def get_operation_by_name(op_name):
+    """
+    """
     _id = class_namemap[op_name]
 
     return _id, class_idmap[_id]

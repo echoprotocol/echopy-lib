@@ -217,6 +217,10 @@ class EchoObject(OrderedDict):
 
 
 class ObjectId(ObjectIdParent):
+    """ Need to overwrite a few attributes to load proper object_types from
+        ECHO
+    """
+
     object_types = object_type
 
 
