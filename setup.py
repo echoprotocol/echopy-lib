@@ -4,8 +4,7 @@
 from setuptools import setup, find_packages
 import sys
 
-VERSION = "0.1.2"
-URL = "https://gitlab.pixelplex.by/645.echo/echopy-lib" # FIX IT
+VERSION = "0.1.3"
 packages = find_packages()
 packages.remove('test')
 
@@ -14,11 +13,12 @@ setup(
     version=VERSION,
     description="Python library for ECHO blockchain",
     long_description=open("README.md").read(),
-    download_url="{}/tarball/{}".format(URL, VERSION), # FIX IT
+    long_description_content_type='text/markdown',
+    download_url="https://pypi.python.org/pypi/echopy-lib",
     license='MIT',
     author="PixelPlex inc",
     author_email="dev@pixelplex.io",
-    url=URL,
+    url="https://echo-dev.io/",
     keywords=["echo", "blockchain", "api", "rpc"],
     packages=packages,
     classifiers=[
