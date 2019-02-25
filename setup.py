@@ -6,8 +6,6 @@ import sys
 
 VERSION = "0.1.1"
 URL = "https://gitlab.pixelplex.by/645.echo/echopy-lib" # FIX IT
-current_python_version = sys.version[:5]
-current_requirements_file = "extended_requirements.txt" if int(current_python_version[0]) == 2 or int(current_python_version[2]) <= 5 else "requirements.txt"
 packages = find_packages()
 packages.remove('test')
 
@@ -30,7 +28,7 @@ setup(
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
     ],
-    install_requires=open(current_requirements_file).readlines(),
+    install_requires=open("requirements.txt").readlines(),
     include_package_data=True,
 
 )
