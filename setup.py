@@ -4,7 +4,7 @@
 from setuptools import setup, find_packages
 import sys
 
-VERSION = "0.1.1"
+VERSION = "0.1.2"
 URL = "https://gitlab.pixelplex.by/645.echo/echopy-lib" # FIX IT
 packages = find_packages()
 packages.remove('test')
