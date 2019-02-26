@@ -1,6 +1,7 @@
 from echopy import Echo
 import string
 import random
+from echopy.echoapi.ws.exceptions import RPCError
 
 _echo_ws_url = 'wss://devnet.echo-dev.io/ws'
 _wif = '5KLRT7oujSYZnDHCJHTDJyuvF2JxBhpQgipEkmM6pVLR6Yh59PF'
@@ -21,3 +22,15 @@ def connect_echo(url=_echo_ws_url):
 
 def disconnect_echo(echo):
     echo.disconnect()
+
+
+def broadcast_operation(echo, operation_ids, props):
+    tx = echo.create_transaction()
+    if type(operation_ids) is list:
+        assert(len(operation_ids)==len(props))
+        for i in range(len(operation_ids)):
+            tx = tx.add_operation(name=operation_ids[i], props=props[i])
+    else:
+        tx = tx.add_operation(name=operation_ids, props=props)
+    tx.sign(_wif)
+    return tx.broadcast()
