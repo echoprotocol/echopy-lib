@@ -1,14 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-""" Python library for ECHO blockchain.
-
-Python ECHO library can be used to construct, sign and broadcast transactions and to easily obtain data from the blockchain via public apis.
-"""
 
 from setuptools import setup, find_packages
 import sys
 
-VERSION = "0.1.3"
+VERSION = "0.1.4"
 packages = find_packages()
 packages.remove('test')
 
