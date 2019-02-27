@@ -37,18 +37,12 @@ To see `Transactions` usage examples and information: look <b>[section](docs/Tra
 
 To run `unit tests`:
 
-```bash
-python3 -m unittest
-# or
-python3 -m unittest -v
-```
+    $ python3 -m unittest
 
 
 If you use python, version <= 3.5, you can improve performance of transaction signing:
 
-```bash
-pip3 install -r speedup_requirements.txt
-```
+    $ pip3 install -r speedup_requirements.txt
 
 ## Contributing
 

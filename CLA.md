@@ -9,13 +9,13 @@ Individual Contributor exclusive License Agreement
 (including the Traditional Patent License OPTION)
 -------------------------------------------------
 
-Thank you for your interest in contributing to ChainSquad GmbH's
-python-graphenelib ("We" or "Us").
+Thank you for your interest in contributing to Pixelplex's
+echopy-lib ("We" or "Us").
 
 The purpose of this contributor agreement ("Agreement") is to clarify
 and document the rights granted by contributors to Us. To make this
 document effective, please follow the instructions provided when sending a pull
-request at https://github.com/xeroc/python-graphenelib.
+request at https://github.com/echoprotocol/echopy-lib.
 
 ### 0. Preamble
 
@@ -56,7 +56,7 @@ employment, You need to have Your employer approve this Agreement or
 sign the Entity version of this document. If You do not own the
 Copyright in the entire work of authorship, any other author of the
 Contribution should also sign this -- in any event, please contact Us at
-info@chainsquad.com.
+dev@pixelplex.io.
 
 ### 1. Definitions
 
@@ -239,7 +239,7 @@ Agreement.
 9.1 This Agreement and all disputes, claims,
 actions, suits or other proceedings arising out of this agreement or
 relating in any way to it shall be governed by the laws of
-Germany excluding its private international
+United States excluding its private international
 law provisions.
 
 9.2 This Agreement sets out the entire agreement
@@ -282,4 +282,4 @@ inaccurate in any respect.
 
 #### Recreate this Contributor License Agreement
 
-[contributoragreements.org](http://contributoragreements.org/u2s/wx8wraqtr)
+[contributoragreements.org](http://contributoragreements.org/u2s/25fg2nwzdz)
