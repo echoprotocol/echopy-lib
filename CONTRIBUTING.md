@@ -66,7 +66,7 @@ A good branch name would be (where issue #325 is the ticket you're working on):
 ### 3. Get the test suite running
 
 Make sure to add a unit tests for your your code contribution in
-`tests/`. You may use other unit tests as template for your own tests.
+`test/`. You may use other unit tests as template for your own tests.
 
 Individual unit tests can be run by:
 
@@ -97,7 +97,7 @@ everyone is a beginner at first
 **Pull requests are supposed to go against the `develop` branch, only!**
 
 At this point, you should switch back to your `develop` branch and make
-sure it's up to date with python-bitshares's `develop` branch:
+sure it's up to date with echopy-lib's `develop` branch:
 
     git remote add upstream git@github.com:echoprotocol/echopy-lib.git
     git checkout develop
