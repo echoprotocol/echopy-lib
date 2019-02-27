@@ -11,7 +11,7 @@ Python ECHO library can be used to construct, sign and broadcast transactions an
 
 ### Manual installation:
 
-    $ git clone https://gitlab.pixelplex.by/645.echo/echopy-lib.git
+    $ git clone https://github.com/echoprotocol/echopy-lib.git
     $ cd echopy-lib
     $ python3 setup.py install
     or
@@ -37,8 +37,17 @@ To see `Transactions` usage examples and information: look <b>[section](docs/Tra
 
 To run `unit tests`:
 
-```python
-python3 -m unittest discover
+```bash
+python3 -m unittest
+# or
+python3 -m unittest -v
+```
+
+
+If you use python, version <= 3.5, you can improve performance of transaction signing:
+
+```bash
+pip3 install -r speedup_requirements.txt
 ```
 
 ## Contributing
