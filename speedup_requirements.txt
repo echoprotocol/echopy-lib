@@ -6,6 +6,7 @@ websocket-client
 pylibscrypt
 pycryptodome
 appdirs
+iroha
 secp256k1
 numpy
 wsaccel

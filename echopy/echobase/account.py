@@ -6,12 +6,13 @@ import re
 import os
 
 from binascii import hexlify, unhexlify
-from .base58 import ripemd160, Base58, doublesha256
+from .base58 import ripemd160, Base58, doublesha256, base58encode
 from .dictionary import words as BrainKeyDictionary
 from .utils import _bytes
 from .prefix import Prefix
 
 import ecdsa
+from iroha import IrohaCrypto
 
 
 class PasswordKey(Prefix):
@@ -92,11 +93,17 @@ class BrainKey(Prefix):
     def get_public(self):
         return self.get_private().pubkey
 
+    def get_echorand(self):
+        return self.get_private().echorand_key
+
     def get_private_key(self):
         return self.get_private()
 
     def get_public_key(self):
         return self.get_public()
+
+    def get_echorand_key(self):
+        return self.get_echorand()
 
     @staticmethod
     def suggest():
@@ -350,6 +357,12 @@ class PrivateKey(Prefix):
         secexp = (seed + z) % order
         secret = "%0x" % secexp
         return PrivateKey(secret, prefix=self.pubkey.prefix)
+
+    @property
+    def echorand_key(self):
+        crypto = IrohaCrypto()
+        public_hex = crypto.derive_public_key(repr(self._wif)).decode()
+        return 'DET' + base58encode(public_hex)
 
     def __format__(self, _format):
         return format(self._wif, _format)

@@ -6,3 +6,4 @@ websocket-client
 pylibscrypt
 pycryptodome
 appdirs
+iroha
