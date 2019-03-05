@@ -191,6 +191,7 @@ class AccountCreate(EchoObject):
                 ("name", String(kwargs["name"])),
                 ("owner", Permission(kwargs["owner"])),
                 ("active", Permission(kwargs["active"])),
+                ("ed_key", Bytes(kwargs["ed_key"])),
                 ("options", AccountOptions(kwargs["options"])),
                 ("extensions", Set([])),
             ]

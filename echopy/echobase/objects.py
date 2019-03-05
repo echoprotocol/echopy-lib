@@ -345,6 +345,7 @@ class AccountOptions(EchoObject):
                             "voting_account",
                             ObjectId(kwargs["voting_account"], "account"),
                         ),
+                        ("delegating_account", ObjectId(kwargs["delegating_account"], "account")),
                         ("num_witness", Uint16(kwargs["num_witness"])),
                         ("num_committee", Uint16(kwargs["num_committee"])),
                         ("votes", Array([VoteId(o) for o in kwargs["votes"]])),
