@@ -1,8 +1,14 @@
 class EchoApi:
-    def __init__(self, register_query, api_name, params=["", ""]):
-        self.register_query = register_query
+    def __init__(self, ws, api_name, api_id):
         self.api_name = api_name
-        self.api_id = self.register_query(api_name, params, api=1)
+        self.api_id = api_id
+        self._ws = ws
 
-    def rpcexec(self, method, params):
-        return self.register_query(method, params, api=self.api_id)
+    async def rpcexec(self, method, params):
+        res = await self._ws.make_query(method, params, api=self.api_id)
+        return res
+
+
+async def register_echo_api(ws, api_name, params=["", ""], api=1):
+    api_id = await ws.make_query(api_name, params, api=api)
+    return EchoApi(ws, api_name, api_id)

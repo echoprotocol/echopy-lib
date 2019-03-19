@@ -1,5 +1,6 @@
 import unittest
-from .fixtures import connect_echo, broadcast_operation, disconnect_echo, get_random_asset_symbol, _from, _to, RPCError
+from .fixtures import connect_echo, broadcast_operation, disconnect_echo, get_random_asset_symbol, run_async
+from .fixtures import _from, _to, RPCError
 from copy import deepcopy
 
 
@@ -7,7 +8,8 @@ def subtest_call_contract(echo, create_contract_result_id):
     if not create_contract_result_id:
         raise Exception('Contract not created')
 
-    contract_id = int(echo.api.database.get_contract_result(create_contract_result_id)[1]['exec_res']['new_address'][2:], 16)
+    contract_result = run_async(echo.api.database.get_contract_result(create_contract_result_id))
+    contract_id = int(contract_result[1]['exec_res']['new_address'][2:], 16)
 
     call_contract_props = {
         "registrar": _from,
@@ -19,21 +21,21 @@ def subtest_call_contract(echo, create_contract_result_id):
         "callee": '1.16.' + str(contract_id)
     }
 
-    call_contract_broadcast_result = broadcast_operation(
+    call_contract_broadcast_result = run_async(broadcast_operation(
         echo=echo,
         operation_ids=echo.config.operation_ids.CALL_CONTRACT,
         props=call_contract_props
-    )
+    ))
 
     return call_contract_broadcast_result
 
 
 class OperationsTest(unittest.TestCase):
     def setUp(self):
-        self.echo = connect_echo()
+        self.echo = run_async(connect_echo())
 
     def tearDown(self):
-        disconnect_echo(self.echo)
+        run_async(disconnect_echo(self.echo))
 
     def test_transfer_with_full_fee(self):
         transfer_props = {
@@ -49,11 +51,11 @@ class OperationsTest(unittest.TestCase):
             }
         }
 
-        transfer_broadcast_result = broadcast_operation(
+        transfer_broadcast_result = run_async(broadcast_operation(
             echo=self.echo,
             operation_ids=self.echo.config.operation_ids.TRANSFER,
             props=transfer_props
-        )
+        ))
 
         self.assertNotIn('error', transfer_broadcast_result)
 
@@ -70,11 +72,11 @@ class OperationsTest(unittest.TestCase):
             }
         }
 
-        transfer_broadcast_result = broadcast_operation(
+        transfer_broadcast_result = run_async(broadcast_operation(
             echo=self.echo,
             operation_ids=self.echo.config.operation_ids.TRANSFER,
             props=transfer_props
-        )
+        ))
 
         self.assertNotIn('error', transfer_broadcast_result)
 
@@ -91,11 +93,11 @@ class OperationsTest(unittest.TestCase):
             }
         }
 
-        transfer_broadcast_result = broadcast_operation(
+        transfer_broadcast_result = run_async(broadcast_operation(
             echo=self.echo,
             operation_ids=self.echo.config.operation_ids.TRANSFER,
             props=transfer_props
-        )
+        ))
 
         self.assertNotIn('error', transfer_broadcast_result)
 
@@ -109,11 +111,11 @@ class OperationsTest(unittest.TestCase):
             }
         }
 
-        transfer_broadcast_result = broadcast_operation(
+        transfer_broadcast_result = run_async(broadcast_operation(
             echo=self.echo,
             operation_ids=self.echo.config.operation_ids.TRANSFER,
             props=transfer_props
-        )
+        ))
 
         self.assertNotIn('error', transfer_broadcast_result)
 
@@ -137,11 +139,11 @@ class OperationsTest(unittest.TestCase):
         ids = [self.echo.config.operation_ids.TRANSFER for _ in range(2)]
         props = [transfer_props, second_transfer_props]
 
-        transfer_broadcast_result = broadcast_operation(
+        transfer_broadcast_result = run_async(broadcast_operation(
             echo=self.echo,
-            operation_ids=self.echo.config.operation_ids.TRANSFER,
-            props=transfer_props
-        )
+            operation_ids=ids,
+            props=props
+        ))
 
         self.assertNotIn('error', transfer_broadcast_result)
 
@@ -175,11 +177,11 @@ class OperationsTest(unittest.TestCase):
             'is_prediction_market': False
         }
 
-        asset_create_broadcast_result = broadcast_operation(
+        asset_create_broadcast_result = run_async(broadcast_operation(
             echo=self.echo,
             operation_ids=self.echo.config.operation_ids.ASSET_CREATE,
             props=asset_create_props
-        )
+        ))
 
         self.assertNotIn('error', asset_create_broadcast_result)
 
@@ -202,11 +204,11 @@ class OperationsTest(unittest.TestCase):
             "eth_accuracy": False
         }
 
-        create_contract_broadcast_result = broadcast_operation(
+        create_contract_broadcast_result = run_async(broadcast_operation(
             echo=self.echo,
             operation_ids=self.echo.config.operation_ids.CREATE_CONTRACT,
             props=create_contract_props
-        )
+        ))
 
         try:
             create_contract_result_id = create_contract_broadcast_result['trx']['operation_results'][0][1]
@@ -219,16 +221,16 @@ class OperationsTest(unittest.TestCase):
 
 class ApiTest(unittest.TestCase):
     def setUp(self):
-        self.echo = connect_echo()
+        self.echo = run_async(connect_echo())
 
     def tearDown(self):
-        disconnect_echo(self.echo)
+        run_async(disconnect_echo(self.echo))
 
     # ASSET API TESTS
     def test_get_asset_holders(self):
         api = self.echo.api.asset
 
-        get_asset_holders_result = api.get_asset_holders('1.3.0', 1 , 1)
+        get_asset_holders_result = run_async(api.get_asset_holders('1.3.0', 1, 1))
 
         self.assertIsInstance(get_asset_holders_result, list)
         self.assertTrue(len(get_asset_holders_result))
@@ -241,14 +243,14 @@ class ApiTest(unittest.TestCase):
     def test_get_asset_holders_count(self):
         api = self.echo.api.asset
 
-        get_asset_holders_count_result = api.get_asset_holders_count('1.3.0')
+        get_asset_holders_count_result = run_async(api.get_asset_holders_count('1.3.0'))
 
         self.assertIsInstance(get_asset_holders_count_result, int)
 
     def test_get_all_asset_holders(self):
         api = self.echo.api.asset
 
-        get_all_asset_holders_result = api.get_all_asset_holders()
+        get_all_asset_holders_result = run_async(api.get_all_asset_holders())
 
         self.assertIsInstance(get_all_asset_holders_result, list)
         self.assertTrue(len(get_all_asset_holders_result))
@@ -261,7 +263,7 @@ class ApiTest(unittest.TestCase):
     def test_get_chain_properties(self):
         api = self.echo.api.database
 
-        get_chain_properties_result = api.get_chain_properties()
+        get_chain_properties_result = run_async(api.get_chain_properties())
 
         self.assertIsInstance(get_chain_properties_result, dict)
         self.assertIsInstance(get_chain_properties_result['chain_id'], str)
@@ -272,7 +274,7 @@ class ApiTest(unittest.TestCase):
     def test_get_global_properties(self):
         api = self.echo.api.database
 
-        get_global_properties_result = api.get_global_properties()
+        get_global_properties_result = run_async(api.get_global_properties())
 
         self.assertIsInstance(get_global_properties_result, dict)
         self.assertIsInstance(get_global_properties_result['active_committee_members'], list)
@@ -285,7 +287,7 @@ class ApiTest(unittest.TestCase):
     def test_get_config(self):
         api = self.echo.api.database
 
-        get_config_result = api.get_config()
+        get_config_result = run_async(api.get_config())
 
         self.assertIsInstance(get_config_result, dict)
         self.assertTrue(len(get_config_result.keys()))
@@ -293,7 +295,7 @@ class ApiTest(unittest.TestCase):
     def test_get_chain_id(self):
         api = self.echo.api.database
 
-        get_chain_id_result = api.get_chain_id()
+        get_chain_id_result = run_async(api.get_chain_id())
 
         self.assertIsInstance(get_chain_id_result, str)
         self.assertTrue(len(get_chain_id_result))
@@ -301,7 +303,7 @@ class ApiTest(unittest.TestCase):
     def test_get_dynamic_global_properties(self):
         api = self.echo.api.database
 
-        get_dynamic_global_properties_result = api.get_dynamic_global_properties()
+        get_dynamic_global_properties_result = run_async(api.get_dynamic_global_properties())
 
         self.assertIsInstance(get_dynamic_global_properties_result, dict)
         self.assertTrue(len(get_dynamic_global_properties_result.keys()))
@@ -310,17 +312,17 @@ class ApiTest(unittest.TestCase):
         api = self.echo.api.database
         block_number = 20
 
-        get_block_result = api.get_block(block_number)
+        get_block_result = run_async(api.get_block(block_number))
 
         self.assertIsInstance(get_block_result, dict)
         self.assertTrue(len(get_block_result.keys()))
 
     def test_get_transaction(self):
         api = self.echo.api.database
-        block_number = 55320
+        block_number = 730
         transaction_index = 0
 
-        get_transaction_result = api.get_transaction(block_number, transaction_index)
+        get_transaction_result = run_async(api.get_transaction(block_number, transaction_index))
 
         self.assertIsInstance(get_transaction_result, dict)
         self.assertTrue(len(get_transaction_result.keys()))
@@ -331,7 +333,7 @@ class ApiTest(unittest.TestCase):
         account_id2 = '1.2.6'
         accounts = [account_id1, account_id2]
 
-        get_accounts_result = api.get_accounts(accounts)
+        get_accounts_result = run_async(api.get_accounts(accounts))
 
         self.assertIsInstance(get_accounts_result, list)
         self.assertEqual(len(get_accounts_result), len(accounts))
@@ -344,7 +346,7 @@ class ApiTest(unittest.TestCase):
         account_id2 = '1.2.6'
         accounts = [account_id1, account_id2]
 
-        get_full_accounts_result = api.get_full_accounts(accounts, False)
+        get_full_accounts_result = run_async(api.get_full_accounts(accounts, False))
 
         self.assertIsInstance(get_full_accounts_result, list)
         self.assertEqual(len(get_full_accounts_result), len(accounts))
@@ -359,7 +361,7 @@ class ApiTest(unittest.TestCase):
     def test_get_account_count(self):
         api = self.echo.api.database
 
-        get_account_count_result = api.get_account_count()
+        get_account_count_result = run_async(api.get_account_count())
 
         self.assertIsInstance(get_account_count_result, int)
 
@@ -368,7 +370,7 @@ class ApiTest(unittest.TestCase):
         asset_key = 'ECHO'
         assets = [asset_key]
 
-        lookup_asset_symbols_result = api.lookup_asset_symbols(assets)
+        lookup_asset_symbols_result = run_async(api.lookup_asset_symbols(assets))
 
         self.assertIsInstance(lookup_asset_symbols_result, list)
         self.assertEqual(len(lookup_asset_symbols_result), len(assets))
@@ -381,7 +383,7 @@ class ApiTest(unittest.TestCase):
         asset_id = '1.3.0'
         assets = [asset_id]
 
-        get_assets_result = api.get_assets(assets)
+        get_assets_result = run_async(api.get_assets(assets))
 
         self.assertIsInstance(get_assets_result, list)
         self.assertEqual(len(get_assets_result), len(assets))
@@ -396,7 +398,7 @@ class ApiTest(unittest.TestCase):
         witness_id = '1.6.0'
         objects = [account_id1, asset_id, witness_id]
 
-        get_objects_result = api.get_objects(objects)
+        get_objects_result = run_async(api.get_objects(objects))
 
         self.assertIsInstance(get_objects_result, list)
         self.assertEqual(len(get_objects_result), len(objects))
@@ -409,7 +411,7 @@ class ApiTest(unittest.TestCase):
         committee_member = '1.5.1'
         committee_members = [committee_member]
 
-        get_committee_members_result = api.get_committee_members(committee_members)
+        get_committee_members_result = run_async(api.get_committee_members(committee_members))
 
         self.assertIsInstance(get_committee_members_result, list)
         self.assertEqual(len(get_committee_members_result), len(committee_members))
@@ -422,7 +424,7 @@ class ApiTest(unittest.TestCase):
         api = self.echo.api.database
         account_name = 'nathan'
 
-        get_account_by_name_result = api.get_account_by_name(account_name)
+        get_account_by_name_result = run_async(api.get_account_by_name(account_name))
 
         self.assertIsInstance(get_account_by_name_result, dict)
         self.assertTrue(len(get_account_by_name_result.keys()))
@@ -432,7 +434,7 @@ class ApiTest(unittest.TestCase):
         witness_id = '1.6.0'
         witnesses = [witness_id]
 
-        get_witnesses_result = api.get_witnesses(witnesses)
+        get_witnesses_result = run_async(api.get_witnesses(witnesses))
 
         self.assertIsInstance(get_witnesses_result, list)
         self.assertEqual(len(get_witnesses_result), len(witnesses))
@@ -443,7 +445,7 @@ class ApiTest(unittest.TestCase):
     def test_get_all_contracts(self):
         api = self.echo.api.database
 
-        get_all_contracts_result = api.get_all_contracts()
+        get_all_contracts_result = run_async(api.get_all_contracts())
 
         self.assertIsInstance(get_all_contracts_result, list)
         self.assertTrue(len(get_all_contracts_result))
@@ -456,7 +458,7 @@ class ApiTest(unittest.TestCase):
         lower_bound_name = 't'
         count = 2
 
-        lookup_accounts_result = api.lookup_accounts(lower_bound_name, count)
+        lookup_accounts_result = run_async(api.lookup_accounts(lower_bound_name, count))
 
         self.assertIsInstance(lookup_accounts_result, list)
         self.assertEqual(len(lookup_accounts_result), count)
@@ -472,7 +474,7 @@ class ApiTest(unittest.TestCase):
         lower_bound_symbol = 'E'
         count = 2
 
-        list_assets_result = api.list_assets(lower_bound_symbol, count)
+        list_assets_result = run_async(api.list_assets(lower_bound_symbol, count))
 
         self.assertIsInstance(list_assets_result, list)
         self.assertEqual(len(list_assets_result), count)
@@ -485,7 +487,7 @@ class ApiTest(unittest.TestCase):
 
         block_number = 20
 
-        get_block_header_result = api.get_block_header(20)
+        get_block_header_result = run_async(api.get_block_header(block_number))
 
         self.assertIsInstance(get_block_header_result, dict)
         self.assertTrue(len(get_block_header_result.keys()))
@@ -495,7 +497,7 @@ class ApiTest(unittest.TestCase):
 
         contract_id = '1.16.0'
 
-        get_contract_result = api.get_contract(contract_id)
+        get_contract_result = run_async(api.get_contract(contract_id))
 
         self.assertIsInstance(get_contract_result, list)
         self.assertIsInstance(get_contract_result[0], int)
@@ -519,7 +521,7 @@ class ApiTest(unittest.TestCase):
         contract_id = '1.16.0'
         contracts = [contract_id]
 
-        get_contracts_result = api.get_contracts(contracts)
+        get_contracts_result = run_async(api.get_contracts(contracts))
 
         self.assertIsInstance(get_contracts_result, list)
         self.assertEqual(len(get_contracts_result), len(contracts))
@@ -533,7 +535,7 @@ class ApiTest(unittest.TestCase):
         witness_vote_id = '1:0'
         vote_ids = [committee_vote_id, witness_vote_id]
 
-        lookup_vote_ids_result = api.lookup_vote_ids(vote_ids)
+        lookup_vote_ids_result = run_async(api.lookup_vote_ids(vote_ids))
 
         self.assertIsInstance(lookup_vote_ids_result, list)
         self.assertEqual(len(lookup_vote_ids_result), len(vote_ids))
@@ -541,13 +543,13 @@ class ApiTest(unittest.TestCase):
             self.assertIsInstance(lookup_vote_ids_result[i], dict)
             self.assertTrue(len(lookup_vote_ids_result[i]))
             self.assertEqual(lookup_vote_ids_result[i]['vote_id'], vote_ids[i])
-    
+
     def test_get_committee_member_by_account(self):
         api = self.echo.api.database
 
         account_id = '1.2.6'
 
-        get_committee_member_by_account_result = api.get_committee_member_by_account(account_id)
+        get_committee_member_by_account_result = run_async(api.get_committee_member_by_account(account_id))
 
         self.assertIsInstance(get_committee_member_by_account_result, dict)
         self.assertTrue(len(get_committee_member_by_account_result.keys()))
@@ -558,7 +560,7 @@ class ApiTest(unittest.TestCase):
 
         ethereum_address = '17A686Cc581e0582e0213Ec49153Af6c1941CAc7'
 
-        get_sidechain_transfers_result = api.get_sidechain_transfers(ethereum_address)
+        get_sidechain_transfers_result = run_async(api.get_sidechain_transfers(ethereum_address))
 
         self.assertIsInstance(get_sidechain_transfers_result, list)
 
@@ -573,11 +575,11 @@ class ApiTest(unittest.TestCase):
         echo_rand_key = 'DET3vw54ewEd7G8aKGHSzC5QbKpGhWEaRH1EvscHMbwZNVW'
 
         with self.assertRaises(RPCError) as cm:
-            api.register_account(account_name, owner_key, active_key, memo, echo_rand_key)
+            run_async(api.register_account(account_name, owner_key, active_key, memo, echo_rand_key))
 
         exception = cm.exception
-        self.assertIn('Assert Exception', str(cm.exception))
-        self.assertIn('Account with this name already exists', str(cm.exception))
+        self.assertIn('Assert Exception', str(exception))
+        self.assertIn('Account with this name already exists', str(exception))
 
     # HISTORY API TESTS
     def test_get_account_history(self):
@@ -586,7 +588,7 @@ class ApiTest(unittest.TestCase):
         account_id = '1.2.2'
         limit = 3
 
-        get_account_history_result = api.get_account_history(account_id, limit=limit)
+        get_account_history_result = run_async(api.get_account_history(account_id, limit=limit))
 
         self.assertIsInstance(get_account_history_result, list)
         if len(get_account_history_result):
@@ -602,7 +604,9 @@ class ApiTest(unittest.TestCase):
         start = stop = 0
         limit = 3
 
-        get_relative_account_history_result = api.get_relative_account_history(account_id, stop, limit, start)
+        get_relative_account_history_result = run_async(
+            api.get_relative_account_history(account_id, stop, limit, start)
+        )
 
         self.assertIsInstance(get_relative_account_history_result, list)
         if len(get_relative_account_history_result):
@@ -618,7 +622,9 @@ class ApiTest(unittest.TestCase):
         operation_id = 0
         limit = 3
 
-        get_account_history_operations_result = api.get_account_history_operations(account_id, operation_id, limit=limit)
+        get_account_history_operations_result = run_async(
+            api.get_account_history_operations(account_id, operation_id, limit=limit)
+        )
 
         self.assertIsInstance(get_account_history_operations_result, list)
         if len(get_account_history_operations_result):
@@ -633,7 +639,7 @@ class ApiTest(unittest.TestCase):
         contract_id = '1.16.0'
         limit = 3
 
-        get_contract_history_result = api.get_contract_history(contract_id, limit=limit)
+        get_contract_history_result = run_async(api.get_contract_history(contract_id, limit=limit))
 
         self.assertIsInstance(get_contract_history_result, list)
         if len(get_contract_history_result):

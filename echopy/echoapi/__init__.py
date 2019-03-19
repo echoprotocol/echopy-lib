@@ -14,8 +14,8 @@ class Api:
     def __init__(self):
         self.ws = WS()
 
-    def connect(self, url):
-        self.ws.connect(url)
+    async def connect(self, url):
+        await self.ws.connect(url)
         self.database = DatabaseApi(self.ws.db_api)
         self.asset = AssetApi(self.ws.asset_api)
         self.network = NetworkApi(self.ws.network_api)
@@ -24,8 +24,8 @@ class Api:
         self.login = LoginApi(self.ws.login_api)
         self.network_node = NetworkNodeApi(self.ws.network_node_api)
 
-    def disconnect(self):
-        self.ws.disconnect()
+    async def disconnect(self):
+        await self.ws.disconnect()
 
 __all__ = [
     "ws",

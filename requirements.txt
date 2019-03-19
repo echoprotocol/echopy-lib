@@ -1,9 +1,10 @@
 pyyaml
 dateutils
 ecdsa
-requests
-websocket-client
+websockets
+async-promises
 pylibscrypt
 pycryptodome
 appdirs
 iroha
+numpy

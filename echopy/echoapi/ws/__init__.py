@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
+from .async_websocket import AsyncWebsocket
 
-from .reconnectionwebsocket import ReconnectionWebsocket
-
-
-class WS(ReconnectionWebsocket):
-    def __init__(self, user=None, password=None, **kwargs):
-        super().__init__(user, password, **kwargs)
+class WS(AsyncWebsocket):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
     @property
     def db_api(self):
@@ -38,7 +36,5 @@ class WS(ReconnectionWebsocket):
 __all__ = [
     "echoapi",
     "exceptions",
-    "reconnectionwebsocket",
-    "rpc",
-    "simplewebsocket"
+    "async_websocket"
 ]

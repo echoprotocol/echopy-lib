@@ -11,8 +11,8 @@ class Echo:
     def create_transaction(self):
         return Transaction(self.api)
 
-    def connect(self, url):
-        self.api.connect(url)
+    async def connect(self, url):
+        await self.api.connect(url)
 
-    def disconnect(self):
-        self.api.disconnect()
+    async def disconnect(self):
+        await self.api.disconnect()
