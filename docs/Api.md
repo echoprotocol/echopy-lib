@@ -12,13 +12,13 @@ start = 0
 limit = 10
 try:
     echo = Echo()
-    echo.connect(url)
+    await echo.connect(url)
 
-    all_asset_holders = echo.api.asset.get_all_asset_holders()
-    holders_count = echo.api.asset.get_asset_holders_count(asset_id=asset_id)
-    asset_holders = echo.api.asset.get_asset_holders(asset_id=asset_id, start=start, limit)
+    all_asset_holders = await echo.api.asset.get_all_asset_holders()
+    holders_count = await echo.api.asset.get_asset_holders_count(asset_id=asset_id)
+    asset_holders = await echo.api.asset.get_asset_holders(asset_id=asset_id, start=start, limit)
 
-    echo.disconnect()
+    await echo.disconnect()
 except Exception as e:
     raise
 ```
@@ -33,13 +33,13 @@ ids = ['1.3.1', '1.3.2']
 block_num = 200
 try:
     echo = Echo()
-    echo.connect(url)
+    await echo.connect(url)
 
-    objects = echo.api.database.get_objects(ids=ids)
-    block_header = echo.api.database.get_block_header(block_num=block_num)
-    block = echo.api.database.get_block(block_num=block_num)
+    objects = await echo.api.database.get_objects(ids=ids)
+    block_header = await echo.api.database.get_block_header(block_num=block_num)
+    block = await echo.api.database.get_block(block_num=block_num)
 
-    echo.disconnect()
+    await echo.disconnect()
 except Exception as e:
     raise	
 ```
@@ -56,15 +56,15 @@ account_limit = 100
 account_start = '1.11.0'
 try:
     echo = Echo()
-    echo.connect(url)
+    await echo.connect(url)
 
-    relative_account_history = echo.api.history.get_relative_account_history(account=account)
-    account_history = echo.api.history.get_account_history(account=account,
-                                                           stop=account_stop,
-                                                           limit=account_limit,
-                                                           start=account_start)
+    relative_account_history = await echo.api.history.get_relative_account_history(account=account)
+    account_history = await echo.api.history.get_account_history(account=account,
+                                                                 stop=account_stop,
+                                                                 limit=account_limit,
+                                                                 start=account_start)
 
-    echo.disconnect()
+    await echo.disconnect()
 except Exception as e:
     raise	
 ```
@@ -78,11 +78,11 @@ url = 'ws://127.0.0.1:9000'
 signed_transaction = '2.7.1'
 try:
     echo = Echo()
-    echo.connect(url)
+    await echo.connect(url)
 
-    echo.api.network_broadcast.broadcast_transaction(signed_transaction=signed_transaction)
+    await echo.api.network_broadcast.broadcast_transaction(signed_transaction=signed_transaction)
 
-    echo.disconnect()
+    await echo.disconnect()
 except Exception as e:
     raise
 ```
@@ -101,15 +101,15 @@ echorand_key = 'DETDvHDsAfk2M8LhYcxLZTbrNJRWT3UH5zxdaWimWc6uZkH'
 
 try:
     echo = Echo()
-    echo.connect(url)
+    await echo.connect(url)
 
-    echo.api.registration.register_account(name=name,
-                                           owner_key=owner_key,
-                                           active_key=active_key,
-                                           memo_key=memo_key,
-                                           echorand_key=echorand_key)
+    await echo.api.registration.register_account(name=name,
+                                                 owner_key=owner_key,
+                                                 active_key=active_key,
+                                                 memo_key=memo_key,
+                                                 echorand_key=echorand_key)
 
-    echo.disconnect()
+    await echo.disconnect()
 except Exception as e:
     raise                                           
 ```

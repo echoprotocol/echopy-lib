@@ -8,7 +8,7 @@ Using transaction builder you can build and broadcast transaction
 from echopy import Echo
 
 echo = Echo()
-echo.connect(url='ws://127.0.0.1:9000')
+await echo.connect(url='ws://127.0.0.1:9000')
 
 operation_id = echo.config.operation_ids.TRANSFER 
 
@@ -34,11 +34,11 @@ transfer_options = {
 tx = echo.create_transaction()
 tx.add_operation(name=operation_id, props=transfer_options)
 tx.add_signer('5J95jcWeqxqRK6McNp3MLi5yEzeWCHsNpe72iw9QphXfUwpz84v')
-tx.sign()
+await tx.sign()
 
-broadcast_result = tx.broadcast()
+broadcast_result = await tx.broadcast()
 
-echo.disconnect()
+await echo.disconnect()
 ```
 
 #### Create contract
@@ -47,7 +47,7 @@ echo.disconnect()
 from echopy import Echo
 
 echo = Echo()
-echo.connect(url='ws://127.0.0.1:9000')
+await echo.connect(url='ws://127.0.0.1:9000')
 
 operation_id = echo.config.operation_ids.CREATE_CONTRACT 
 
@@ -66,11 +66,11 @@ create_contract_props = {
 tx = echo.create_transaction()
 tx.add_operation(name=operation_id, props=create_contract_props)
 tx.add_signer('5J95jcWeqxqRK6McNp3MLi5yEzeWCHsNpe72iw9QphXfUwpz84v')
-tx.sign()
+await tx.sign()
 
-broadcast_result = tx.broadcast()
+broadcast_result = await tx.broadcast()
 
-echo.disconnect()
+await echo.disconnect()
 ```
 
 #### Call contract
@@ -79,7 +79,7 @@ echo.disconnect()
 from echopy import Echo
 
 echo = Echo()
-echo.connect(url='ws://127.0.0.1:9000')
+await echo.connect(url='ws://127.0.0.1:9000')
 
 operation_id = echo.config.operation_ids.CALL_CONTRACT 
 
@@ -100,11 +100,11 @@ call_contract_props = {
 tx = echo.create_transaction()
 tx.add_operation(name=operation_id, props=call_contract_props)
 tx.add_signer('5J95jcWeqxqRK6McNp3MLi5yEzeWCHsNpe72iw9QphXfUwpz84v')
-tx.sign()
+await tx.sign()
 
-broadcast_result = tx.broadcast()
+broadcast_result = await tx.broadcast()
 
-echo.disconnect()
+await echo.disconnect()
 ```
 
 #### Asset create
@@ -113,7 +113,7 @@ echo.disconnect()
 from echopy import Echo
 
 echo = Echo()
-echo.connect(url='ws://127.0.0.1:9000')
+await echo.connect(url='ws://127.0.0.1:9000')
 
 operation_id = echo.config.operation_ids.ASSET_CREATE
 
@@ -151,11 +151,11 @@ create_asset_props = {
 tx = echo.create_transaction()
 tx.add_operation(name=operation_id, props=create_asset_props)
 tx.add_signer('5J95jcWeqxqRK6McNp3MLi5yEzeWCHsNpe72iw9QphXfUwpz84v')
-tx.sign()
+await tx.sign()
 
-broadcast_result = tx.broadcast()
+broadcast_result = await tx.broadcast()
 
-echo.disconnect()
+await echo.disconnect()
 ```
 
 You can add few operations and signers using this constructions:
@@ -173,19 +173,7 @@ tx = tx.add_operation(echo.config.operation_ids.CALL_CONTRACT, call_contract_pro
 tx = tx.add_signer(private_key) #private_key first
 tx = tx.add_signer(private_key) #private_key second
 
-broadcast_result = tx.broadcast()
-```
-
-If you have only one signer you can reduce parts of code:
-
-```python
-tx = echo.create_transaction()
-tx.add_operation(echo.config.operation_ids.TRANSFER , transfer_options)
-# or 
-tx = echo.create_transaction()
-tx = tx.add_operation(echo.config.operation_ids.TRANSFER , transfer_options)
-
-broadcast_result = tx.broadcast(private_key)
+broadcast_result = await tx.broadcast()
 ```
 
 Or sign first and then broadcast:
@@ -193,13 +181,13 @@ Or sign first and then broadcast:
 ```python
 tx = echo.create_transaction()
 tx.add_operation(echo.config.operation_ids.TRANSFER , transfer_options)
-tx.sign(private_key)
+await tx.sign(private_key)
 # or 
 tx = echo.create_transaction()
 tx = tx.add_operation(echo.config.operation_ids.TRANSFER , transfer_options)
-tx = tx.sign(private_key)
+tx = await tx.sign(private_key)
 
-broadcast_result = tx.broadcast()
+broadcast_result = await tx.broadcast()
 ```
 
 ---

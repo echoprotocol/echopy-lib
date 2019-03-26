@@ -1,5 +1,6 @@
 import unittest
-from .fixtures import connect_echo, broadcast_operation, disconnect_echo, get_random_asset_symbol, run_async
+from .fixtures import (connect_echo, broadcast_operation, disconnect_echo, get_random_asset_symbol,
+                       run_async, get_keys, random_string)
 from .fixtures import _from, _to, RPCError
 from copy import deepcopy
 
@@ -217,6 +218,78 @@ class OperationsTest(unittest.TestCase):
                 self.assertNotIn('error', call_contract_broadcast_result)
         except KeyError:
             raise Exception('Contract not created')
+
+    def test_account_create(self):
+        _, public_key, echorand_key = get_keys()
+        account_create_props = {
+            "ed_key": echorand_key,
+            "registrar": _from,
+            "referrer": _from,
+            "referrer_percent": 0,
+            "name": random_string(),
+            "owner": {
+                "weight_threshold": 1,
+                "account_auths": [],
+                "key_auths": [[public_key, 1]],
+                "address_auths": [],
+            },
+            "active": {
+                "weight_threshold": 1,
+                "account_auths": [],
+                "key_auths": [[public_key, 1]],
+                "address_auths": [],
+            },
+            "options": {
+                "memo_key": public_key,
+                "voting_account": "1.2.1",
+                "delegating_account": "1.2.1",
+                "num_witness": 0,
+                "num_committee": 0,
+                "votes": [],
+                "extensions": [],
+            },
+        }
+        account_create_broadcast_result = run_async(broadcast_operation(
+            echo=self.echo,
+            operation_ids=self.echo.config.operation_ids.ACCOUNT_CREATE,
+            props=account_create_props
+        ))
+        self.assertNotIn('error', account_create_broadcast_result)
+
+    def test_account_upgrade(self):
+        account_upgrade_props = {
+            "account_to_upgrade": _from,
+            "upgrade_to_lifetime_member": True
+        }
+
+        try:
+            account_upgrade_broadcast_result = run_async(broadcast_operation(
+                echo=self.echo,
+                operation_ids=self.echo.config.operation_ids.ACCOUNT_UPGRADE,
+                props=account_upgrade_props
+            ))
+            self.assertNotIn('error', account_upgrade_broadcast_result)
+        except RPCError as e:
+            self.assertIn('Insufficient Balance', str(e))
+
+    def test_account_update(self):
+        _, public_key, echorand_key = get_keys()
+        account_update_props = {
+            "account": _from,
+            "ed_key": echorand_key,
+            "active": {
+                "weight_threshold": 1,
+                "account_auths": [],
+                "key_auths": [[public_key, 1]],
+                "address_auths": []
+            }
+        }
+        account_update_broadcast_result = run_async(broadcast_operation(
+            echo=self.echo,
+            operation_ids=self.echo.config.operation_ids.ACCOUNT_UPDATE,
+            props=account_update_props
+        ))
+        self.assertNotIn('error', account_update_broadcast_result)
 
 
 class ApiTest(unittest.TestCase):

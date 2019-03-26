@@ -2,6 +2,7 @@ from echopy import Echo
 import string
 import random
 from echopy.echoapi.ws.exceptions import RPCError
+from echopy.echobase.account import BrainKey
 import asyncio
 
 _echo_ws_url = 'wss://devnet.echo-dev.io/ws'
@@ -36,6 +37,22 @@ async def broadcast_operation(echo, operation_ids, props):
         tx = tx.add_operation(name=operation_ids, props=props)
     await tx.sign(_wif)
     return await tx.broadcast()
+
+
+def get_keys():
+    key = BrainKey()
+
+    private_key = str(key.get_private_key())
+    public_key = str(key.get_public_key())
+    echorand_key = str(key.get_echorand_key())
+
+    return private_key, public_key, echorand_key
+
+
+def random_string():
+    result = ""
+    result += "".join(random.choice(string.ascii_letters) for i in range(random.randint(5, 10)))
+    return result
 
 
 def run_async(coro):
