@@ -28,9 +28,9 @@ from echopy import Echo
 
 url = 'ws://127.0.0.1:9000'
 echo = Echo()
-echo.connect(url)
-accounts = echo.api.database.get_objects(['1.2.0'])
-echo.disconnect()
+await echo.connect(url)
+accounts = await echo.api.database.get_objects(['1.2.0'])
+await echo.disconnect()
 
 ```
 
