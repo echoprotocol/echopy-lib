@@ -2,9 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from setuptools import setup, find_packages
-import sys
 
-VERSION = "0.1.4"
+VERSION = "0.1.5"
 packages = find_packages()
 packages.remove('test')
 
@@ -27,7 +26,9 @@ setup(
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
-        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
     ],

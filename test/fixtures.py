@@ -5,10 +5,10 @@ from echopy.echoapi.ws.exceptions import RPCError
 from echopy.echobase.account import BrainKey
 import asyncio
 
-_echo_ws_url = 'wss://devnet.echo-dev.io/ws'
-_wif = '5KLRT7oujSYZnDHCJHTDJyuvF2JxBhpQgipEkmM6pVLR6Yh59PF'
-_from = '1.2.21'
-_to = '1.2.22'
+_echo_ws_url = 'wss://testnet.echo-dev.io/ws'
+_wif = '5KUbAUeSFgZqMxNKNftxAhhrjrQmgiEE4CXmbdWk8j3MZruCVZe'
+_from = '1.2.260'
+_to = '1.2.259'
 
 
 def get_random_asset_symbol():
