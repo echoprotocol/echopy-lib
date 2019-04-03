@@ -19,7 +19,7 @@ def subtest_call_contract(echo, create_contract_result_id):
             "asset_id": "1.3.0"
         },
         "code": '86be3f80' + '0000000000000000000000000000000000000000000000000000000000000001',
-        "callee": '1.16.' + str(contract_id)
+        "callee": '1.14.' + str(contract_id)
     }
 
     call_contract_broadcast_result = run_async(broadcast_operation(
