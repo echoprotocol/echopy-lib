@@ -7,3 +7,4 @@ pylibscrypt
 pycryptodome
 appdirs
 iroha
+numpy

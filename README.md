@@ -17,6 +17,10 @@ Python ECHO library can be used to construct, sign and broadcast transactions an
     or
     $ pip3 install .
 
+## Preparation
+
+Launched echo node (https://github.com/echoprotocol/echo-core) with open port
+
 ## Usage
 
 ```python
@@ -39,10 +43,6 @@ To run `unit tests`:
 
     $ python3 -m unittest
 
-
-If you use python, version <= 3.5, you can improve performance of transaction signing:
-
-    $ pip3 install -r speedup_requirements.txt
 
 ## Contributing
 

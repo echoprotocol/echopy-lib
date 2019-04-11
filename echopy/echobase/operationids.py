@@ -20,8 +20,6 @@ ops = [
     "asset_settle",
     "asset_global_settle",
     "asset_publish_feed",
-    "witness_create",
-    "witness_update",
     "proposal_create",
     "proposal_update",
     "proposal_delete",
@@ -34,7 +32,6 @@ ops = [
     "committee_member_update_global_parameters",
     "vesting_balance_create",
     "vesting_balance_withdraw",
-    "worker_create",
     "custom",
     "assert",
     "balance_claim",
@@ -50,6 +47,7 @@ ops = [
     "create_contract",
     "call_contract",
     "contract_transfer",
+    "change_sidechain_config"
 
 ]
 operations = {o: ops.index(o) for o in ops}

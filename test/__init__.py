@@ -1,5 +1,6 @@
 import unittest
-from .fixtures import connect_echo, broadcast_operation, disconnect_echo, get_random_asset_symbol, _from, _to, RPCError
+from .fixtures import connect_echo, broadcast_operation, disconnect_echo, get_random_asset_symbol, _from, _to
+from echopy.echoapi.ws.exceptions import RPCError
 from copy import deepcopy
 
 
