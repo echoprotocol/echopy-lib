@@ -2,9 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from setuptools import setup, find_packages
-import sys
 
-VERSION = "0.1.5"
+VERSION = "0.1.7"
 packages = find_packages()
 packages.remove('test')
 
