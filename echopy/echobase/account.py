@@ -313,10 +313,6 @@ class PrivateKey(Prefix):
         assert len(repr(self._wif)) == 64
 
     @property
-    def bitcoin(self):
-        return BitcoinPublicKey.from_privkey(self)
-
-    @property
     def address(self):
         return Address.from_pubkey(self.pubkey, prefix=self.prefix)
 
@@ -379,27 +375,3 @@ class PrivateKey(Prefix):
     def __bytes__(self):
         """ Returns the raw private key """
         return bytes(self._wif)
-
-
-class BitcoinAddress(Address):
-    @classmethod
-    def from_pubkey(cls, pubkey, compressed=False, version=56, prefix='ECHO'):
-        pubkey = PublicKey(pubkey)
-        if compressed:
-            pubkey = pubkey.compressed()
-        else:
-            pubkey = pubkey.uncompressed()
-
-        addressbin = ripemd160(hexlify(hashlib.sha256(unhexlify(pubkey)).digest()))
-        return cls(hexlify(addressbin).decode("ascii"))
-
-    def __str__(self):
-        """ Returns the readable ECHO address
-        """
-        return format(self._address, "ECHO")
-
-
-class BitcoinPublicKey(PublicKey):
-    @property
-    def address(self):
-        return BitcoinAddress.from_pubkey(repr(self))

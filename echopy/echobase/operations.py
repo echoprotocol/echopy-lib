@@ -30,7 +30,6 @@ from .objects import (
     BitAssetOptions,
     Memo,
     ObjectId,
-    Operation,
     Permission,
     Price,
     PriceFeed,
@@ -52,24 +51,20 @@ class_namemap = {}
 
 
 def snake_to_camel(text):
-    """ Convert string in snake_case to camelCase
-    """
+    """Convert string in snake_case to camelCase."""
     text_parts = text.split('_')
     return ''.join(word.capitalize() for word in text_parts)
 
 
 def camel_to_snake(text):
-    """ Convert string in camelCase to snake_case
-    """
+    """Convert string in camelCase to snake_case."""
     import re
     str1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', text)
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', str1).lower()
 
 
 def fill_classmaps():
-    """ Fill global dict's for get_operation_by_id and
-        get_operation_by_name methods
-    """
+    """Fill global dict's for get_operation_by_id and get_operation_by_name methods."""
     for name, ind in operations.items():
         classname = snake_to_camel(name)
         class_namemap[classname] = ind
@@ -80,23 +75,19 @@ def fill_classmaps():
 
 
 def get_operation_by_id(op_id):
-    """ Convert an operation id into the (operation_id, corresponding class)
-    """
-
+    """Convert an operation id into the (operation_id, corresponding class)."""
     return (op_id, class_idmap[op_id]) if op_id in class_idmap else (None, None)
 
 
 def get_operation_by_name(op_name):
-    """ Convert an operation name into the (operation_id, coressponding class)
-    """
+    """Convert an operation name into the (operation_id, coressponding class)."""
     _id = class_namemap[op_name]
 
     return _id, class_idmap[_id]
 
 
 def get_optional(param, kwargs, object_class):
-    """ Wrapper for optional params init
-    """
+    """Wrapper for optional params init."""
     result = object_class(kwargs[param]) if param in kwargs else ''
     return result
 
@@ -700,7 +691,7 @@ class BalanceClaim(EchoObject):
         result = OrderedDict(
             [
                 ("deposit_to_account", ObjectId(kwargs["deposit_to_account"], "account")),
-                ("balance_to_claim", ObjectId(kwargs["balance_to_claim"], "account")),
+                ("balance_to_claim", ObjectId(kwargs["balance_to_claim"], "balance")),
                 ("balance_owner_key", PublicKey(kwargs["balance_owner_key"])),
                 ("total_claimed", Asset(kwargs["total_claimed"])),
             ]

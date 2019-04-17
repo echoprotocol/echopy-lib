@@ -51,10 +51,3 @@ ops = [
 
 ]
 operations = {o: ops.index(o) for o in ops}
-
-
-def getOperationNameForId(i):
-    for key in operations:
-        if int(operations[key]) is int(i):
-            return key
-    raise ValueError("Unknown Operation ID %d" % i)

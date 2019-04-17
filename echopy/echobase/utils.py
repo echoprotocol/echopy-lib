@@ -35,8 +35,7 @@ def unicodify(data):
 
 
 def format_time(t):
-    """ Properly Format Time for permlinks
-    """
+    """Properly Format Time for permlinks."""
     if isinstance(t, (float, int)):
         return datetime.utcfromtimestamp(t).strftime(timeFormat)
     elif isinstance(t, datetime):
@@ -46,15 +45,12 @@ def format_time(t):
 
 
 def format_time_from_now(secs=0):
-    """ Properly Format Time that is `x` seconds in the future
-    """
+    """Properly Format Time that is `x` seconds in the future."""
     return datetime.utcfromtimestamp(time.time() + int(secs)).strftime(timeFormat)
 
 
 def parse_time(block_time):
-    """Take a string representation of time from the blockchain, and parse it
-       into datetime object.
-    """
+    """Take a string representation of time from the blockchain, and parse it into datetime object."""
     return datetime.strptime(block_time, timeFormat).replace(tzinfo=timezone.utc)
 
 

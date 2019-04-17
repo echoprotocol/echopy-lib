@@ -2,6 +2,7 @@ from .echoapi import Api
 from .transaction import Transaction
 from .echobase.config import Config
 
+
 class Echo:
 
     def __init__(self):
