@@ -130,12 +130,15 @@ class String:
 
 
 class Bytes:
-    def __init__(self, d):
-        self.data = d
+    def __init__(self, d, length=None):
+        self.data = str(d)
+        if length is not None:
+            assert len(d) == length * 2
+        self.length = length
 
     def __bytes__(self):
         d = unhexlify(bytes(self.data, "utf-8"))
-        return varint(len(d)) + d
+        return varint(self.length) + d if self.length is None else d
 
     def __str__(self):
         return str(self.data)

@@ -6,7 +6,7 @@ import re
 import os
 
 from binascii import hexlify, unhexlify
-from .base58 import ripemd160, Base58, doublesha256, base58encode
+from .base58 import ripemd160, Base58, doublesha256
 from .dictionary import words as BrainKeyDictionary
 from .utils import _bytes
 from .prefix import Prefix
@@ -90,20 +90,23 @@ class BrainKey(Prefix):
         a = _bytes(self.brainkey)
         return PrivateKey(hashlib.sha256(a).hexdigest(), prefix=self.prefix)
 
-    def get_public(self):
-        return self.get_private().pubkey
+    def get_private_key_base58(self):
+        return str(self.get_private())
 
-    def get_echorand(self):
-        return self.get_private().echorand_key
+    def get_private_key_hex(self):
+        return repr(self.get_private())
 
-    def get_private_key(self):
-        return self.get_private()
+    def get_public_key_base58(self):
+        return str(self.get_private().pubkey)
 
-    def get_public_key(self):
-        return self.get_public()
+    def get_public_key_hex(self):
+        return repr(self.get_private().pubkey)
 
-    def get_echorand_key(self):
-        return self.get_echorand()
+    def get_echorand_key_base58(self):
+        return str(self.get_private().echorand_key)
+
+    def get_echorand_key_hex(self):
+        return repr(self.get_private().echorand_key)
 
     @staticmethod
     def suggest():
@@ -356,9 +359,7 @@ class PrivateKey(Prefix):
 
     @property
     def echorand_key(self):
-        crypto = IrohaCrypto()
-        public_hex = crypto.derive_public_key(repr(self._wif)).decode()
-        return 'DET' + base58encode(public_hex)
+        return EchorandKey(wif=self._wif)
 
     def __format__(self, _format):
         return format(self._wif, _format)
@@ -375,3 +376,27 @@ class PrivateKey(Prefix):
     def __bytes__(self):
         """ Returns the raw private key """
         return bytes(self._wif)
+
+
+class EchorandKey(Prefix):
+
+    def __init__(self, wif, prefix='DET'):
+        self.set_prefix(prefix)
+        self.crypto = IrohaCrypto()
+        self._echorand_key = Base58(self.crypto.derive_public_key(repr(wif)).decode())
+
+    def __repr__(self):
+        """ Gives the hex representation of the ECHO echorand key.
+        """
+        return repr(self._echorand_key)
+
+    def __str__(self):
+        """ Returns the readable ECHO echorand key.
+        """
+        return format(self._echorand_key, self.prefix)
+
+    def __format__(self, _format):
+        return format(self._echorand_key, _format)
+
+    def __bytes__(self):
+        return bytes(self._echorand_key)

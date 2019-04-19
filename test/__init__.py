@@ -1,5 +1,5 @@
 import unittest
-from .fixtures import connect_echo, broadcast_operation, disconnect_echo, get_random_asset_symbol, _from, _to
+from .fixtures import connect_echo, broadcast_operation, disconnect_echo, get_random_asset_symbol, _from, _to, get_keys, random_string
 from echopy.echoapi.ws.exceptions import RPCError
 from copy import deepcopy
 
@@ -27,6 +27,30 @@ def subtest_call_contract(echo, create_contract_result_id):
     )
 
     return call_contract_broadcast_result
+
+
+def subtest_asset_issue(echo, create_asset_result):
+    if not create_asset_result:
+        raise Exception('Asset not created')
+
+    asset_id = create_asset_result['trx']['operation_results'][0][1]
+
+    asset_issue_props = {
+        "issuer": _from,
+        "asset_to_issue": {
+            "amount": 100,
+            "asset_id": asset_id
+        },
+        "issue_to_account": _to
+    }
+
+    asset_issue_broadcast_result = broadcast_operation(
+        echo=echo,
+        operation_ids=echo.config.operation_ids.ASSET_ISSUE,
+        props=asset_issue_props
+    )
+    return asset_issue_broadcast_result
+
 
 
 class OperationsTest(unittest.TestCase):
@@ -140,8 +164,8 @@ class OperationsTest(unittest.TestCase):
 
         transfer_broadcast_result = broadcast_operation(
             echo=self.echo,
-            operation_ids=self.echo.config.operation_ids.TRANSFER,
-            props=transfer_props
+            operation_ids=ids,
+            props=props
         )
 
         self.assertNotIn('error', transfer_broadcast_result)
@@ -181,8 +205,9 @@ class OperationsTest(unittest.TestCase):
             operation_ids=self.echo.config.operation_ids.ASSET_CREATE,
             props=asset_create_props
         )
-
-        self.assertNotIn('error', asset_create_broadcast_result)
+        with self.subTest(asset_create_broadcast_result=asset_create_broadcast_result):
+            asset_issue_broadcast_result = subtest_asset_issue(self.echo, asset_create_broadcast_result)
+            self.assertNotIn('error', asset_issue_broadcast_result)
 
     def test_create_contract(self):
         create_contract_props = {
@@ -217,6 +242,81 @@ class OperationsTest(unittest.TestCase):
         except KeyError:
             raise Exception('Contract not created')
 
+    def test_account_create(self):
+        private_base58, public_base58, echorand_base58, private_hex, public_hex, echorand_hex = get_keys()
+        account_create_props = {
+            "ed_key": echorand_hex,
+            "registrar": _from,
+            "referrer": _from,
+            "referrer_percent": 5,
+            "name": random_string(),
+            "owner": {
+                "weight_threshold": 1,
+                "account_auths": [],
+                "key_auths": [[public_base58, 1]],
+                "address_auths": [],
+            },
+            "active": {
+                "weight_threshold": 1,
+                "account_auths": [],
+                "key_auths": [[public_base58, 1]],
+                "address_auths": [],
+            },
+            "options": {
+                "memo_key": public_base58,
+                "voting_account": "1.2.1",
+                "delegating_account": "1.2.1",
+                "num_witness": 0,
+                "num_committee": 0,
+                "votes": [],
+                "extensions": [],
+            },
+        }
+        try:
+            account_create_broadcast_result = broadcast_operation(
+                echo=self.echo,
+                operation_ids=self.echo.config.operation_ids.ACCOUNT_CREATE,
+                props=account_create_props
+            )
+            self.assertNotIn('error', account_create_broadcast_result)
+        except RPCError as e:
+            self.assertIn('Only Lifetime members may register an account.', str(e))
+
+    def test_account_upgrade(self):
+        account_upgrade_props = {
+            "account_to_upgrade": _from,
+            "upgrade_to_lifetime_member": True
+        }
+
+        try:
+            account_upgrade_broadcast_result = broadcast_operation(
+                echo=self.echo,
+                operation_ids=self.echo.config.operation_ids.ACCOUNT_UPGRADE,
+                props=account_upgrade_props
+            )
+            self.assertNotIn('error', account_upgrade_broadcast_result)
+        except RPCError as e:
+            self.assertIn('Insufficient Balance', str(e))
+
+    def test_account_update(self):
+        private_base58, public_base58, echorand_base58, private_hex, public_hex, echorand_hex = get_keys()
+        account_update_props = {
+            "account": _from,
+            "ed_key": echorand_hex,
+            "active": {
+                "weight_threshold": 1,
+                "account_auths": [],
+                "key_auths": [[public_base58, 1]],
+                "address_auths": []
+            }
+        }
+        account_update_broadcast_result = broadcast_operation(
+            echo=self.echo,
+            operation_ids=self.echo.config.operation_ids.ACCOUNT_UPDATE,
+            props=account_update_props
+        )
+        self.assertNotIn('error', account_update_broadcast_result)
+
 
 class ApiTest(unittest.TestCase):
     def setUp(self):
@@ -229,7 +329,7 @@ class ApiTest(unittest.TestCase):
     def test_get_asset_holders(self):
         api = self.echo.api.asset
 
-        get_asset_holders_result = api.get_asset_holders('1.3.0', 1 , 1)
+        get_asset_holders_result = api.get_asset_holders('1.3.0', 1, 1)
 
         self.assertIsInstance(get_asset_holders_result, list)
         self.assertTrue(len(get_asset_holders_result))

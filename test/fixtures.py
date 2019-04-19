@@ -1,6 +1,7 @@
 from echopy import Echo
 import string
 import random
+from echopy.echobase.account import BrainKey
 
 
 _echo_ws_url = 'wss://testnet.echo-dev.io/ws'
@@ -35,3 +36,22 @@ def broadcast_operation(echo, operation_ids, props):
         tx = tx.add_operation(name=operation_ids, props=props)
     tx.sign(_wif)
     return tx.broadcast()
+
+
+def get_keys():
+    key = BrainKey()
+
+    private_base58 = key.get_private_key_base58()
+    public_base58 = key.get_public_key_base58()
+    echorand_base58 = key.get_echorand_key_base58()
+    private_hex = key.get_private_key_hex()
+    public_hex = key.get_public_key_hex()
+    echorand_hex = key.get_echorand_key_hex()
+
+    return private_base58, public_base58, echorand_base58, private_hex, public_hex, echorand_hex
+
+
+def random_string():
+    result = ""
+    result += "".join(random.choice(string.ascii_lowercase) for i in range(random.randint(5, 10)))
+    return result

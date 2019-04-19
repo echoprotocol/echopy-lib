@@ -182,7 +182,7 @@ class AccountCreate(EchoObject):
                 ("name", String(kwargs["name"])),
                 ("owner", Permission(kwargs["owner"])),
                 ("active", Permission(kwargs["active"])),
-                ("ed_key", Bytes(kwargs["ed_key"])),
+                ("ed_key", Bytes(kwargs["ed_key"], 32)),
                 ("options", AccountOptions(kwargs["options"])),
                 ("extensions", Set([])),
             ]
@@ -196,7 +196,7 @@ class AccountUpdate(EchoObject):
     def detail(self, *args, **kwargs):
         owner = get_optional("owner", kwargs, Permission)
         active = get_optional("active", kwargs, Permission)
-        ed_key = get_optional("ed_key", kwargs, Bytes)
+        ed_key = get_optional("ed_key", kwargs, partial(Bytes, length=32))
         new_options = get_optional("new_options", kwargs, AccountOptions)
 
         result = OrderedDict(
@@ -726,7 +726,7 @@ class TransferToBlind(EchoObject):
             [
                 ("amount", Asset(kwargs["amount"])),
                 ("from", ObjectId(kwargs["from"], "account")),
-                ("blinding_factor", Bytes(kwargs["blinding_factor"])),
+                ("blinding_factor", Bytes(kwargs["blinding_factor"], 32)),
                 ("outputs", Array(kwargs["blindOutput"])),
             ]
         )
@@ -754,7 +754,7 @@ class TransferFromBlind(EchoObject):
             [
                 ("amount", Asset(kwargs["amount"])),
                 ("to", ObjectId(kwargs["to"], "account")),
-                ("blinding_factor", Bytes(kwargs["blinding_factor"])),
+                ("blinding_factor", Bytes(kwargs["blinding_factor"], 32)),
                 ("inputs", Array(kwargs["blindInput"])),
             ]
         )

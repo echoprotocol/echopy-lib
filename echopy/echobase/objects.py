@@ -27,7 +27,7 @@ from .types import (
 )
 from .types import ObjectId as ObjectIdParent
 from .objecttypes import object_type
-from .account import PublicKey
+from .account import PublicKey, Address
 
 
 default_prefix = "ECHO"
@@ -52,7 +52,8 @@ class EchoObject(OrderedDict):
         if len(self) is 0:
             return bytes()
         b = b""
-        for name, value in self.items():
+        for name in self.keys():
+            value = self[name]
             if isinstance(value, str):
                 b += bytes(value, "utf-8")
             else:
@@ -195,13 +196,19 @@ class Permission(EchoObject):
                     for e in kwargs["key_auths"]
                 ]
             )
+            address_auths = Map(
+                [
+                    [Address(e[0], prefix=prefix), Uint16(e[1])]
+                    for e in kwargs["address_auths"]
+                ]
+            )
             super().__init__(
                 OrderedDict(
                     [
                         ("weight_threshold", Uint32(int(kwargs["weight_threshold"]))),
                         ("account_auths", account_auths),
                         ("key_auths", key_auths),
-                        ("extensions", Set([])),
+                        ("address_auths", address_auths),
                     ]
                 )
             )
@@ -231,7 +238,7 @@ class AccountOptions(EchoObject):
                         ("delegating_account", ObjectId(kwargs["delegating_account"], "account")),
                         ("num_witness", Uint16(kwargs["num_witness"])),
                         ("num_committee", Uint16(kwargs["num_committee"])),
-                        ("votes", Array([VoteId(o) for o in kwargs["votes"]])),
+                        ("votes", Set([VoteId(o) for o in kwargs["votes"]])),
                         ("extensions", Set([])),
                     ]
                 )
