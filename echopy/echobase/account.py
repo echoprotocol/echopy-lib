@@ -3,11 +3,11 @@ from __future__ import absolute_import
 
 import hashlib
 import re
-import os
+import random
 
 from binascii import hexlify, unhexlify
 from .base58 import ripemd160, Base58, doublesha256
-from .dictionary import words as BrainKeyDictionary
+from .bip39_dictionary import words as brain_key_dictionary
 from .utils import _bytes
 from .prefix import Prefix
 
@@ -44,84 +44,94 @@ class PasswordKey(Prefix):
 
 class BrainKey(Prefix):
     """ Given the brain key, a private key is derived as::
-            privkey = SHA256(SHA512(brainkey + " " + sequence))
+            privkey = SHA256(SHA512(brain_key + " " + sequence))
 
         Incrementing the sequence number yields a new key that can be
         regenerated given the brain key.
 
     """
 
-    def __init__(self, brainkey=None, sequence=0, prefix='ECHO'):
+    def __init__(self, brain_key=None, prefix='ECHO'):
         self.set_prefix(prefix)
-        if not brainkey:
-            self.brainkey = BrainKey.suggest()
+        if not brain_key:
+            self._brain_key = BrainKey._suggest()
         else:
-            self.brainkey = self.normalize(brainkey).strip()
-        self.sequence = sequence
+            self._brain_key = self._normalize(brain_key).strip()
+
 
     def __next__(self):
         """ Get the next private key for iterators
         """
-        return self.next_sequence()
+        return self.next_brain_key()
 
-    def next_sequence(self):
-        """ Increment the sequence number by 1 """
-        self.sequence += 1
+    @property
+    def brain_key(self):
+        return self._normalize(self._brain_key)
+
+    @brain_key.setter
+    def brain_key(self, brain_key):
+        assert isinstance(brain_key, (str, list))
+        if isinstance(brain_key, list):
+            assert len(brain_key) == 16
+            for word in brain_key:
+                assert isinstance(word, str)
+            brain_key = ' '.join(brain_key).upper()
+        else:
+            separator = ' ' if brain_key.find(',') < 0 else ','
+            words = brain_key.split(separator)
+            assert len(words) == 16
+            brain_key = ' '.join(words).upper()
+        self._brain_key = brain_key
+
+    def next_brain_key(self):
+        self._brain_key = self._suggest()
         return self
 
-    def normalize(self, brainkey):
-        return " ".join(re.compile("[\t\n\v\f\r ]+").split(brainkey))
+    def _normalize(self, brain_key):
+        return " ".join(re.compile("[\t\n\v\f\r ]+").split(brain_key))
 
-    def get_brainkey(self):
-        return self.normalize(self.brainkey)
-
-    def get_private(self):
+    def _get_private(self):
         """ Derive private key from the brain key and the current sequence
             number
         """
-        encoded = "%s %d" % (self.brainkey, self.sequence)
+        encoded = "%s" % (self._brain_key)
         a = _bytes(encoded)
         s = hashlib.sha256(hashlib.sha512(a).digest()).digest()
         return PrivateKey(hexlify(s).decode("ascii"), prefix=self.prefix)
 
-    def get_blind_private(self):
-        """ Derive private key from the brain key (and no sequence number)
-        """
-        a = _bytes(self.brainkey)
-        return PrivateKey(hashlib.sha256(a).hexdigest(), prefix=self.prefix)
+
 
     def get_private_key_base58(self):
-        return str(self.get_private())
+        return str(self._get_private())
 
     def get_private_key_hex(self):
-        return repr(self.get_private())
+        return repr(self._get_private())
 
     def get_public_key_base58(self):
-        return str(self.get_private().pubkey)
+        return str(self._get_private().pubkey)
 
     def get_public_key_hex(self):
-        return repr(self.get_private().pubkey)
+        return repr(self._get_private().pubkey)
 
     def get_echorand_key_base58(self):
-        return str(self.get_private().echorand_key)
+        return str(self._get_private().echorand_key)
 
     def get_echorand_key_hex(self):
-        return repr(self.get_private().echorand_key)
+        return repr(self._get_private().echorand_key)
 
     @staticmethod
-    def suggest():
+    def _suggest():
         """ Suggest a new random brain key
         """
         word_count = 16
-        brainkey = [None] * word_count
-        dict_lines = BrainKeyDictionary.split(",")
-        assert len(dict_lines) == 49744
-        for j in range(0, word_count):
-            num = int.from_bytes(os.urandom(2), byteorder="little")
-            rndMult = num / 2 ** 16
-            wIdx = round(len(dict_lines) * rndMult)
-            brainkey[j] = dict_lines[wIdx]
-        return " ".join(brainkey).upper()
+        brain_key = []
+        dict_lines = brain_key_dictionary.split(",")
+        assert len(dict_lines) == 2**11
+        for _ in range(0, word_count):
+            num = int(random.getrandbits(11))
+            brain_key.append(dict_lines[num].upper())
+        return " ".join(brain_key)
+
 
 
 class Address(Prefix):
