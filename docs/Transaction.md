@@ -1,6 +1,6 @@
 ### Transactions
 
-Using transaction builder you can build and broadcast transaction
+Using transaction builder you can build and broadcast transaction.
 
 #### Transfer
 
@@ -21,12 +21,6 @@ transfer_options = {
     'amount': {
         'asset_id': '1.3.0',
         'amount': 1
-    },
-    'memo': { # optional
-        'from': 'ECHO6tMhKMDpynSsLyFL3gk2gZi4xMayficom97fZQKh64FHtCpV7D', # memo key
-        'to': 'ECHO8gP5V1F9cudUHxxoDb66BwiEPUB4ZQmwgtLXDrXaQAuJWb921w', # memo key
-        'nonce': 424252442,
-        'message': '746573745F6D657373616765', # hex string
     },
     'extensions': [],
 }
@@ -94,7 +88,7 @@ call_contract_props = {
         'amount': 1,
     },
     'code': method + method_parameters
-    'callee': '1.16.20',
+    'callee': '1.14.20',
 }
 
 tx = echo.create_transaction()
@@ -126,7 +120,7 @@ create_asset_props = {
         'max_supply': 1000000000000000,
         'market_fee_percent': 0,
         'max_market_fee': 1000000000000000,
-        'issuer_permissions': 79,
+        'issuer_permissions': 78,
         'flags': 0,
         'core_exchange_rate': {
             'base': {
@@ -134,7 +128,7 @@ create_asset_props = {
                 'asset_id': '1.3.0',
             },
             'quote': {
-                'amount': 1,
+                'amount': 2,
                 'asset_id': '1.3.1',
             }
         },

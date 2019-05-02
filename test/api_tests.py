@@ -1,5 +1,5 @@
 import unittest
-from .fixtures import connect_echo, disconnect_echo
+from .fixtures import connect_echo, disconnect_echo, get_keys
 from echopy.echoapi.ws.exceptions import RPCError
 
 
@@ -22,7 +22,7 @@ class ApiTest(unittest.TestCase):
         self.assertTrue(len(get_asset_holders_result[0].keys()))
         self.assertIsInstance(get_asset_holders_result[0]['name'], str)
         self.assertIsInstance(get_asset_holders_result[0]['account_id'], str)
-        self.assertIsInstance(get_asset_holders_result[0]['amount'], str)
+        self.assertIsInstance(get_asset_holders_result[0]['amount'], int)
 
     def test_get_asset_holders_count(self):
         api = self.echo.api.asset
@@ -62,7 +62,6 @@ class ApiTest(unittest.TestCase):
 
         self.assertIsInstance(get_global_properties_result, dict)
         self.assertIsInstance(get_global_properties_result['active_committee_members'], list)
-        self.assertIsInstance(get_global_properties_result['active_witnesses'], list)
         self.assertIsInstance(get_global_properties_result['id'], str)
         self.assertIsInstance(get_global_properties_result['next_available_vote_id'], int)
         self.assertIsInstance(get_global_properties_result['parameters'], dict)
@@ -103,7 +102,7 @@ class ApiTest(unittest.TestCase):
 
     def test_get_transaction(self):
         api = self.echo.api.database
-        block_number = 55320
+        block_number = 3028
         transaction_index = 0
 
         get_transaction_result = api.get_transaction(block_number, transaction_index)
@@ -177,10 +176,9 @@ class ApiTest(unittest.TestCase):
 
     def test_get_objects(self):
         api = self.echo.api.database
-        account_id1 = '1.2.5'
+        account_id = '1.2.5'
         asset_id = '1.3.0'
-        witness_id = '1.6.0'
-        objects = [account_id1, asset_id, witness_id]
+        objects = [account_id, asset_id]
 
         get_objects_result = api.get_objects(objects)
 
@@ -246,9 +244,9 @@ class ApiTest(unittest.TestCase):
     def test_get_block_header(self):
         api = self.echo.api.database
 
-        # block_number = 20
+        block_number = 20
 
-        get_block_header_result = api.get_block_header(20)
+        get_block_header_result = api.get_block_header(block_number)
 
         self.assertIsInstance(get_block_header_result, dict)
         self.assertTrue(len(get_block_header_result.keys()))
@@ -256,7 +254,7 @@ class ApiTest(unittest.TestCase):
     def test_get_contract(self):
         api = self.echo.api.database
 
-        contract_id = '1.16.0'
+        contract_id = '1.14.0'
 
         get_contract_result = api.get_contract(contract_id)
 
@@ -279,7 +277,7 @@ class ApiTest(unittest.TestCase):
     def test_get_contracts(self):
         api = self.echo.api.database
 
-        contract_id = '1.16.0'
+        contract_id = '1.14.0'
         contracts = [contract_id]
 
         get_contracts_result = api.get_contracts(contracts)
@@ -328,16 +326,14 @@ class ApiTest(unittest.TestCase):
     def test_register_account(self):
         api = self.echo.api.registration
 
-        account_name = 'test101'
-        owner_key = 'ECHO59St8wBpta2ZREBnA3dQQTVFBrEcx5UK12Tm5geG7kv7Hwyzyc'
-        active_key = 'ECHO59St8wBpta2ZREBnA3dQQTVFBrEcx5UK12Tm5geG7kv7Hwyzyc'
+        private_base58, public_base58, private_hex, public_hex = get_keys()
+
+        account_name = 'testversion1'
         memo = 'ECHO59St8wBpta2ZREBnA3dQQTVFBrEcx5UK12Tm5geG7kv7Hwyzyc'
-        echo_rand_key = 'DET3vw54ewEd7G8aKGHSzC5QbKpGhWEaRH1EvscHMbwZNVW'
 
         with self.assertRaises(RPCError) as cm:
-            api.register_account(account_name, owner_key, active_key, memo, echo_rand_key)
+            api.register_account('1', account_name, public_base58, public_base58, memo, public_base58)
 
-        # exception = cm.exception
         self.assertIn('Assert Exception', str(cm.exception))
         self.assertIn('Account with this name already exists', str(cm.exception))
 
@@ -394,14 +390,13 @@ class ApiTest(unittest.TestCase):
     def test_get_contract_history(self):
         api = self.echo.api.history
 
-        contract_id = '1.16.0'
+        contract_id = '1.14.7'
         limit = 3
 
         get_contract_history_result = api.get_contract_history(contract_id, limit=limit)
-
         self.assertIsInstance(get_contract_history_result, list)
         if len(get_contract_history_result):
             self.assertLessEqual(len(get_contract_history_result), limit)
-            for i in range(limit):
+            for i in range(min(limit, len(get_contract_history_result))):
                 self.assertIsInstance(get_contract_history_result[i], dict)
                 self.assertTrue(len(get_contract_history_result[i].keys()))

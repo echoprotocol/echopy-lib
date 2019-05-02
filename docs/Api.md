@@ -51,9 +51,9 @@ from echopy import Echo
 
 url = 'ws://127.0.0.1:9000'
 account = '1.2.16'
-account_stop = '1.11.0'
+account_stop = '1.10.0'
 account_limit = 100
-account_start = '1.11.0'
+account_start = '1.10.0'
 try:
     echo = Echo()
     echo.connect(url)
@@ -69,18 +69,18 @@ except Exception as e:
     raise	
 ```
 
-#### Network_broadcast Api
+#### Network Api
 
 ``` python
 from echopy import Echo
 
 url = 'ws://127.0.0.1:9000'
-signed_transaction = '2.7.1'
 try:
     echo = Echo()
     echo.connect(url)
-
-    echo.api.network_broadcast.broadcast_transaction(signed_transaction=signed_transaction)
+    
+    signed_transaction = '<your signed transaction>'
+    echo.api.network.broadcast_transaction(signed_transaction=signed_transaction)
 
     echo.disconnect()
 except Exception as e:
@@ -94,20 +94,20 @@ from echopy import Echo
 
 url = 'ws://127.0.0.1:9000'
 name = 'test123'
-owner_key = 'ECHO6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV'
-active_key = 'ECHO6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV'
+
 memo_key = 'ECHO6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV'
-echorand_key = 'DETDvHDsAfk2M8LhYcxLZTbrNJRWT3UH5zxdaWimWc6uZkH'
 
 try:
     echo = Echo()
     echo.connect(url)
-
-    echo.api.registration.register_account(name=name,
-                                           owner_key=owner_key,
-                                           active_key=active_key,
+    brain_key = echo.brain_key()
+    public_key = get_public_key_base58()
+    echo.api.registration.register_account(callback='1',
+                                           name=name,
+                                           owner_key=public_key,
+                                           active_key=public_key,
                                            memo_key=memo_key,
-                                           echorand_key=echorand_key)
+                                           echorand_key=public_key)
 
     echo.disconnect()
 except Exception as e:

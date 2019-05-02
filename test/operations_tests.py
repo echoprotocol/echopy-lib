@@ -223,7 +223,10 @@ class OperationsTest(unittest.TestCase):
             )
             self.assertNotIn('error', account_create_broadcast_result)
         except RPCError as e:
-            self.assertIn('Only Lifetime members may register an account.', str(e))
+            try:
+                self.assertIn('Only Lifetime members may register an account.', str(e))
+            except AssertionError:
+                self.assertIn('Insufficient Balance', str(e))
 
     def test_account_upgrade(self):
         account_upgrade_props = {
@@ -239,7 +242,10 @@ class OperationsTest(unittest.TestCase):
             )
             self.assertNotIn('error', account_upgrade_broadcast_result)
         except RPCError as e:
-            self.assertIn('Insufficient Balance', str(e))
+            try:
+                self.assertIn('Insufficient Balance', str(e))
+            except AssertionError:
+                self.assertIn('Unable to upgrade account', str(e))
 
     def test_account_update(self):
         private_base58, public_base58, private_hex, public_hex = get_keys()

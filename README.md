@@ -39,7 +39,7 @@ To see `Api's` usage examples and information: look <b>[section](docs/Api.md)</b
 
 To see `Transactions` usage examples and information: look <b>[section](docs/Transaction.md)</b>.
 
-To see example of `generation keys` (private, public, echorand): look <b>[section](docs/Brain_key.md)</b>.
+To see example of `keys generation`: look <b>[section](docs/Brain_key.md)</b>.
 
 To run `unit tests`:
 
