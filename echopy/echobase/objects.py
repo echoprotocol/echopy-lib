@@ -27,10 +27,10 @@ from .types import (
 )
 from .types import ObjectId as ObjectIdParent
 from .objecttypes import object_type
-from .account import PublicKey, Address
+from .account import PublicKey, EcdsaKey
 
 
-default_prefix = "ECHO"
+default_prefix = "DET"
 
 
 class EchoObject(OrderedDict):
@@ -115,13 +115,12 @@ class Memo(EchoObject):
         else:
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
-            prefix = default_prefix
             if "message" in kwargs and kwargs["message"]:
                 super().__init__(
                     OrderedDict(
                         [
-                            ("from", PublicKey(kwargs["from"], prefix=prefix)),
-                            ("to", PublicKey(kwargs["to"], prefix=prefix)),
+                            ("from", PublicKey(kwargs["from"], prefix='ECHO')),
+                            ("to", PublicKey(kwargs["to"], prefix='ECHO')),
                             ("nonce", Uint64(int(kwargs["nonce"]))),
                             ("message", Bytes(kwargs["message"])),
                         ]
@@ -175,15 +174,10 @@ class Permission(EchoObject):
         if isArgsThisClass(self, args):
             self.data = args[0].data
         else:
-            prefix = default_prefix
 
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
-            kwargs["key_auths"] = sorted(
-                kwargs["key_auths"],
-                key=lambda x: PublicKey(x[0], prefix=prefix),
-                reverse=False,
-            )
+
             account_auths = Map(
                 [
                     [ObjectId(e[0], "account"), Uint16(e[1])]
@@ -192,23 +186,16 @@ class Permission(EchoObject):
             )
             key_auths = Map(
                 [
-                    [PublicKey(e[0], prefix=prefix), Uint16(e[1])]
+                    [PublicKey(e[0]), Uint16(e[1])]
                     for e in kwargs["key_auths"]
-                ]
-            )
-            address_auths = Map(
-                [
-                    [Address(e[0], prefix=prefix), Uint16(e[1])]
-                    for e in kwargs["address_auths"]
                 ]
             )
             super().__init__(
                 OrderedDict(
                     [
-                        ("weight_threshold", Uint32(int(kwargs["weight_threshold"]))),
+                        ("weight_threshold", Uint32(kwargs["weight_threshold"])),
                         ("account_auths", account_auths),
                         ("key_auths", key_auths),
-                        ("address_auths", address_auths),
                     ]
                 )
             )
@@ -216,8 +203,6 @@ class Permission(EchoObject):
 
 class AccountOptions(EchoObject):
     def __init__(self, *args, **kwargs):
-        prefix = default_prefix
-
         if isArgsThisClass(self, args):
             self.data = args[0].data
         else:
@@ -230,13 +215,9 @@ class AccountOptions(EchoObject):
             super().__init__(
                 OrderedDict(
                     [
-                        ("memo_key", PublicKey(kwargs["memo_key"], prefix=prefix)),
-                        (
-                            "voting_account",
-                            ObjectId(kwargs["voting_account"], "account"),
-                        ),
+                        ("memo_key", EcdsaKey(kwargs["memo_key"], prefix='ECHO')),
+                        ("voting_account", ObjectId(kwargs["voting_account"], "account")),
                         ("delegating_account", ObjectId(kwargs["delegating_account"], "account")),
-                        ("num_witness", Uint16(kwargs["num_witness"])),
                         ("num_committee", Uint16(kwargs["num_committee"])),
                         ("votes", Set([VoteId(o) for o in kwargs["votes"]])),
                         ("extensions", Set([])),
@@ -542,7 +523,6 @@ class ChainParameters(EchoObject):
                         ("maximum_proposal_lifetime", Uint32(kwargs["maximum_proposal_lifetime"])),
                         ("maximum_asset_whitelist_authorities", Uint8(kwargs["maximum_asset_whitelist_authorities"])),
                         ("maximum_asset_feed_publishers", Uint8(kwargs["maximum_asset_feed_publishers"])),
-                        ("maximum_witness_count", Uint16(kwargs["maximum_witness_count"])),
                         ("maximum_committee_count", Uint16(kwargs["maximum_committee_count"])),
                         ("maximum_authority_membership", Uint16(kwargs["maximum_authority_membership"])),
                         ("reserve_percent_of_fee", Uint16(kwargs["reserve_percent_of_fee"])),
@@ -552,8 +532,6 @@ class ChainParameters(EchoObject):
                         ("cashback_vesting_threshold", Int64(kwargs["cashback_vesting_threshold"])),
                         ("count_non_member_votes", Bool(kwargs["count_non_member_votes"])),
                         ("allow_non_member_whitelists", Bool(kwargs["allow_non_member_whitelists"])),
-                        ("witness_pay_per_block", Int64(kwargs["witness_pay_per_block"])),
-                        ("worker_budget_per_day", Int64(kwargs["worker_budget_per_day"])),
                         ("max_predicate_opcode", Uint16(kwargs["max_predicate_opcode"])),
                         ("fee_liquidation_threshold", Int64(kwargs["fee_liquidation_threshold"])),
                         ("accounts_per_fee_scale", Uint16(kwargs["accounts_per_fee_scale"])),

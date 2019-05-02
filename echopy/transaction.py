@@ -1,10 +1,9 @@
 from .echoapi import Api
 
 from .echobase.operations import get_operation_by_id, get_operation_by_name
-from .echobase.account import PrivateKey, PublicKey
+from .echobase.account import PrivateKey
 from .echobase.objects import EchoObject, StaticVariant, Asset, ObjectId
 from .echobase.types import Uint16, Uint32, PointInTime, Array, Optional, Set, Bytes, String
-from .echobase.ecdsa import sign_message
 
 from collections import OrderedDict
 from copy import deepcopy, copy
@@ -15,6 +14,9 @@ from codecs import decode
 from datetime import timezone, datetime
 from calendar import timegm
 import time
+
+from .echobase.crypto import Crypto
+
 
 echo_asset_id = '1.3.0'
 
@@ -57,6 +59,7 @@ class Transaction:
         self._signatures = []
         self._finalized = False
         self._expiration = None
+        self._crypto = Crypto
 
     @property
     def ref_block_num(self):
@@ -144,7 +147,7 @@ class Transaction:
         self._operations.append(operation)
         return self
 
-    def _get_required_fees(self, operations, asset_id='1.3.0'):
+    def _get_required_fees(self, operations, asset_id=echo_asset_id):
         return self.api.database.get_required_fees(operations, asset_id)
 
     def _get_fee_pool(self, asset_id):
@@ -217,13 +220,11 @@ class Transaction:
     def add_signer(self, private):
         self.check_not_finalized()
         private_key = PrivateKey(private)
-        public_key = private_key.pubkey
-        private_key_hex = bytes(private_key)
-        for signer in self._signers:
-            if bytes(signer['private_key']) == private_key_hex:
-                return self
+        private_key_hex = repr(private_key)
+        if private_key_hex in self._signers:
+            return self
 
-        self._signers.append({'private_key': private_key, 'public_key': public_key})
+        self._signers.append(private_key_hex)
         return self
 
     def _get_dynamic_global_chain_data(self, dynamic_global_object_id):
@@ -274,8 +275,9 @@ class Transaction:
             now_iso = seconds_to_iso(datetime.now(timezone.utc).timestamp())
             now_seconds = iso_to_seconds(now_iso)
             expired = now_seconds - head_block_time_seconds > 30
-            self.expiration = seconds_to_iso(head_block_time_seconds + 3) if expired \
-                else (seconds_to_iso(now_seconds + 3) if now_seconds > head_block_time_seconds else seconds_to_iso(head_block_time_seconds + 3))
+            self.expiration = seconds_to_iso(head_block_time_seconds + 3) if expired\
+                else (seconds_to_iso(now_seconds + 3) if now_seconds > head_block_time_seconds
+                      else seconds_to_iso(head_block_time_seconds + 3))
 
         _transaction = TransactionType(
             ref_block_num=self.ref_block_num,
@@ -286,7 +288,8 @@ class Transaction:
         )
         transaction_buffer = bytes(_transaction)
         chain_buffer = bytes.fromhex(chain_id)
-        self._signatures = list(map(lambda signer: sign_message(chain_buffer + transaction_buffer, signer['private_key']).hex(), self._signers))
+        self._signatures = list(map(lambda signer: self._crypto.sign_message(chain_buffer + transaction_buffer,
+                                    signer).hex(), self._signers))
 
     @property
     def transaction_object(self):

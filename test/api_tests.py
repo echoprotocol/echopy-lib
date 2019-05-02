@@ -213,29 +213,6 @@ class ApiTest(unittest.TestCase):
         self.assertIsInstance(get_account_by_name_result, dict)
         self.assertTrue(len(get_account_by_name_result.keys()))
 
-    def test_get_witnesses(self):
-        api = self.echo.api.database
-        witness_id = '1.6.0'
-        witnesses = [witness_id]
-
-        get_witnesses_result = api.get_witnesses(witnesses)
-
-        self.assertIsInstance(get_witnesses_result, list)
-        self.assertEqual(len(get_witnesses_result), len(witnesses))
-        for i in range(len(witnesses)):
-            self.assertIsInstance(get_witnesses_result[i], dict)
-            self.assertTrue(len(get_witnesses_result[i].keys()))
-
-    def test_get_all_contracts(self):
-        api = self.echo.api.database
-
-        get_all_contracts_result = api.get_all_contracts()
-
-        self.assertIsInstance(get_all_contracts_result, list)
-        self.assertTrue(len(get_all_contracts_result))
-        self.assertIsInstance(get_all_contracts_result[0], dict)
-        self.assertTrue(len(get_all_contracts_result[0].keys()))
-
     def test_lookup_accounts(self):
         api = self.echo.api.database
 
@@ -316,8 +293,7 @@ class ApiTest(unittest.TestCase):
         api = self.echo.api.database
 
         committee_vote_id = '0:1'
-        witness_vote_id = '1:0'
-        vote_ids = [committee_vote_id, witness_vote_id]
+        vote_ids = [committee_vote_id]
 
         lookup_vote_ids_result = api.lookup_vote_ids(vote_ids)
 

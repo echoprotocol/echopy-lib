@@ -36,18 +36,12 @@ ops = [
     "assert",
     "balance_claim",
     "override_transfer",
-    "transfer_to_blind",
-    "blind_transfer",
-    "transfer_from_blind",
     "asset_settle_cancel",
     "asset_claim_fees",
-    "fba_distribute",
     "bid_collateral",
     "execute_bid",
     "create_contract",
     "call_contract",
-    "contract_transfer",
-    "change_sidechain_config"
-
+    "contract_transfer"
 ]
 operations = {o: ops.index(o) for o in ops}

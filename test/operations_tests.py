@@ -195,33 +195,24 @@ class OperationsTest(unittest.TestCase):
             raise Exception('Contract not created')
 
     def test_account_create(self):
-        private_base58, public_base58, echorand_base58, private_hex, public_hex, echorand_hex = get_keys()
+        private_base58, public_base58, private_hex, public_hex = get_keys()
         account_create_props = {
-            "ed_key": echorand_hex,
+            "ed_key": public_base58,
             "registrar": _from,
             "referrer": _from,
-            "referrer_percent": 5,
+            "referrer_percent": 1,
             "name": random_string(),
-            "owner": {
-                "weight_threshold": 1,
-                "account_auths": [],
-                "key_auths": [[public_base58, 1]],
-                "address_auths": [],
-            },
             "active": {
                 "weight_threshold": 1,
                 "account_auths": [],
                 "key_auths": [[public_base58, 1]],
-                "address_auths": [],
             },
             "options": {
-                "memo_key": public_base58,
-                "voting_account": "1.2.1",
-                "delegating_account": "1.2.1",
-                "num_witness": 0,
+                "memo_key": 'ECHO59St8wBpta2ZREBnA3dQQTVFBrEcx5UK12Tm5geG7kv7Hwyzyc',
+                "voting_account": '1.2.5',
+                "delegating_account": '1.2.5',
                 "num_committee": 0,
-                "votes": [],
-                "extensions": [],
+                "votes": []
             },
         }
         try:
@@ -251,15 +242,16 @@ class OperationsTest(unittest.TestCase):
             self.assertIn('Insufficient Balance', str(e))
 
     def test_account_update(self):
-        private_base58, public_base58, echorand_base58, private_hex, public_hex, echorand_hex = get_keys()
+        private_base58, public_base58, private_hex, public_hex = get_keys()
         account_update_props = {
             "account": _from,
-            "ed_key": echorand_hex,
-            "active": {
-                "weight_threshold": 1,
-                "account_auths": [],
-                "key_auths": [[public_base58, 1]],
-                "address_auths": []
+            "ed_key": "DET269oGvqUJgyMQcR7sbGjJbyAEBQhiD5SUq3XKnZuLinN",
+            "new_options": {
+                "memo_key": "ECHO1111111111111111111111111111111114T1Anm",
+                "voting_account": "1.2.5",
+                "delegating_account": "1.2.8",
+                "num_committee": 0,
+                "votes": [],
             }
         }
         account_update_broadcast_result = broadcast_operation(

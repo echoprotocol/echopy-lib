@@ -5,6 +5,9 @@ def subtest_call_contract(echo, create_contract_result_id):
     if not create_contract_result_id:
         raise Exception('Contract not created')
 
+    object_id_start_index = create_contract_result_id.rfind('.') + 1
+    create_contract_result_id = create_contract_result_id[:object_id_start_index] +\
+        str(int(create_contract_result_id[object_id_start_index:]) - 1)
     contract_id = int(echo.api.database.get_contract_result(create_contract_result_id)
                       [1]['exec_res']['new_address'][2:], 16)
 
@@ -15,7 +18,7 @@ def subtest_call_contract(echo, create_contract_result_id):
             "asset_id": "1.3.0"
         },
         "code": '86be3f80' + '0000000000000000000000000000000000000000000000000000000000000001',
-        "callee": '1.16.' + str(contract_id)
+        "callee": '1.14.' + str(contract_id)
     }
 
     call_contract_broadcast_result = broadcast_operation(

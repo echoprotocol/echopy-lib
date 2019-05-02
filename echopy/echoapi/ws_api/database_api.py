@@ -117,18 +117,6 @@ class DatabaseApi:
     def get_trade_history(self, base_asset_name, quote_asset_name, start, stop, limit):
         return self.db.rpcexec('get_trade_history', [base_asset_name, quote_asset_name, start, stop, limit])
 
-    def get_witnesses(self, witness_ids):
-        return self.db.rpcexec('get_witnesses', [witness_ids])
-
-    def get_witness_by_account(self, account_id):
-        return self.db.rpcexec('get_witness_by_account', [account_id])
-
-    def lookup_witness_accounts(self, lower_bound_name, limit):
-        return self.db.rpcexec('lookup_witness_accounts', [lower_bound_name, limit])
-
-    def get_witness_count(self):
-        return self.db.rpcexec("get_witness_count", [])
-
     def get_committee_members(self, committee_member_ids):
         return self.db.rpcexec('get_committee_members', [committee_member_ids])
 
@@ -137,9 +125,6 @@ class DatabaseApi:
 
     def lookup_committee_member_accounts(self, lower_bound_name, limit):
         return self.db.rpcexec('lookup_committee_member_accounts', [lower_bound_name, limit])
-
-    def get_workers_by_account(self, account_id):
-        return self.db.rpcexec('get_workers_by_account', [account_id])
 
     def lookup_vote_ids(self, votes):
         return self.db.rpcexec('lookup_vote_ids', [votes])
@@ -171,17 +156,14 @@ class DatabaseApi:
     def get_proposed_transactions(self, account_name_or_id):
         return self.db.rpcexec('get_proposed_transactions', [account_name_or_id])
 
-    def get_all_contracts(self):
-        return self.db.rpcexec('get_all_contracts', [])
-
     def get_contract_logs(self, contract_id, from_block, to_block):
         return self.db.rpcexec('get_contract_logs', [contract_id, from_block, to_block])
 
     def subscribe_contract_logs(self, callback, contract_id, from_block, to_block):
         return self.db.rpcexec('subscribe_contract_logs', [callback, contract_id, from_block, to_block])
 
-    def get_contract_result(self, resultcontract_id):
-        return self.db.rpcexec('get_contract_result', [resultcontract_id])
+    def get_contract_result(self, result_contract_id):
+        return self.db.rpcexec('get_contract_result', [result_contract_id])
 
     def get_contract(self, contract_id):
         return self.db.rpcexec('get_contract', [contract_id])

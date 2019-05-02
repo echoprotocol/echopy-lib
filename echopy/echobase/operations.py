@@ -180,9 +180,8 @@ class AccountCreate(EchoObject):
                 ("referrer", ObjectId(kwargs["referrer"], "account")),
                 ("referrer_percent", Uint16(kwargs["referrer_percent"])),
                 ("name", String(kwargs["name"])),
-                ("owner", Permission(kwargs["owner"])),
                 ("active", Permission(kwargs["active"])),
-                ("ed_key", Bytes(kwargs["ed_key"], 32)),
+                ("ed_key", PublicKey(kwargs["ed_key"])),
                 ("options", AccountOptions(kwargs["options"])),
                 ("extensions", Set([])),
             ]
@@ -194,15 +193,13 @@ class AccountCreate(EchoObject):
 
 class AccountUpdate(EchoObject):
     def detail(self, *args, **kwargs):
-        owner = get_optional("owner", kwargs, Permission)
         active = get_optional("active", kwargs, Permission)
-        ed_key = get_optional("ed_key", kwargs, partial(Bytes, length=32))
+        ed_key = get_optional("ed_key", kwargs, PublicKey)
         new_options = get_optional("new_options", kwargs, AccountOptions)
 
         result = OrderedDict(
             [
                 ("account", ObjectId(kwargs["account"], "account")),
-                ("owner", Optional(owner)),
                 ("active", Optional(active)),
                 ("ed_key", Optional(ed_key)),
                 ("new_options", Optional(new_options)),
@@ -415,39 +412,6 @@ class AssetPublishFeed(EchoObject):
         return result
 
 
-class WitnessCreate(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("witness_account", ObjectId(kwargs["witness_account"], "account")),
-                ("url", String(kwargs["url"])),
-                ("block_signing_key", PublicKey(kwargs["block_signing_key"])),
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
-class WitnessUpdate(EchoObject):
-    def detail(self, *args, **kwargs):
-        new_url = get_optional("new_url", kwargs, String)
-        new_signing_key = get_optional("new_signing_key", kwargs, PublicKey)
-
-        result = OrderedDict(
-            [
-                ("witness", ObjectId(kwargs["witness"], "witness")),
-                ("witness_account", ObjectId(kwargs["witness_account"], "account")),
-                ("new_url", Optional(new_url)),
-                ("new_signing_key", Optional(new_signing_key)),
-
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
 class ProposalCreate(EchoObject):
     def detail(self, *args, **kwargs):
         review_period_seconds = get_optional("review_period_seconds", kwargs, Uint32)
@@ -638,24 +602,6 @@ class VestingBalanceWithdraw(EchoObject):
         return result
 
 
-class WorkerCreate(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("owner", ObjectId(kwargs["owner"], "account")),
-                ("work_begin_date", PointInTime(kwargs["work_begin_date"])),
-                ("work_end_date", PointInTime(kwargs["work_end_date"])),
-                ("daily_pay", Int64(kwargs["daily_pay"])),
-                ("name", String(kwargs["name"])),
-                ("url", String(kwargs["url"])),
-                ("initializer", WorkerInitializer(kwargs["initializer"])),
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
 class Custom(EchoObject):
     def detail(self, *args, **kwargs):
         result = OrderedDict(
@@ -720,49 +666,6 @@ class OverrideTransfer(EchoObject):
         return result
 
 
-class TransferToBlind(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("amount", Asset(kwargs["amount"])),
-                ("from", ObjectId(kwargs["from"], "account")),
-                ("blinding_factor", Bytes(kwargs["blinding_factor"], 32)),
-                ("outputs", Array(kwargs["blindOutput"])),
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
-class BlindTransfer(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("inputs", Array(kwargs["blindInput"])),
-                ("outputs", Array(kwargs["blindOutput"])),
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
-class TransferFromBlind(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("amount", Asset(kwargs["amount"])),
-                ("to", ObjectId(kwargs["to"], "account")),
-                ("blinding_factor", Bytes(kwargs["blinding_factor"], 32)),
-                ("inputs", Array(kwargs["blindInput"])),
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
 class AssetSettleCancel(EchoObject):
     def detail(self, *args, **kwargs):
         result = OrderedDict(
@@ -784,6 +687,36 @@ class AssetClaimFees(EchoObject):
             [
                 ("issuer", ObjectId(kwargs["issuer"], "account")),
                 ("amount_to_claim", Asset(kwargs["amount_to_claim"])),
+                ("extensions", Set([])),
+            ]
+        )
+        self.add_fee(result, kwargs)
+
+        return result
+
+
+class BidCollateral(EchoObject):
+    def detail(self, *args, **kwargs):
+        result = OrderedDict(
+            [
+                ("bidder", ObjectId(kwargs["bidder"], "account")),
+                ("additional_collateral", Asset(kwargs["additional_collateral"])),
+                ("debt_covered", Asset(kwargs["debt_covered"])),
+                ("extensions", Set([])),
+            ]
+        )
+        self.add_fee(result, kwargs)
+
+        return result
+
+
+class ExecuteBid(EchoObject):
+    def detail(self, *args, **kwargs):
+        result = OrderedDict(
+            [
+                ("bidder", ObjectId(kwargs["bidder"], "account")),
+                ("debt", Asset(kwargs["debt"])),
+                ("collateral", Asset(kwargs["collateral"])),
                 ("extensions", Set([])),
             ]
         )
@@ -833,21 +766,6 @@ class ContractTransfer(EchoObject):
                 ("to", ObjectId(kwargs['account'], "account")),
                 ("amount", Asset(kwargs["asset"])),
                 ("extensions", Set([])),
-
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
-class FbaDistribute(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("account_id", ObjectId(kwargs['account'], "account")),
-                ("fba_id", ObjectId(kwargs["fba"])),
-                ("amount", Int64(kwargs["amount"])),
 
             ]
         )

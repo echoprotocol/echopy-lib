@@ -4,10 +4,10 @@ import random
 from echopy.echobase.account import BrainKey
 
 
-_echo_ws_url = 'wss://testnet.echo-dev.io/ws'
-_wif = '5KUbAUeSFgZqMxNKNftxAhhrjrQmgiEE4CXmbdWk8j3MZruCVZe'
-_from = '1.2.260'
-_to = '1.2.259'
+_echo_ws_url = 'wss://devnet.echo-dev.io/ws'
+_wif = 'E7sNmbqX3ZWxBergfa4fG4F2wEzkicpuBzGBtQSNQnHm'
+_from = '1.2.45'
+_to = '1.2.46'
 
 
 def get_random_asset_symbol():
@@ -43,12 +43,10 @@ def get_keys():
 
     private_base58 = key.get_private_key_base58()
     public_base58 = key.get_public_key_base58()
-    echorand_base58 = key.get_echorand_key_base58()
     private_hex = key.get_private_key_hex()
     public_hex = key.get_public_key_hex()
-    echorand_hex = key.get_echorand_key_hex()
 
-    return private_base58, public_base58, echorand_base58, private_hex, public_hex, echorand_hex
+    return private_base58, public_base58, private_hex, public_hex
 
 
 def random_string():
