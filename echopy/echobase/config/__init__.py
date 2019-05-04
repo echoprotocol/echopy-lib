@@ -1,8 +1,9 @@
 from .api_config import ApiConfig
 from .chain_config import ChainConfig
-from .chain_types import ChainTypes
+from .implementation_object_types import ImplementationObjectTypes
 from .object_types import ObjectTypes
 from .operations_ids import OperationIds
+from .reserved_spaces import ReservedSpaces
 from .ws_constants import WSConfig
 
 
@@ -10,9 +11,10 @@ class Config:
     def __init__(self):
         self.api = ApiConfig()
         self.chain = ChainConfig()
-        self.chain_types = ChainTypes()
+        self.implementation_object_types = ImplementationObjectTypes()
         self.object_types = ObjectTypes()
         self.operation_ids = OperationIds()
+        self.reserved_spaces = ReservedSpaces()
         self.ws = WSConfig()
         self.start_operation_id = '1.11.0'
         self.core_asset_id = '1.3.0'
@@ -31,8 +33,9 @@ class Config:
 __all__ = [
     "api_config",
     "chain_config",
-    "chain_types",
+    "implementation_object_types",
     "object_types",
     "operations_ids",
+    "reserved_spaces",
     "ws_constants"
 ]
