@@ -182,3 +182,18 @@ class DatabaseApi:
 
     def get_sidechain_transfers(self, reciever):
         return self.db.rpcexec('get_sidechain_transfers', [reciever])
+
+    def get_account_addresses(self, account_id, start, limit, stop):
+        return self.db.rpcexec('get_account_addresses', [account_id, start, limit, stop])
+
+    def get_account_by_address(self, address):
+        return self.db.rpcexec('get_account_by_address', [address])
+
+    def get_eth_address(self, account_id):
+        return self.db.rpcexec('get_eth_address', [account_id])
+
+    def get_deposit_eth(self, deposit_id):
+        return self.db.rpcexec('get_deposit_eth', [deposit_id])
+
+    def get_withdraw_eth(self, withdraw_id):
+        return self.db.rpcexec('get_withdraw_eth', [withdraw_id])

@@ -19,3 +19,4 @@ class ImplementationObjectTypes:
         self.CONTRACT_BALANCE = 15
         self.CONTRACT_HISTORY = 16
         self.CONTRACT_STATISTICS = 17
+        self.ACCOUNT_ADDRESS = 18

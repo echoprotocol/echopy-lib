@@ -42,6 +42,14 @@ ops = [
     "execute_bid",
     "create_contract",
     "call_contract",
-    "contract_transfer"
+    "contract_transfer",
+    "change_sidechain_config",
+    "account_address_create",
+    "transfer_to_address",
+    "generate_eth_address",
+    "create_eth_address",
+    "deposit_eth_operation",
+    "withdraw_eth_operation",
+    "approve_withdraw_eth_operation"
 ]
 operations = {o: ops.index(o) for o in ops}

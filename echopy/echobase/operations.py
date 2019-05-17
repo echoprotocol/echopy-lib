@@ -489,7 +489,7 @@ class WithdrawPermissionUpdate(EchoObject):
                 ("withdraw_from_account", ObjectId(kwargs["withdraw_from_account"], "account")),
                 ("authorized_account", ObjectId(kwargs["authorized_account"], "account")),
                 ("permission_to_update", ObjectId(kwargs["permission_to_update"], "withdraw_permission")),
-                ("withdrawal_limit", Asset(kwargs['withdrawal_limit'])),
+                ("withdrawal_limit", Asset(kwargs["withdrawal_limit"])),
                 ("withdrawal_period_sec", Uint32(kwargs["withdrawal_period_sec"])),
                 ("period_start_time", PointInTime(kwargs["period_start_time"])),
                 ("periods_until_expiration", Uint32(kwargs["periods_until_expiration"])),
@@ -731,7 +731,7 @@ class CreateContract(EchoObject):
 
         result = OrderedDict(
             [
-                ("registrar", ObjectId(kwargs["registrar"], 'account')),
+                ("registrar", ObjectId(kwargs["registrar"], "account")),
                 ("value", Asset(kwargs["value"])),
                 ("code", String(kwargs["code"])),
                 ("supported_asset_id", Optional(supported_asset_id)),
@@ -762,8 +762,8 @@ class ContractTransfer(EchoObject):
     def detail(self, *args, **kwargs):
         result = OrderedDict(
             [
-                ("from", ObjectId(kwargs['account'], "account")),
-                ("to", ObjectId(kwargs['account'], "account")),
+                ("from", ObjectId(kwargs["account"], "account")),
+                ("to", ObjectId(kwargs["account"], "account")),
                 ("amount", Asset(kwargs["asset"])),
                 ("extensions", Set([])),
 
@@ -772,5 +772,65 @@ class ContractTransfer(EchoObject):
         self.add_fee(result, kwargs)
 
         return result
+
+
+class AccountAddressCreate(EchoObject):
+    def detail(self, *args, **kwargs):
+        result = OrderedDict(
+            [
+                ("owner", ObjectId(kwargs["owner"], "account")),
+                ("label", String(kwargs["label"])),
+                ("extensions", Set([])),
+
+            ]
+        )
+        self.add_fee(result, kwargs)
+
+        return result
+
+
+class TransferToAddress(EchoObject):
+    def detail(self, *args, **kwargs):
+        result = OrderedDict(
+            [
+                ("from", ObjectId(kwargs["from"], "account")),
+                ("to", String(kwargs["to"])),
+                ("amount", Asset(kwargs["amount"]))
+                ("extensions", Set([])),
+
+            ]
+        )
+        self.add_fee(result, kwargs)
+
+        return result
+
+
+class GenerateEthAddress(EchoObject):
+    def detail(self, *args, **kwargs):
+        result = OrderedDict(
+            [
+                ("account_id", ObjectId(kwargs["account_id"], "account")),
+                ("extensions", Set([])),
+            ]
+        )
+        self.add_fee(result, kwargs)
+
+        return result
+
+
+class WithdrawEth(EchoObject):
+    def detail(self, *args, **kwargs):
+        result = OrderedDict(
+            [
+                ("acc_id", ObjectId(kwargs["acc_id"], "account")),
+                ("eth_addr", String(kwargs["eth_addr"])),
+                ("value", Uint64(kwargs["value"])),
+                ("extensions", Set([])),
+            ]
+        )
+        self.add_fee(result, kwargs)
+
+        return result
+
 
 fill_classmaps()

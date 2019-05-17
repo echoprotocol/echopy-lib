@@ -17,4 +17,6 @@ object_type["balance"] = 13
 object_type["contract"] = 14
 object_type["contract_result"] = 15
 object_type["block_result"] = 16
-object_type["sidechain_transfer"] = 17
+object_type["eth_address"] = 17
+object_type["deposit_eth"] = 18
+object_type["withdraw_eth"] = 19

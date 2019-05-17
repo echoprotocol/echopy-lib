@@ -44,3 +44,11 @@ class OperationIds:
         self.CREATE_CONTRACT = 40
         self.CALL_CONTRACT = 41
         self.CONTRACT_TRANSFER = 42
+        self.CHANGE_SIDECHAIN_CONFIG = 43
+        self.ACCOUNT_ADDRESS_CREATE = 44
+        self.TRANSFER_TO_ADDRESS = 45
+        self.GENERATE_ETH_ADDRESS = 46
+        self.CREATE_ETH_ADDRESS = 47
+        self.DEPOSIT_ETH_ADDRESS = 48
+        self.WITHDRAW_ETH = 49
+        self.APPROVE_WIDTHDRAW_ETH = 50

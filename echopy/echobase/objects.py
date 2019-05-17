@@ -472,17 +472,36 @@ class SidechainConfig(EchoObject):
             super().__init__(
                 OrderedDict(
                     [
-                        ("echo_contract_id", ObjectId(kwargs["echo_contract_id"], "contract")),
-                        ("echo_vote_method", String(kwargs["echo_vote_method"])),
-                        ("echo_sign_method", String(kwargs["echo_sign_method"])),
-                        ("echo_transfer_topic", String(kwargs["echo_transfer_topic"])),
-                        ("echo_transfer_ready_topic", String(kwargs["echo_transfer_ready_topic"])),
-                        ("eth_contract_address", String(kwargs["eth_contract_address"])),
-                        ("eth_committee_method", String(kwargs["eth_committee_method"])),
-                        ("eth_transfer_topic", String(kwargs["eth_transfer_topic"]))
+                        ("eth_contarct_address", String(kwargs["eth_contarct_address"])),
+                        ("eth_committee_update_method", EthMethod(kwargs["eth_committee_update_method"])),
+                        ("eth_gen_address_method", EthMethod(kwargs["eth_gen_address_method"])),
+                        ("eth_withdraw_method", EthMethod(kwargs["eth_withdraw_method"])),
+                        ("eth_committee_updated_topic", String(kwargs["eth_committee_updated_topic"])),
+                        ("eth_gen_address_topic", String(kwargs["eth_gen_address_topic"])),
+                        ("eth_deposit_topic", String(kwargs["eth_deposit_topic"])),
+                        ("eth_withdraw_topic", String(kwargs["eth_withdraw_topic"])),
+                        ("ETH_asset_id", ObjectId(kwargs["ETH_asset_id", "asset"]))
                     ]
                 )
             )
+
+
+class EthMethod(EchoObject):
+    def __init__(self, *args, **kwargs):
+        if isArgsThisClass(self, args):
+            self.data = args[0].data
+        else:
+            if len(args) == 1 and len(kwargs) == 0:
+                kwargs = args[0]
+            super().__init__(
+                OrderedDict(
+                    [
+                        ("method", String(kwargs["method"])),
+                        ("gas", Uint64(kwargs["gas"]))
+                    ]
+                )
+            )
+
 
 
 class GasPrice(EchoObject):

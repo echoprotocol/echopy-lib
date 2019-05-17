@@ -27,7 +27,7 @@ class BrainKey(Prefix):
         if not brain_key:
             self._brain_key = BrainKey._suggest()
         else:
-            self.brain_key = self._normalize(brain_key).strip()
+            self._brain_key = self._normalize(brain_key).strip()
 
 
     def __next__(self):

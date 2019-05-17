@@ -18,4 +18,6 @@ class ObjectTypes:
         self.CONTRACT = 14
         self.CONTRACT_RESULT = 15
         self.BLOCK_RESULT = 16
-        self.SIDECHAIN_TRANSFER = 17
+        self.ETH_ADDRESS = 17
+        self.DEPOSIT_ETH = 18
+        self.WITHDRAW_ETH = 19
