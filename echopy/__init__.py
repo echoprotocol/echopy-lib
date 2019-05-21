@@ -3,5 +3,7 @@ from .transaction import Transaction
 
 __all__ = [
     "echo",
-    "transaction"
+    "transaction",
+    "Echo",
+    "Transaction"
 ]

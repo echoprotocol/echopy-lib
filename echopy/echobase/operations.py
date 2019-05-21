@@ -794,8 +794,8 @@ class TransferToAddress(EchoObject):
         result = OrderedDict(
             [
                 ("from", ObjectId(kwargs["from"], "account")),
-                ("to", String(kwargs["to"])),
-                ("amount", Asset(kwargs["amount"]))
+                ("to", Bytes(kwargs["to"], 20)),
+                ("amount", Asset(kwargs["amount"])),
                 ("extensions", Set([])),
 
             ]
