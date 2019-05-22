@@ -197,3 +197,6 @@ class DatabaseApi:
 
     def get_withdraw_eth(self, withdraw_id):
         return self.db.rpcexec('get_withdraw_eth', [withdraw_id])
+
+    def get_balance_objects(self, public_key):
+        return self.db.rpcexec('get_balance_objects', [public_key])
