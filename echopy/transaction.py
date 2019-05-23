@@ -332,13 +332,7 @@ class Transaction:
 
         return public_keys, addresses
 
-    def broadcast(self):
-        if not self.finalized:
-            self.sign()
-        transaction_object = self.transaction_object
-        return self.api.network.broadcast_transaction_synchronous(transaction_object)
-
-    def broadcast_with_callback(self, callback=None):
+    def broadcast(self, callback=None):
         if not self.finalized:
             self.sign()
         transaction_object = self.transaction_object
