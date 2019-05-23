@@ -48,8 +48,8 @@ ops = [
     "transfer_to_address",
     "generate_eth_address",
     "create_eth_address",
-    "deposit_eth_operation",
-    "withdraw_eth_operation",
-    "approve_withdraw_eth_operation"
+    "deposit_eth",
+    "withdraw_eth",
+    "approve_withdraw_eth"
 ]
 operations = {o: ops.index(o) for o in ops}
