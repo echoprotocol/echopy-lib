@@ -163,8 +163,6 @@ class ReconnectionWebsocket:
                 import traceback
 
                 log.debug(traceback.format_exc())
-                log.warning(str(e))
-                log.warning("Reconnecting ...")
                 self.error_url()
                 self.next()
 

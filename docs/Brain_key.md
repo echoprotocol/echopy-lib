@@ -1,4 +1,5 @@
 ### Brain key
+
 Using brain key object you can get keys(private, public) in base58 and hex representations.
 
 #### Generating keys example

@@ -5,9 +5,9 @@ from echopy.echobase.account import BrainKey
 
 
 _echo_ws_url = 'wss://devnet.echo-dev.io/ws'
-_wif = 'E7sNmbqX3ZWxBergfa4fG4F2wEzkicpuBzGBtQSNQnHm'
-_from = '1.2.45'
-_to = '1.2.46'
+_wif = 'ErSXa1TXo8HnkGgLQGxpUBoK674V51A5WZreRio9jFUK'
+_from = '1.2.18'
+_to = '1.2.17'
 
 
 def get_random_asset_symbol():

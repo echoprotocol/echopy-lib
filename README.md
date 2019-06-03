@@ -19,7 +19,7 @@ Python ECHO library can be used to construct, sign and broadcast transactions an
 
 ## Preparation
 
-Launched echo node (https://github.com/echoprotocol/echo-core) with open port
+Launched echo node (https://github.com/echoprotocol/echo-core) with open port.
 
 ## Usage
 
