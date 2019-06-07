@@ -22,7 +22,7 @@ class BrainKey(Prefix):
 
     """
 
-    def __init__(self, brain_key=None, prefix='DET'):
+    def __init__(self, brain_key=None, prefix='ECHO'):
         self.set_prefix(prefix)
         if not brain_key:
             self._brain_key = BrainKey._suggest()
@@ -78,7 +78,7 @@ class BrainKey(Prefix):
         encoded = "%s" % (self._brain_key)
         a = _bytes(encoded)
         s = hashlib.sha256(hashlib.sha512(a).digest()).digest()
-        return PrivateKey(hexlify(s).decode("ascii"), prefix=self.prefix)
+        return PrivateKey(hexlify(s).decode("ascii"))
 
     def get_private_key_base58(self):
         return str(self._get_private())
@@ -97,12 +97,12 @@ class Address(Prefix):
     """ This class serves as an address representation for Public Keys.
         """
 
-    def __init__(self, address, prefix='DET'):
+    def __init__(self, address, prefix='ECHO'):
         self.set_prefix(prefix)
         self._address = Base58(address, prefix=self.prefix)
 
     @classmethod
-    def from_public_key(cls, public_key, version=56, prefix='DET'):
+    def from_public_key(cls, public_key, version=56, prefix='ECHO'):
         """ Load an address provided the public key.
         """
         public_key = PublicKey(public_key, prefix=prefix or Prefix.prefix)
@@ -134,7 +134,7 @@ class Address(Prefix):
 class EchoAddress(Address):
 
     @classmethod
-    def from_public_key(cls, public_key, version=56, prefix='DET'):
+    def from_public_key(cls, public_key, version=56, prefix='ECHO'):
         if not isinstance(public_key, PublicKey):
             public_key = PublicKey(public_key, prefix=prefix or Prefix.prefix)
         public_key_plain = repr(public_key)
@@ -149,8 +149,7 @@ class PrivateKey(Prefix):
         constructs two instances of ``PublicKey``
     """
 
-    def __init__(self, wif=None, prefix='DET'):
-        self.set_prefix(prefix)
+    def __init__(self, wif=None):
         if wif is None:
             import os
             self._wif = Base58(hexlify(os.urandom(32)).decode("ascii"))
@@ -195,15 +194,15 @@ class PrivateKey(Prefix):
 
 class PublicKey(Prefix):
 
-    def __init__(self, public_key, prefix='DET'):
+    def __init__(self, public_key, prefix='ECHO'):
         self.set_prefix(prefix)
         self._public_key = Base58(public_key, prefix=self.prefix)
 
     @classmethod
-    def from_private_key(cls, private_key, prefix='DET'):
-        private_key = PrivateKey(private_key, prefix=prefix or Prefix.prefix)
+    def from_private_key(cls, private_key):
+        private_key = PrivateKey(private_key)
         public_key = Crypto.derive_public_key(repr(private_key)).decode()
-        return cls(public_key, prefix=prefix or Prefix.prefix)
+        return cls(public_key)
 
     def __repr__(self):
         """ Gives the hex representation of the ECHO echorand key.
@@ -224,26 +223,3 @@ class PublicKey(Prefix):
     @property
     def address(self):
         return EchoAddress.from_public_key(self, prefix=self.prefix)
-
-
-class EcdsaKey(Prefix):
-
-    def __init__(self, public_key, prefix='ECHO'):
-        self.set_prefix(prefix)
-        self._public_key = Base58(public_key, prefix=self.prefix)
-
-    def __repr__(self):
-        """ Gives the hex representation of the ECHO echorand key.
-        """
-        return repr(self._public_key)
-
-    def __str__(self):
-        """ Returns the readable ECHO echorand key.
-        """
-        return format(self._public_key, self.prefix)
-
-    def __format__(self, _format):
-        return format(self._public_key, _format)
-
-    def __bytes__(self):
-        return bytes(self._public_key)[:-4]

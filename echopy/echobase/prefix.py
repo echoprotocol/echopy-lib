@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 class Prefix:
-    prefix = "DET"
+    prefix = "ECHO"
 
     def set_prefix(self, prefix):
         if prefix:

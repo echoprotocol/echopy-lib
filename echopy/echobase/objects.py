@@ -27,10 +27,10 @@ from .types import (
 )
 from .types import ObjectId as ObjectIdParent
 from .objecttypes import object_type
-from .account import PublicKey, EcdsaKey
+from .account import PublicKey
 
 
-default_prefix = "DET"
+default_prefix = "ECHO"
 
 
 class EchoObject(OrderedDict):
@@ -215,7 +215,6 @@ class AccountOptions(EchoObject):
             super().__init__(
                 OrderedDict(
                     [
-                        ("memo_key", EcdsaKey(kwargs["memo_key"], prefix='ECHO')),
                         ("voting_account", ObjectId(kwargs["voting_account"], "account")),
                         ("delegating_account", ObjectId(kwargs["delegating_account"], "account")),
                         ("num_committee", Uint16(kwargs["num_committee"])),
@@ -476,6 +475,7 @@ class SidechainConfig(EchoObject):
                         ("eth_committee_update_method", EthMethod(kwargs["eth_committee_update_method"])),
                         ("eth_gen_address_method", EthMethod(kwargs["eth_gen_address_method"])),
                         ("eth_withdraw_method", EthMethod(kwargs["eth_withdraw_method"])),
+                        ("eth_update_addr_method", EthMethod(kwargs["eth_update_addr_method"])),
                         ("eth_committee_updated_topic", String(kwargs["eth_committee_updated_topic"])),
                         ("eth_gen_address_topic", String(kwargs["eth_gen_address_topic"])),
                         ("eth_deposit_topic", String(kwargs["eth_deposit_topic"])),

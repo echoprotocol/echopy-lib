@@ -197,7 +197,7 @@ class OperationsTest(unittest.TestCase):
     def test_account_create(self):
         private_base58, public_base58, private_hex, public_hex = get_keys()
         account_create_props = {
-            "ed_key": public_base58,
+            "echorand_key": public_base58,
             "registrar": _from,
             "referrer": _from,
             "referrer_percent": 1,
@@ -208,7 +208,6 @@ class OperationsTest(unittest.TestCase):
                 "key_auths": [[public_base58, 1]],
             },
             "options": {
-                "memo_key": 'ECHO59St8wBpta2ZREBnA3dQQTVFBrEcx5UK12Tm5geG7kv7Hwyzyc',
                 "voting_account": '1.2.5',
                 "delegating_account": '1.2.5',
                 "num_committee": 0,
@@ -251,9 +250,8 @@ class OperationsTest(unittest.TestCase):
         private_base58, public_base58, private_hex, public_hex = get_keys()
         account_update_props = {
             "account": _from,
-            "ed_key": "DET269oGvqUJgyMQcR7sbGjJbyAEBQhiD5SUq3XKnZuLinN",
+            "echorand_key": "ECHO269oGvqUJgyMQcR7sbGjJbyAEBQhiD5SUq3XKnZuLinN",
             "new_options": {
-                "memo_key": "ECHO1111111111111111111111111111111114T1Anm",
                 "voting_account": "1.2.5",
                 "delegating_account": "1.2.8",
                 "num_committee": 0,

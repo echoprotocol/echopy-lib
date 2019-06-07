@@ -50,6 +50,10 @@ ops = [
     "create_eth_address",
     "deposit_eth",
     "withdraw_eth",
-    "approve_withdraw_eth"
+    "approve_withdraw_eth",
+    "contract_fund_pool",
+    "contract_whitelist",
+    "sidechain_issue",
+    "sidechain_burn"
 ]
 operations = {o: ops.index(o) for o in ops}

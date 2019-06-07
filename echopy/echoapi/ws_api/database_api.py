@@ -177,6 +177,12 @@ class DatabaseApi:
     def get_contract_balances(self, contract_id):
         return self.db.rpcexec('get_contract_balances', [contract_id])
 
+    def get_contract_pool_balance(self, contract_id):
+        return self.db.rpcexec("get_contract_pool_balance", [contract_id])
+
+    def get_contract_pool_whitelist(self, contract_id):
+        return self.df.rpcexec("get_contract_pool_whitelist", [contract_id])
+
     def get_recent_transaction_by_id(self, transaction_id):
         return self.db.rpcexec('get_recent_transaction_by_id', [transaction_id])
 
@@ -200,3 +206,9 @@ class DatabaseApi:
 
     def get_balance_objects(self, public_key):
         return self.db.rpcexec('get_balance_objects', [public_key])
+
+    def get_account_deposits(self, account_id):
+        return self.db.rpcexec('get_account_deposits', [account_id])
+
+    def get_account_withdrawals(self, account_id):
+        return self.db.rpcexec('get_account_withdrawals', [account_id])
