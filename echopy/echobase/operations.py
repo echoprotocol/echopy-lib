@@ -533,6 +533,7 @@ class CommitteeMemberCreate(EchoObject):
             [
                 ("committee_member_account", ObjectId(kwargs["committee_member_account"], "account")),
                 ("url", String(kwargs["url"])),
+                ("address", String(kwargs["address"])),
             ]
         )
         self.add_fee(result, kwargs)
@@ -543,12 +544,14 @@ class CommitteeMemberCreate(EchoObject):
 class CommitteeMemberUpdate(EchoObject):
     def detail(self, *args, **kwargs):
         new_url = get_optional("new_url", kwargs, String)
+        new_eth_address = get_optional("new_eth_address", kwargs, String)
 
         result = OrderedDict(
             [
                 ("committee_member", ObjectId(kwargs["committee_member"], "committee_member")),
                 ("committee_member_account", ObjectId(kwargs["committee_member_account"], "account")),
                 ("new_url", Optional(new_url)),
+                ("new_eth_address", Optional(new_eth_address)),
             ]
         )
         self.add_fee(result, kwargs)
@@ -831,7 +834,7 @@ class ContractFundPool(EchoObject):
         result = OrderedDict(
             [
                 ("sender", ObjectId(kwargs["sender"], "account")),
-                ("callee", ObjectId(kwargs["callee"], "account")),
+                ("callee", ObjectId(kwargs["callee"], "contract")),
                 ("value", Asset(kwargs["value"])),
             ]
         )

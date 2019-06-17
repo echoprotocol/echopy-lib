@@ -189,8 +189,8 @@ class DatabaseApi:
     def get_sidechain_transfers(self, reciever):
         return self.db.rpcexec('get_sidechain_transfers', [reciever])
 
-    def get_account_addresses(self, account_id, start, limit, stop):
-        return self.db.rpcexec('get_account_addresses', [account_id, start, limit, stop])
+    def get_account_addresses(self, account_id, start, limit):
+        return self.db.rpcexec('get_account_addresses', [account_id, start, limit])
 
     def get_account_by_address(self, address):
         return self.db.rpcexec('get_account_by_address', [address])

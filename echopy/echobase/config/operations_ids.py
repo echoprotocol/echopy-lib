@@ -56,4 +56,3 @@ class OperationIds:
         self.CONTRACT_WHITELIST = 52
         self.SIDECHAIN_ISSUE = 53
         self.SIDECHAIN_BURN = 54
-       
