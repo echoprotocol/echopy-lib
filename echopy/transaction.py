@@ -305,7 +305,7 @@ class Transaction:
             operations=self.operations,
             extensions=[],
             signatures=self._signatures
-        ).json()
+        )
 
     def _get_potential_signatures(self, tr):
         return self.api.database.get_potential_signatures(tr)
@@ -341,5 +341,5 @@ class Transaction:
             self.sign()
         transaction_object = self.transaction_object
         if callback is None:
-            return self.api.network.broadcast_transaction_synchronous(transaction_object)
+            return self.api.network.broadcast_transaction_synchronous(transaction_object.json())
         return self.api.network.broadcast_transaction_with_callback(transaction_object, callback)

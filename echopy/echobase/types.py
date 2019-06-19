@@ -138,7 +138,7 @@ class Bytes:
 
     def __bytes__(self):
         d = unhexlify(bytes(self.data, "utf-8"))
-        return varint(self.length) + d if self.length is None else d
+        return varint(self.length) + d if self.length is not None else d
 
     def __str__(self):
         return str(self.data)
