@@ -54,6 +54,11 @@ ops = [
     "contract_fund_pool",
     "contract_whitelist",
     "sidechain_issue",
-    "sidechain_burn"
+    "sidechain_burn",
+    "register_erc20_token",
+    "deposit_erc20_token",
+    "withdraw_erc20_token",
+    "approve_erc20_token_withdraw",
+    "contract_update"
 ]
 operations = {o: ops.index(o) for o in ops}

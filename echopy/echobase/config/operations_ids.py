@@ -56,3 +56,8 @@ class OperationIds:
         self.CONTRACT_WHITELIST = 52
         self.SIDECHAIN_ISSUE = 53
         self.SIDECHAIN_BURN = 54
+        self.REGISTER_ERC20_TOKEN = 55
+        self.DEPOSIT_ERC20_TOKEN = 56
+        self.WITHDRAW_ERC20_TOKEN = 57
+        self.APPROVE_ERC20_TOKEN_WITHDRAW = 58
+        self.CONTRACT_UPDATE = 59

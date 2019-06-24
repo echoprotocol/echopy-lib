@@ -20,3 +20,6 @@ object_type["block_result"] = 16
 object_type["eth_address"] = 17
 object_type["deposit_eth"] = 18
 object_type["withdraw_eth"] = 19
+object_type["erc20_token"] = 20
+object_type["deposit_erc20_token"] = 21
+object_type["withdraw_erc20_token"] = 22

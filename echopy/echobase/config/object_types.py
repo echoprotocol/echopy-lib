@@ -21,3 +21,6 @@ class ObjectTypes:
         self.ETH_ADDRESS = 17
         self.DEPOSIT_ETH = 18
         self.WITHDRAW_ETH = 19
+        self.ERC20_TOKEN = 20
+        self.DEPOSIT_ERC20_TOKEN = 21
+        self.WITHDRAW_ERC20_TOKEN = 22

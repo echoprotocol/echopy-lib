@@ -21,3 +21,4 @@ class ImplementationObjectTypes:
         self.CONTRACT_STATISTICS = 17
         self.ACCOUNT_ADDRESS = 18
         self.CONTRACT_POOL = 19
+        self.MALICIOUS_COMMITTEEMEN = 20
