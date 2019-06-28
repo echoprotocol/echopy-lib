@@ -830,7 +830,7 @@ class WithdrawEth(EchoObject):
         result = OrderedDict(
             [
                 ("account", ObjectId(kwargs["account"], "account")),
-                ("eth_addr", String(kwargs["eth_addr"])),
+                ("eth_addr", Bytes(kwargs["eth_addr"], 20)),
                 ("value", Uint64(kwargs["value"])),
                 ("extensions", Set([])),
             ]
