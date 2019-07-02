@@ -4,23 +4,16 @@ from .types import (
     Array,
     Bool,
     Bytes,
-    FixedArray,
-    Id,
     Int64,
-    Map,
     Optional,
     PointInTime,
     Set,
-    Signature,
     StaticVariant,
     String,
     Uint8,
     Uint16,
     Uint32,
     Uint64,
-    Varint32,
-    Void,
-    VoteId,
 )
 
 from .objects import (
@@ -28,13 +21,10 @@ from .objects import (
     Asset,
     AssetOptions,
     BitAssetOptions,
-    Memo,
     ObjectId,
     Permission,
     Price,
     PriceFeed,
-    WorkerInitializer,
-    isArgsThisClass,
     VestingPolicyInitializer,
     ChainParameters,
 )
@@ -310,7 +300,7 @@ class AssetUpdateFeedProducers(EchoObject):
             [
                 ("issuer", ObjectId(kwargs["issuer"], "account")),
                 ("asset_to_update", ObjectId(kwargs["asset_to_update"], "asset")),
-                ("new_feed_producers", Set(ObjectId(kwargs["new_feed_producers"], "account"))),
+                ("new_feed_producers", Set([ObjectId(i, "account") for i in kwargs["new_feed_producers"]])),
                 ("extensions", Set([])),
             ]
         )
@@ -416,7 +406,7 @@ class ProposalCreate(EchoObject):
             [
                 ("fee_paying_account", ObjectId(kwargs["fee_paying_account"], "account")),
                 ("expiration_time", PointInTime(kwargs["expiration_time"])),
-                ("proposed_ops", Array(StaticVariant(kwargs["proposed_ops"]))),
+                ("proposed_ops", Array([StaticVariant(i) for i in kwargs["proposed_ops"]])),
                 ("review_period_seconds", Optional(review_period_seconds)),
                 ("extensions", Set([])),
             ]
@@ -432,12 +422,16 @@ class ProposalUpdate(EchoObject):
             [
                 ("fee_paying_account", ObjectId(kwargs["fee_paying_account"], "account")),
                 ("proposal", ObjectId(kwargs["proposal"], "proposal")),
-                ("active_approvals_to_add", Set(ObjectId(kwargs["active_approvals_to_add"], "account"))),
-                ("active_approvals_to_remove", Set(ObjectId(kwargs["active_approvals_to_remove"], "account"))),
-                ("owner_approvals_to_add", Set(ObjectId(kwargs["owner_approvals_to_add"], "account"))),
-                ("owner_approvals_to_remove", Set(ObjectId(kwargs["owner_approvals_to_remove"], "account"))),
-                ("key_approvals_to_add", Set(PublicKey(kwargs["key_approvals_to_add"]))),
-                ("key_approvals_to_remove", Set(PublicKey(kwargs["key_approvals_to_remove"]))),
+                ("active_approvals_to_add", Set([ObjectId(i, "account") for i in
+                                                 kwargs["active_approvals_to_add"]])),
+                ("active_approvals_to_remove", Set([ObjectId(i, "account") for i in
+                                                    kwargs["active_approvals_to_remove"]])),
+                ("owner_approvals_to_add", Set([ObjectId(i, "account") for i in
+                                                kwargs["owner_approvals_to_add"]])),
+                ("owner_approvals_to_remove", Set([ObjectId(i, "account") for i in
+                                                   kwargs["owner_approvals_to_remove"]])),
+                ("key_approvals_to_add", Set([PublicKey(i) for i in kwargs["key_approvals_to_add"]])),
+                ("key_approvals_to_remove", Set([PublicKey(i) for i in kwargs["key_approvals_to_remove"]])),
                 ("extensions", Set([])),
             ]
         )
@@ -612,7 +606,7 @@ class Custom(EchoObject):
         result = OrderedDict(
             [
                 ("payer", ObjectId(kwargs["payer"], "account")),
-                ("required_auths", Set(ObjectId(kwargs["required_auths"], "account"))),
+                ("required_auths", Set([ObjectId(i, "account") for i in kwargs["required_auths"]])),
                 ("id", Uint16(kwargs["id"])),
                 ("data", Bytes(kwargs["data"])),
                 ("extensions", Set([])),
@@ -628,8 +622,8 @@ class Assert(EchoObject):
         result = OrderedDict(
             [
                 ("fee_paying_account", ObjectId(kwargs["fee_paying_account"], "account")),
-                ("predicates", Array(kwargs["predicates"])),
-                ("required_auths", Set(ObjectId(kwargs["required_auths"], "account"))),
+                ("predicates", Array([i for i in kwargs["predicates"]])),
+                ("required_auths", Set([ObjectId(i, "account") for i in kwargs["required_auths"]])),
                 ("extensions", Set([])),
             ]
         )
@@ -845,7 +839,7 @@ class ContractFundPool(EchoObject):
         result = OrderedDict(
             [
                 ("sender", ObjectId(kwargs["sender"], "account")),
-                ("callee", ObjectId(kwargs["callee"], "contract")),
+                ("contract", ObjectId(kwargs["contract"], "contract")),
                 ("value", Asset(kwargs["value"])),
                 ("extensions", Set([])),
             ]
@@ -859,13 +853,12 @@ class ContractWhitelist(EchoObject):
     def detail(self, *args, **kwargs):
         result = OrderedDict(
             [
-                ("registrar", ObjectId(kwargs["registrar"], "account")),
-                ("contract_to_modify", ObjectId(kwargs["contract_to_modify"], "contract")),
-                ("value", Asset(kwargs["value"])),
-                ("add_to_whitelist", Set(ObjectId(kwargs["add_to_whitelist"], "account"))),
-                ("remove_from_whitelist", Set(ObjectId(kwargs["remove_from_whitelist"], "account"))),
-                ("add_to_blacklist", Set(ObjectId(kwargs["add_to_blacklist"], "account"))),
-                ("remove_from_blacklist", Set(ObjectId(kwargs["remove_from_blacklist"], "account"))),
+                ("sender", ObjectId(kwargs["sender"], "account")),
+                ("contract", ObjectId(kwargs["contract"], "contract")),
+                ("add_to_whitelist", Set([ObjectId(i, "account") for i in kwargs["add_to_whitelist"]])),
+                ("remove_from_whitelist", Set([ObjectId(i, "account") for i in kwargs["remove_from_whitelist"]])),
+                ("add_to_blacklist", Set([ObjectId(i, "account") for i in kwargs["add_to_blacklist"]])),
+                ("remove_from_blacklist", Set([ObjectId(i, "account") for i in kwargs["remove_from_blacklist"]])),
                 ("extensions", Set([])),
             ]
         )

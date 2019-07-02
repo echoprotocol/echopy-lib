@@ -2,16 +2,6 @@
 import json
 import struct
 import time
-from .validation import (
-    is_uint64,
-    is_uint32,
-    is_uint16,
-    is_uint8,
-    is_int64,
-    is_bytes,
-    is_string,
-    is_ripemd160
-)
 from calendar import timegm
 from binascii import hexlify, unhexlify
 from .objecttypes import object_type

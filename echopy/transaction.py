@@ -3,10 +3,10 @@ from .echoapi import Api
 from .echobase.operations import get_operation_by_id, get_operation_by_name
 from .echobase.account import PrivateKey
 from .echobase.objects import EchoObject, StaticVariant, Asset, ObjectId
-from .echobase.types import Uint16, Uint32, PointInTime, Array, Optional, Set, Bytes, String
+from .echobase.types import Uint16, Uint32, PointInTime, Array, Set, Bytes
 
 from collections import OrderedDict
-from copy import deepcopy, copy
+from copy import copy
 
 from math import ceil
 from codecs import decode
@@ -342,4 +342,4 @@ class Transaction:
         transaction_object = self.transaction_object
         if callback is None:
             return self.api.network.broadcast_transaction_synchronous(transaction_object.json())
-        return self.api.network.broadcast_transaction_with_callback(transaction_object, callback)
+        return self.api.network.broadcast_transaction_with_callback(transaction_object.json(), callback)

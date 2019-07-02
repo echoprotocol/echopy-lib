@@ -29,7 +29,6 @@ class BrainKey(Prefix):
         else:
             self._brain_key = self._normalize(brain_key).strip()
 
-
     def __next__(self):
         """ Get the next private key for iterators
         """
@@ -60,7 +59,7 @@ class BrainKey(Prefix):
 
     @staticmethod
     def _suggest():
-        """ Suggest a new random brain key
+        """ Suggest a new random brain key.
         """
         word_count = 16
         brain_key = []
