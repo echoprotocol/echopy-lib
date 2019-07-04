@@ -899,7 +899,7 @@ class SidechainBurn(EchoObject):
 
 class ContractUpdate(EchoObject):
     def detail(self, *args, **kwargs):
-        new_owner = get_optional("new_onwer", kwargs, partial(ObjectId, type_verify="account"))
+        new_owner = get_optional("new_owner", kwargs, partial(ObjectId, type_verify="account"))
         result = OrderedDict(
             [
                 ("sender", ObjectId(kwargs["sender"], "account")),
