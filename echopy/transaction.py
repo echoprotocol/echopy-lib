@@ -28,7 +28,7 @@ class TransactionType(EchoObject):
                 ("ref_block_num", Uint16(kwargs['ref_block_num'])),
                 ("ref_block_prefix", Uint32(kwargs['ref_block_prefix'])),
                 ("expiration", PointInTime(kwargs['expiration'])),
-                ("operations", Array([StaticVariant(op, op_id) for op_id, op in kwargs['operations']])),
+                ("operations", Array([StaticVariant(op_id, op) for op_id, op in kwargs['operations']])),
                 ("extensions", Set([])),
             ]
 
@@ -42,7 +42,7 @@ class SignedTransactionType(EchoObject):
                 ("ref_block_num", Uint16(kwargs['ref_block_num'])),
                 ("ref_block_prefix", Uint32(kwargs['ref_block_prefix'])),
                 ("expiration", PointInTime(kwargs['expiration'])),
-                ("operations", Array([StaticVariant(op, op_id) for op_id, op in kwargs['operations']])),
+                ("operations", Array([StaticVariant(op_id, op) for op_id, op in kwargs['operations']])),
                 ("extensions", Set([])),
                 ("signatures", Array([Bytes(signature) for signature in kwargs['signatures']])),
             ]

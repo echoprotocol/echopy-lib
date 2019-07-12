@@ -254,8 +254,8 @@ class Optional:
 
 
 class StaticVariant:
-    def __init__(self, d, type_id):
-        self.data = d
+    def __init__(self, type_id, data):
+        self.data = data
         self.type_id = type_id
 
     def __bytes__(self):

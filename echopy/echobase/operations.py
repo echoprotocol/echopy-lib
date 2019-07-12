@@ -406,7 +406,7 @@ class ProposalCreate(EchoObject):
             [
                 ("fee_paying_account", ObjectId(kwargs["fee_paying_account"], "account")),
                 ("expiration_time", PointInTime(kwargs["expiration_time"])),
-                ("proposed_ops", Array([StaticVariant(i) for i in kwargs["proposed_ops"]])),
+                ("proposed_ops", Array([StaticVariant(op_id, op) for op_id, op in kwargs["proposed_ops"]])),
                 ("review_period_seconds", Optional(review_period_seconds)),
                 ("extensions", Set([])),
             ]
@@ -920,6 +920,9 @@ class RegisterErc20Token(EchoObject):
             [
                 ("account", ObjectId(kwargs["account"], "account")),
                 ("eth_addr", Bytes(kwargs["eth_addr"], 20)),
+                ("name", String(kwargs["name"])),
+                ("symbol", String(kwargs["symbol"])),
+                ("decimals", Uint8(kwargs["decimals"])),
                 ("extensions", Set([])),
 
             ]
