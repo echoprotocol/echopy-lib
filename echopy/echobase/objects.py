@@ -374,7 +374,7 @@ class VestingPolicyInitializer(StaticVariant):
             data = CddVestingPolicyInitializer(o[1])
         else:
             raise Exception("Unknown vesting_policy_initializer")
-        super().__init__(data, _id)
+        super().__init__(_id, data)
 
 
 class WorkerInitializer(StaticVariant):
@@ -414,7 +414,7 @@ class WorkerInitializer(StaticVariant):
             data = BurnWorkerInitializer(o[1])
         else:
             raise Exception("Unknown Worker_initializer")
-        super().__init__(data, id)
+        super().__init__(_id, data)
 
 
 class FeeSchedule(EchoObject):
