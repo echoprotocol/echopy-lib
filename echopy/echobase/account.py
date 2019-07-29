@@ -151,13 +151,14 @@ class PrivateKey(Prefix):
     def __init__(self, wif=None):
         if wif is None:
             import os
-            self._wif = Base58(hexlify(os.urandom(32)).decode("ascii"))
+            self._wif = Base58(hexlify(os.urandom(32)).decode("ascii"), private=True)
         elif isinstance(wif, PrivateKey):
             self._wif = wif._wif
         elif isinstance(wif, Base58):
             self._wif = wif
+            self._wif._private = True
         else:
-            self._wif = Base58(wif)
+            self._wif = Base58(wif, private=True)
 
         assert len(repr(self._wif)) == 64
 

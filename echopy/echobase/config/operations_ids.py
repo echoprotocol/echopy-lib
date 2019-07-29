@@ -51,7 +51,7 @@ class OperationIds:
         self.CREATE_ETH_ADDRESS = 47
         self.DEPOSIT_ETH_ADDRESS = 48
         self.WITHDRAW_ETH = 49
-        self.APPROVE_WIDTHDRAW_ETH = 50
+        self.APPROVE_WITHDRAW_ETH = 50
         self.CONTRACT_FUND_POOL = 51
         self.CONTRACT_WHITELIST = 52
         self.SIDECHAIN_ISSUE = 53

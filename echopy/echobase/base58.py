@@ -18,8 +18,9 @@ class Base58(Prefix):
     the library.
     """
 
-    def __init__(self, data, prefix=None):
+    def __init__(self, data, prefix=None, private=False):
         self.set_prefix(prefix)
+        self._private = private
         if isinstance(data, Base58):
             data = repr(data)
         if all(c in string.hexdigits for c in data):
@@ -27,7 +28,7 @@ class Base58(Prefix):
         else:
             if self.prefix is not None and data[: len(self.prefix)] == self.prefix:
                 data = data[len(self.prefix):]
-            self._hex = base58decode(data)
+            self._hex = base58CheckDecode(data) if self._private else base58decode(data)
 
     def __format__(self, _format):
         return str(self) if _format == 'WIF' else _format.upper() + str(self)
@@ -36,6 +37,8 @@ class Base58(Prefix):
         return self._hex
 
     def __str__(self):
+        if self._private:
+            return base58CheckEncode(0x80, self._hex)
         return base58encode(self._hex)
 
     def __bytes__(self):
@@ -98,3 +101,18 @@ def b58encode(v):
 
 def b58decode(v):
     return base58decode(v)
+
+
+def base58CheckEncode(version, payload):
+    s = ("%.2x" % version) + payload
+    checksum = doublesha256(s)[:4]
+    result = s + hexlify(checksum).decode("ascii")
+    return base58encode(result)
+
+
+def base58CheckDecode(s):
+    s = unhexlify(base58decode(s))
+    dec = hexlify(s[:-4]).decode("ascii")
+    checksum = doublesha256(dec)[:4]
+    assert s[-4:] == checksum
+    return dec[2:]
