@@ -220,6 +220,13 @@ class PublicKey(Prefix):
     def __bytes__(self):
         return bytes(self._public_key)
 
+    def __lt__(self, other):
+        """ For sorting of public keys (due to graphene),
+            we actually sort according to addresses
+        """
+        assert isinstance(other, PublicKey)
+        return repr(self) < repr(other)
+
     @property
     def address(self):
         return EchoAddress.from_public_key(self, prefix=self.prefix)
