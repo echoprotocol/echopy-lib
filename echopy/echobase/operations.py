@@ -99,67 +99,6 @@ class Transfer(EchoObject):
         return result
 
 
-class LimitOrderCreate(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("seller", ObjectId(kwargs["seller"], "account")),
-                ("amount_to_sell", Asset(kwargs["amount_to_sell"])),
-                ("min_to_receive", Asset(kwargs["min_to_receive"])),
-                ("expiration", PointInTime(kwargs["expiration"])),
-                ("fill_or_kill", Bool(kwargs["fill_or_kill"])),
-                ("extensions", Set([])),
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
-class LimitOrderCancel(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("fee_paying_account", ObjectId(kwargs["fee_paying_account"], "account")),
-                ("order", ObjectId(kwargs["order"], "limit_order")),
-                ("extensions", Set([])),
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
-class CallOrderUpdate(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("funding_account", ObjectId(kwargs["funding_account"], "account")),
-                ("delta_collateral", Asset(kwargs["delta_collateral"])),
-                ("delta_debt", Asset(kwargs["delta_debt"])),
-                ("extensions", Set([])),
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
-class FillOrder(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("order_id", ObjectId(kwargs["order_id"])),
-                ("account_id", ObjectId(kwargs["account_id"], "account")),
-                ("pays", Asset(kwargs["pays"])),
-                ("receives", Asset(kwargs["receives"])),
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
 class AccountCreate(EchoObject):
     def detail(self, *args, **kwargs):
         result = OrderedDict(
@@ -205,20 +144,6 @@ class AccountWhitelist(EchoObject):
             [
                 ("authorizing_account", ObjectId(kwargs["authorizing_account"], "account")),
                 ("new_listing", Uint8(kwargs["new_listing"])),
-                ("extensions", Set([])),
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
-class AccountUpgrade(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("account_to_upgrade", ObjectId(kwargs["account_to_upgrade"], "account")),
-                ("upgrade_to_lifetime_member", Bool(kwargs["upgrade_to_lifetime_member"])),
                 ("extensions", Set([])),
             ]
         )
@@ -354,35 +279,6 @@ class AssetFundFeePool(EchoObject):
         return result
 
 
-class AssetSettle(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("account", ObjectId(kwargs["account"], "account")),
-                ("amount", Asset(kwargs["asset"])),
-                ("extensions", Set([])),
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
-class AssetGlobalSettle(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("issuer", ObjectId(kwargs["issuer"], "account")),
-                ("asset_to_settle", ObjectId(kwargs["asset_to_settle"], "asset")),
-                ("settle_price", Price(kwargs["settle_price"])),
-                ("extensions", Set([])),
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
 class AssetPublishFeed(EchoObject):
     def detail(self, *args, **kwargs):
         result = OrderedDict(
@@ -447,74 +343,6 @@ class ProposalDelete(EchoObject):
                 ("fee_paying_account", ObjectId(kwargs["fee_paying_account"], "account")),
                 ("using_owner_authority", Bool(kwargs["using_owner_authority"])),
                 ("proposal", ObjectId(kwargs["proposal"], "proposal")),
-                ("extensions", Set([])),
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
-class WithdrawPermissionCreate(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("withdraw_from_account", ObjectId(kwargs["withdraw_from_account"], "account")),
-                ("authorized_account", ObjectId(kwargs["authorized_account"], "account")),
-                ("withdrawal_limit", Asset(kwargs["withdrawal_limit"])),
-                ("withdrawal_period_sec", Uint32(kwargs["withdrawal_period_sec"])),
-                ("periods_until_expiration", Uint32(kwargs["periods_until_expiration"])),
-                ("period_start_time", PointInTime(kwargs["period_start_time"])),
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
-class WithdrawPermissionUpdate(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("withdraw_from_account", ObjectId(kwargs["withdraw_from_account"], "account")),
-                ("authorized_account", ObjectId(kwargs["authorized_account"], "account")),
-                ("permission_to_update", ObjectId(kwargs["permission_to_update"], "withdraw_permission")),
-                ("withdrawal_limit", Asset(kwargs["withdrawal_limit"])),
-                ("withdrawal_period_sec", Uint32(kwargs["withdrawal_period_sec"])),
-                ("period_start_time", PointInTime(kwargs["period_start_time"])),
-                ("periods_until_expiration", Uint32(kwargs["periods_until_expiration"])),
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
-class WithdrawPermissionClaim(EchoObject):
-    def detail(self, *args, **kwargs):
-
-        result = OrderedDict(
-            [
-                ("withdraw_permission", ObjectId(kwargs["withdraw_permission"], "withdraw_permission")),
-                ("withdraw_from_account", ObjectId(kwargs["withdraw_from_account"], "account")),
-                ("withdraw_to_account", ObjectId(kwargs["withdraw_to_account"], "account")),
-                ("amount_to_withdraw", Asset(kwargs["amount_to_withdraw"])),
-                ("extensions", Set([])),
-
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
-class WithdrawPermissionDelete(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("withdraw_from_account", ObjectId(kwargs["withdraw_from_account"], "account")),
-                ("authorized_account", ObjectId(kwargs["authorized_account"], "account")),
-                ("withdrawal_permission", ObjectId(kwargs["withdrawal_permission"], "withdraw_permission")),
                 ("extensions", Set([])),
             ]
         )
@@ -601,37 +429,6 @@ class VestingBalanceWithdraw(EchoObject):
         return result
 
 
-class Custom(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("payer", ObjectId(kwargs["payer"], "account")),
-                ("required_auths", Set([ObjectId(i, "account") for i in kwargs["required_auths"]])),
-                ("id", Uint16(kwargs["id"])),
-                ("data", Bytes(kwargs["data"])),
-                ("extensions", Set([])),
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
-class Assert(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("fee_paying_account", ObjectId(kwargs["fee_paying_account"], "account")),
-                ("predicates", Array([i for i in kwargs["predicates"]])),
-                ("required_auths", Set([ObjectId(i, "account") for i in kwargs["required_auths"]])),
-                ("extensions", Set([])),
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
 class BalanceClaim(EchoObject):
     def detail(self, *args, **kwargs):
         result = OrderedDict(
@@ -665,21 +462,6 @@ class OverrideTransfer(EchoObject):
         return result
 
 
-class AssetSettleCancel(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("settlement", ObjectId(kwargs["settlement"], "force_settlement")),
-                ("account", ObjectId(kwargs["account"], "account")),
-                ("amount", Asset(kwargs["amount"])),
-                ("extensions", Set([])),
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
 class AssetClaimFees(EchoObject):
     def detail(self, *args, **kwargs):
         result = OrderedDict(
@@ -694,37 +476,7 @@ class AssetClaimFees(EchoObject):
         return result
 
 
-class BidCollateral(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("bidder", ObjectId(kwargs["bidder"], "account")),
-                ("additional_collateral", Asset(kwargs["additional_collateral"])),
-                ("debt_covered", Asset(kwargs["debt_covered"])),
-                ("extensions", Set([])),
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
-class ExecuteBid(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("bidder", ObjectId(kwargs["bidder"], "account")),
-                ("debt", Asset(kwargs["debt"])),
-                ("collateral", Asset(kwargs["collateral"])),
-                ("extensions", Set([])),
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
-class CreateContract(EchoObject):
+class ContractCreate(EchoObject):
     def detail(self, *args, **kwargs):
         supported_asset_id = get_optional("supported_asset_id", kwargs, partial(ObjectId, type_verify="asset"))
 
@@ -743,7 +495,7 @@ class CreateContract(EchoObject):
         return result
 
 
-class CallContract(EchoObject):
+class ContractCall(EchoObject):
     def detail(self, *args, **kwargs):
         result = OrderedDict(
             [
@@ -806,7 +558,7 @@ class TransferToAddress(EchoObject):
         return result
 
 
-class GenerateEthAddress(EchoObject):
+class SidechainEthCreateAddress(EchoObject):
     def detail(self, *args, **kwargs):
         result = OrderedDict(
             [
@@ -819,7 +571,7 @@ class GenerateEthAddress(EchoObject):
         return result
 
 
-class WithdrawEth(EchoObject):
+class SidechainEthWithdraw(EchoObject):
     def detail(self, *args, **kwargs):
         result = OrderedDict(
             [
@@ -867,7 +619,7 @@ class ContractWhitelist(EchoObject):
         return result
 
 
-class SidechainIssue(EchoObject):
+class SidechainEthIssue(EchoObject):
     def detail(self, *args, **kwargs):
         result = OrderedDict(
             [
@@ -882,7 +634,7 @@ class SidechainIssue(EchoObject):
         return result
 
 
-class SidechainBurn(EchoObject):
+class SidechainEthBurn(EchoObject):
     def detail(self, *args, **kwargs):
         result = OrderedDict(
             [
@@ -914,7 +666,7 @@ class ContractUpdate(EchoObject):
         return result
 
 
-class RegisterErc20Token(EchoObject):
+class SidechainErc20RegisterToken(EchoObject):
     def detail(self, *args, **kwargs):
         result = OrderedDict(
             [
@@ -932,7 +684,7 @@ class RegisterErc20Token(EchoObject):
         return result
 
 
-class WithdrawErc20Token(EchoObject):
+class SidechainErc20WithdrawToken(EchoObject):
     def detail(self, *args, **kwargs):
         result = OrderedDict(
             [

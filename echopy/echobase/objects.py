@@ -169,9 +169,14 @@ class Permission(EchoObject):
         if isArgsThisClass(self, args):
             self.data = args[0].data
         else:
-
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
+
+            kwargs["key_auths"] = sorted(
+                kwargs["key_auths"],
+                key=lambda x: PublicKey(x[0], prefix='ECHO'),
+                reverse=False,
+            )
 
             account_auths = Map(
                 [
@@ -231,8 +236,6 @@ class AssetOptions(EchoObject):
                 OrderedDict(
                     [
                         ("max_supply", Int64(kwargs["max_supply"])),
-                        ("market_fee_percent", Uint16(kwargs["market_fee_percent"])),
-                        ("max_market_fee", Int64(kwargs["max_market_fee"])),
                         ("issuer_permissions", Uint16(kwargs["issuer_permissions"])),
                         ("flags", Uint16(kwargs["flags"])),
                         ("core_exchange_rate", Price(kwargs["core_exchange_rate"])),
@@ -251,24 +254,6 @@ class AssetOptions(EchoObject):
                                 [
                                     ObjectId(x, "account")
                                     for x in kwargs["blacklist_authorities"]
-                                ]
-                            ),
-                        ),
-                        (
-                            "whitelist_markets",
-                            Array(
-                                [
-                                    ObjectId(x, "asset")
-                                    for x in kwargs["whitelist_markets"]
-                                ]
-                            ),
-                        ),
-                        (
-                            "blacklist_markets",
-                            Array(
-                                [
-                                    ObjectId(x, "asset")
-                                    for x in kwargs["blacklist_markets"]
                                 ]
                             ),
                         ),
@@ -291,18 +276,6 @@ class BitAssetOptions(EchoObject):
                     [
                         ("feed_lifetime_sec", Uint32(kwargs["feed_lifetime_sec"])),
                         ("minimum_feeds", Uint8(kwargs["minimum_feeds"])),
-                        (
-                            "force_settlement_delay_sec",
-                            Uint32(kwargs["force_settlement_delay_sec"]),
-                        ),
-                        (
-                            "force_settlement_offset_percent",
-                            Uint16(kwargs["force_settlement_offset_percent"]),
-                        ),
-                        (
-                            "maximum_force_settlement_volume",
-                            Uint16(kwargs["maximum_force_settlement_volume"]),
-                        ),
                         (
                             "short_backing_asset",
                             ObjectId(kwargs["short_backing_asset"], "asset"),
@@ -434,6 +407,7 @@ class FeeSchedule(EchoObject):
                 )
             )
 
+
 class EchorandConfig(EchoObject):
     def __init__(self, *args, **kwargs):
         if isArgsThisClass(self, args):
@@ -498,7 +472,6 @@ class EthMethod(EchoObject):
             )
 
 
-
 class GasPrice(EchoObject):
     def __init__(self, *args, **kwargs):
         if isArgsThisClass(self, args):
@@ -543,13 +516,8 @@ class ChainParameters(EchoObject):
                         ("maximum_authority_membership", Uint16(kwargs["maximum_authority_membership"])),
                         ("reserve_percent_of_fee", Uint16(kwargs["reserve_percent_of_fee"])),
                         ("network_percent_of_fee", Uint16(kwargs["network_percent_of_fee"])),
-                        ("lifetime_referrer_percent_of_fee", Uint16(kwargs["lifetime_referrer_percent_of_fee"])),
                         ("cashback_vesting_period_seconds", Uint32(kwargs["cashback_vesting_period_seconds"])),
-                        ("cashback_vesting_threshold", Int64(kwargs["cashback_vesting_threshold"])),
-                        ("count_non_member_votes", Bool(kwargs["count_non_member_votes"])),
-                        ("allow_non_member_whitelists", Bool(kwargs["allow_non_member_whitelists"])),
                         ("max_predicate_opcode", Uint16(kwargs["max_predicate_opcode"])),
-                        ("fee_liquidation_threshold", Int64(kwargs["fee_liquidation_threshold"])),
                         ("accounts_per_fee_scale", Uint16(kwargs["accounts_per_fee_scale"])),
                         ("account_fee_scale_bitshifts", Uint8(kwargs["account_fee_scale_bitshifts"])),
                         ("max_authority_depth", Uint8(kwargs["max_authority_depth"])),
