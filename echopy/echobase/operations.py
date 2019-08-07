@@ -104,8 +104,6 @@ class AccountCreate(EchoObject):
         result = OrderedDict(
             [
                 ("registrar", ObjectId(kwargs["registrar"], "account")),
-                ("referrer", ObjectId(kwargs["referrer"], "account")),
-                ("referrer_percent", Uint16(kwargs["referrer_percent"])),
                 ("name", String(kwargs["name"])),
                 ("active", Permission(kwargs["active"])),
                 ("echorand_key", PublicKey(kwargs["echorand_key"])),
@@ -177,7 +175,6 @@ class AssetCreate(EchoObject):
                 ("precision", Uint8(kwargs["precision"])),
                 ("common_options", AssetOptions(kwargs["common_options"])),
                 ("bitasset_opts", Optional(bitasset_opts)),
-                ("is_prediction_market", Bool(kwargs["is_prediction_market"])),
                 ("extensions", Set([])),
             ]
         )
