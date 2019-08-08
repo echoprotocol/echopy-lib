@@ -14,8 +14,8 @@ class Api:
     def __init__(self):
         self.ws = WS()
 
-    def connect(self, url):
-        self.ws.connect(url)
+    def connect(self, url, debug):
+        self.ws.connect(url, debug)
         self.database = DatabaseApi(self.ws.db_api)
         self.asset = AssetApi(self.ws.asset_api)
         self.network = NetworkApi(self.ws.network_api)

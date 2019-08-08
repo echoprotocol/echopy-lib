@@ -16,7 +16,7 @@ class SimpleWebsocket(Rpc):
         self.__lock = Lock()
 
     def connect(self):
-        log.debug("Trying to connect to node %s" % self.url)
+        log.debug("Trying to connect to node %s\n" % self.url)
         self._request_id = 0
         if self.url[:3] == "wss":
             ssl_defaults = ssl.get_default_verify_paths()
@@ -55,7 +55,7 @@ class SimpleWebsocket(Rpc):
         if not self.ws:
             self.connect()
 
-        log.debug(json.dumps(payload))
+        # log.debug(json.dumps(payload))
 
         # Mutex/Lock
         # We need to lock because we need to wait for websocket

@@ -6,13 +6,12 @@ from .exceptions import RPCError, NumRetriesReached
 
 log = logging.getLogger(__name__)
 
-
 class Rpc:
     """ This class allows to call API methods synchronously, without
         callbacks.
     """
 
-    def __init__(self, url, **kwargs):
+    def __init__(self, url, debug, **kwargs):
         self.api_id = {}
         self._request_id = 0
 
@@ -21,6 +20,21 @@ class Rpc:
         self.user = kwargs.get("user")
         self.password = kwargs.get("password")
         self.url = url
+        self.debug = debug
+
+    @property
+    def debug(self):
+        return self._debug
+
+    @debug.setter
+    def debug(self, debug):
+        self._debug = debug
+        if debug is not False:
+            logging.basicConfig(
+                level=logging.DEBUG,
+                format='%(asctime)s - %(message)s',
+                datefmt='%d-%b-%y %H:%M:%S'
+            )
 
     def setup_proxy(self, options):
         proxy_url = options.pop("proxy", None)
@@ -35,7 +49,7 @@ class Rpc:
             if not (url.scheme.endswith("h")):
                 self.proxy_rdns = False
             else:
-                self.proxy_type = self.proxy_type[0 : len(self.proxy_type) - 1]
+                self.proxy_type = self.proxy_type[0: len(self.proxy_type) - 1]
         else:
             self.proxy_host = options.pop("proxy_host", None)
             self.proxy_port = options.pop("proxy_port", 80)
@@ -78,7 +92,8 @@ class Rpc:
         except ValueError:
             raise ValueError("Client returned invalid format. Expected JSON!")
 
-        log.debug(json.dumps(query))
+        log.debug('{}{}{} {}\n'.format('\x1b[1;31m', '<<<', '\x1b[0m', ret))
+
         if "error" in ret:
             if "detail" in ret["error"]:
                 raise RPCError(ret["error"]["detail"])
@@ -106,11 +121,12 @@ class Rpc:
             self.num_retries = kwargs.get("num_retries", self.num_retries)
 
             query = {
-                "method": "call",
-                "params": [api_id, name, params],
-                "jsonrpc": "2.0",
-                "id": self.get_request_id(),
+                'method': 'call',
+                'params': [api_id, name, params],
+                'jsonrpc': '2.0',
+                'id': self.get_request_id(),
             }
+            log.debug('{}{}{} {}'.format('\x1b[1;32m', '>>>', '\x1b[0m', query))
             r = self.rpcexec(query)
             message = self.parse_response(r)
             return message

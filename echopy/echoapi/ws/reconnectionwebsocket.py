@@ -32,7 +32,7 @@ class ReconnectionWebsocket:
 
     def _updated_connection(self):
         if self.url[:2] == "ws":
-            return SimpleWebsocket(self.url, **self._kwargs)
+            return SimpleWebsocket(self.url, self.debug, **self._kwargs)
         else:
             raise ValueError("Only support ws(s) connections!")
 
@@ -40,13 +40,14 @@ class ReconnectionWebsocket:
     def connection(self):
         if self._active_url != self.url:
             log.debug(
-                "Updating connection from {} to {}".format(self._active_url, self.url)
+                "Updating connection from {} to {} \n".format(self._active_url, self.url)
             )
             self._active_connection = self._updated_connection()
             self._active_url = self.url
         return self._active_connection
 
-    def connect(self, url=None):
+    def connect(self, url=None, debug=False):
+        self.debug = debug
         try:
             if self.urls is None and url:
                 urls = [url]

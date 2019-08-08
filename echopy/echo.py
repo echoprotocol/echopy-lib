@@ -14,8 +14,8 @@ class Echo:
     def create_transaction(self):
         return Transaction(self.api)
 
-    def connect(self, url):
-        self.api.connect(url)
+    def connect(self, url, debug=False):
+        self.api.connect(url, debug)
 
     def disconnect(self):
         self.api.disconnect()
