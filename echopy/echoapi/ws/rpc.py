@@ -32,7 +32,7 @@ class Rpc:
         if debug is not False:
             logging.basicConfig(
                 level=logging.DEBUG,
-                format='%(asctime)s - %(message)s',
+                format='\n{}%(levelname)s:{} %(asctime)s - %(message)s'.format('\x1b[1;33m', '\x1b[0m'),
                 datefmt='%d-%b-%y %H:%M:%S'
             )
 
