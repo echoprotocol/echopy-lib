@@ -64,7 +64,6 @@ class ReconnectionWebsocket:
             self.next()
         self.register_apis()
 
-
     def disconnect(self):
         if self.urls is not None:
             self.connection.disconnect()
@@ -73,7 +72,6 @@ class ReconnectionWebsocket:
             self.url = None
             self.urls = None
             self._active_connection = None
-
 
     def find_next(self):
         if int(self.num_retries) < 0:
@@ -121,7 +119,6 @@ class ReconnectionWebsocket:
     def post_process_exception(self, exception):
         raise exception
 
-
     def register_apis(self):
         """ This method is called right after connection and has previously
             been used to register to different APIs within the backend that are
@@ -134,7 +131,7 @@ class ReconnectionWebsocket:
         self._registration = EchoApi(self.make_query, 'registration')
         self._asset = EchoApi(self.make_query, 'asset')
 
-        self._login = EchoApi(self.make_query, 'login')
+        self._login = EchoApi(self.make_query, 'login', ["", ""])
         self._login.api_id = 1
         self._network_node = EchoApi(self.make_query, 'network_node')
 

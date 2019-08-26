@@ -2,9 +2,10 @@
 import json
 import logging
 import urllib
-from .exceptions import RPCError, NumRetriesReached
+from .exceptions import RPCError
 
 log = logging.getLogger(__name__)
+
 
 class Rpc:
     """ This class allows to call API methods synchronously, without
