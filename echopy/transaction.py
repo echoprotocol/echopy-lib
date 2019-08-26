@@ -130,7 +130,7 @@ class Transaction:
         if not self.finalized:
             raise Exception('transaction is not finalized')
 
-    def add_operation(self, name, props: dict):
+    def add_operation(self, name, props):
         self.check_not_finalized()
         if (name is None):
             raise Exception('name is missing')
