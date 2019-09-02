@@ -95,6 +95,23 @@ class EchoObject(OrderedDict):
     json = __json__
 
 
+class OpWrapper(EchoObject):
+    def __init__(self, *args, **kwargs):
+        if isArgsThisClass(self, args):
+            self.data = args[0].data
+        else:
+            if len(args) == 1 and len(kwargs) == 0:
+                kwargs = args[0]
+            super().__init__(
+
+                OrderedDict(
+                    [
+                        ("op", StaticVariant(kwargs["op"][0], kwargs["op"][1])),
+                    ]
+                )
+            )
+
+
 class ObjectId(ObjectIdParent):
     """ Need to overwrite a few attributes to load proper object_types from
         ECHO

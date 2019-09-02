@@ -27,6 +27,7 @@ from .objects import (
     PriceFeed,
     VestingPolicyInitializer,
     ChainParameters,
+    OpWrapper,
 )
 
 from .objects import EchoObject
@@ -141,6 +142,7 @@ class AccountWhitelist(EchoObject):
         result = OrderedDict(
             [
                 ("authorizing_account", ObjectId(kwargs["authorizing_account"], "account")),
+                ("account_to_list", ObjectId(kwargs["account_to_list"], "account")),
                 ("new_listing", Uint8(kwargs["new_listing"])),
                 ("extensions", Set([])),
             ]
@@ -186,13 +188,14 @@ class AssetCreate(EchoObject):
 class AssetUpdate(EchoObject):
     def detail(self, *args, **kwargs):
         new_issuer = get_optional("new_issuer", kwargs, partial(ObjectId, type_verify="account"))
+        new_options = get_optional("new_options", kwargs, AssetOptions)
 
         result = OrderedDict(
             [
                 ("issuer", ObjectId(kwargs["issuer"], "account")),
                 ("asset_to_update", ObjectId(kwargs["asset_to_update"], "asset")),
                 ("new_issuer", Optional(new_issuer)),
-                ("new_options", AssetOptions(kwargs["new_options"])),
+                ("new_options", Optional(new_options)),
                 ("extensions", Set([])),
             ]
         )
@@ -252,7 +255,7 @@ class AssetReserve(EchoObject):
         result = OrderedDict(
             [
                 ("payer", ObjectId(kwargs["payer"], "account")),
-                ("amount_to_reserve", Asset(kwargs["asset"])),
+                ("amount_to_reserve", Asset(kwargs["amount_to_reserve"])),
                 ("extensions", Set([])),
             ]
         )
@@ -294,12 +297,15 @@ class AssetPublishFeed(EchoObject):
 class ProposalCreate(EchoObject):
     def detail(self, *args, **kwargs):
         review_period_seconds = get_optional("review_period_seconds", kwargs, Uint32)
-
+        proposed_operations = []
+        for proposed_operation in kwargs["proposed_ops"]:
+            operation_id, operation_class = get_operation_by_id(proposed_operation[0])
+            proposed_operations.append(OpWrapper(op=[operation_id, operation_class(proposed_operation[1])]))
         result = OrderedDict(
             [
                 ("fee_paying_account", ObjectId(kwargs["fee_paying_account"], "account")),
                 ("expiration_time", PointInTime(kwargs["expiration_time"])),
-                ("proposed_ops", Array([StaticVariant(op_id, op) for op_id, op in kwargs["proposed_ops"]])),
+                ("proposed_ops", Array(proposed_operations)),
                 ("review_period_seconds", Optional(review_period_seconds)),
                 ("extensions", Set([])),
             ]
