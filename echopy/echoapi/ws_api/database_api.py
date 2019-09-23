@@ -212,3 +212,12 @@ class DatabaseApi:
 
     def get_account_withdrawals(self, account_id):
         return self.db.rpcexec('get_account_withdrawals', [account_id])
+
+    def get_btc_addresses(self, account):
+        return self.db.rpcexec('get_btc_addresses', [account])
+
+    def get_btc_deposit_script(self, address):
+        return self.db.rpcexec('get_btc_deposit_script', [address])
+
+    def get_frozen_balances(self, account):
+        return self.db.rpcexec('get_frozen_balances', [account])

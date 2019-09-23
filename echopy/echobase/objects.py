@@ -546,3 +546,22 @@ class ChainParameters(EchoObject):
                     ]
                 )
             )
+
+
+class BtcTransactionDetails(EchoObject):
+    def __init__(self, *args, **kwargs):
+        if isArgsThisClass(self, args):
+            self.data = args[0].data
+        else:
+            if len(args) == 1 and len(kwargs) == 0:
+                kwargs = args[0]
+            super().__init__(
+                OrderedDict(
+                    [
+                        ("block_number", Uint64(kwargs["block_number"])),
+                        ("tx_id", String(kwargs["tx_id"])),
+                        ("value", Uint64(kwargs["value"])),
+                        ("vout", Uint32(kwargs["vout"])),
+                    ]
+                )
+            )

@@ -7,10 +7,10 @@ from .types import (
     Uint32,
     Uint64,
 )
-from .types import Static_variant
+from .types import StaticVariant
 
 
-class FeeTypes(Static_variant):
+class FeeTypes(StaticVariant):
     def __init__(self, o):
         class NoFee(EchoObject):
             def __init__(self, kwargs):
@@ -167,4 +167,4 @@ class FeeTypes(Static_variant):
         }
 
         ops_key, params = o
-        super().__init__(ops[ops_key](params), ops_key)
+        super().__init__(ops_key, ops[ops_key](params))

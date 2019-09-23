@@ -199,10 +199,10 @@ class Transaction:
         if len(default_asset_operations):
             fees = self._get_required_fees(default_asset_operations)
             for i, fee in enumerate(fees):
-                if 'fee' in fee:
-                    fee = fee['fee']
-                else:
+                if isinstance(fee, list):
                     fee = fee[0]
+                elif isinstance(fee, dict) and 'fee' in fee:
+                    fee = fee['fee']
                 self._operations[default_asset_indices[i]][1].update({'fee': Asset(fee)})
                 self._operations[default_asset_indices[i]][1].move_to_end('fee', last=False)
 
@@ -213,10 +213,10 @@ class Transaction:
 
             total_fees = 0
             for i, fee in enumerate(fees):
-                if 'fee' in fee:
-                    fee = fee['fee']
-                else:
+                if isinstance(fee, list):
                     fee = fee[0]
+                elif isinstance(fee, dict) and 'fee' in fee:
+                    fee = fee['fee']
                 self._operations[non_default_asset_indices[asset_group][i]][1].update({'fee': Asset(fee)})
                 total_fees += fee['amount']
 
