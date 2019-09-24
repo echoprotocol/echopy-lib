@@ -50,6 +50,6 @@ ops = [
     "sidechain_btc_deposit",
     "sidechain_btc_withdraw",
     "sidechain_btc_approve_withdraw",
-    "sidechain_btc_aggregate_operation"
+    "sidechain_btc_aggregate"
 ]
 operations = {o: ops.index(o) for o in ops}

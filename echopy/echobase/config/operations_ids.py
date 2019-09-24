@@ -28,7 +28,7 @@ class OperationIds:
         self.CONTRACT_CREATE = 24
         self.CONTRACT_CALL = 25
         self.CONTRACT_TRANSFER = 26
-        self.CONTRAT_UPDATE = 27
+        self.CONTRACT_UPDATE = 27
         self.ACCOUNT_ADDRESS_CREATE = 28
         self.TRANSFER_TO_ADDRESS = 29
         self.SIDECHAIN_ETH_CREATE_ADDRESS = 30
