@@ -349,7 +349,7 @@ class CommitteeMemberCreate(EchoObject):
                 ("committee_member_account", ObjectId(kwargs["committee_member_account"], "account")),
                 ("url", String(kwargs["url"])),
                 ("eth_address", Bytes(kwargs["eth_address"], 20)),
-                ("btc_public_key", Bytes(kwargs["btc_public_key"], 33)),
+                ("btc_public_key", Bytes(kwargs["btc_public_key"])),
                 ("extensions", Set([])),
             ]
         )
@@ -362,7 +362,7 @@ class CommitteeMemberUpdate(EchoObject):
     def detail(self, *args, **kwargs):
         new_url = get_optional("new_url", kwargs, String)
         new_eth_address = get_optional("new_eth_address", kwargs, partial(Bytes, length=20))
-        new_btc_public_key = get_optional("new_btc_public_key", kwargs, partial(Bytes, length=33))
+        new_btc_public_key = get_optional("new_btc_public_key", kwargs, Bytes)
 
         result = OrderedDict(
             [
