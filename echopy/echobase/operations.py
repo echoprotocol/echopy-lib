@@ -803,7 +803,7 @@ class SidechainBtcAggregate(EchoObject):
 
 
 class BalanceFreeze(EchoObject):
-    def default(self, *args, **kwargs):
+    def detail(self, *args, **kwargs):
         result = OrderedDict(
             [
                 ("account", ObjectId(kwargs["account"], "account")),

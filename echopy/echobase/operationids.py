@@ -21,7 +21,7 @@ ops = [
     "vesting_balance_create",
     "vesting_balance_withdraw",
     "balance_claim",
-    "balanse_freeze",
+    "balance_freeze",
     "override_transfer",
     "asset_claim_fees",
     "contract_create",
