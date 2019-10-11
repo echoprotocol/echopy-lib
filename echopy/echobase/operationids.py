@@ -22,6 +22,7 @@ ops = [
     "vesting_balance_withdraw",
     "balance_claim",
     "balance_freeze",
+    "balance_unfreeze",
     "override_transfer",
     "asset_claim_fees",
     "contract_create",
@@ -50,6 +51,7 @@ ops = [
     "sidechain_btc_deposit",
     "sidechain_btc_withdraw",
     "sidechain_btc_approve_withdraw",
-    "sidechain_btc_aggregate"
+    "sidechain_btc_aggregate",
+    "block_reward"
 ]
 operations = {o: ops.index(o) for o in ops}

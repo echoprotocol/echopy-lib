@@ -259,7 +259,7 @@ class AssetOptions(EchoObject):
                         ("core_exchange_rate", Price(kwargs["core_exchange_rate"])),
                         (
                             "whitelist_authorities",
-                            Array(
+                            Set(
                                 [
                                     ObjectId(x, "account")
                                     for x in kwargs["whitelist_authorities"]
@@ -268,7 +268,7 @@ class AssetOptions(EchoObject):
                         ),
                         (
                             "blacklist_authorities",
-                            Array(
+                            Set(
                                 [
                                     ObjectId(x, "account")
                                     for x in kwargs["blacklist_authorities"]
