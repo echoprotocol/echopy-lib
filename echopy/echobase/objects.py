@@ -560,8 +560,8 @@ class BtcTransactionDetails(EchoObject):
                     [
                         ("block_number", Uint64(kwargs["block_number"])),
                         ("tx_id", String(kwargs["tx_id"])),
-                        ("value", Uint64(kwargs["value"])),
-                        ("vout", Uint32(kwargs["vout"])),
+                        ("index", Uint32(kwargs["index"])),
+                        ("amount", Uint64(kwargs["amount"])),
                     ]
                 )
             )

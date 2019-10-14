@@ -126,9 +126,6 @@ class DatabaseApi:
     def lookup_committee_member_accounts(self, lower_bound_name, limit):
         return self.db.rpcexec('lookup_committee_member_accounts', [lower_bound_name, limit])
 
-    def lookup_vote_ids(self, votes):
-        return self.db.rpcexec('lookup_vote_ids', [votes])
-
     def get_transaction_hex(self, transaction):
         return self.db.rpcexec('get_transaction_hex', [transaction])
 
@@ -159,8 +156,8 @@ class DatabaseApi:
     def get_contract_logs(self, contract_id, from_block, to_block):
         return self.db.rpcexec('get_contract_logs', [contract_id, from_block, to_block])
 
-    def subscribe_contract_logs(self, callback, contract_id, from_block, to_block):
-        return self.db.rpcexec('subscribe_contract_logs', [callback, contract_id, from_block, to_block])
+    def subscribe_contract_logs(self, callback, subs):
+        return self.db.rpcexec('subscribe_contract_logs', [callback, subs])
 
     def get_contract_result(self, result_contract_id):
         return self.db.rpcexec('get_contract_result', [result_contract_id])
@@ -221,3 +218,6 @@ class DatabaseApi:
 
     def get_frozen_balances(self, account):
         return self.db.rpcexec('get_frozen_balances', [account])
+
+    def get_committee_frozen_balance(self, committee_member_id):
+        return self.db.rpcexec('get_committee_frozen_balance', [committee_member_id])
