@@ -232,11 +232,8 @@ class AccountOptions(EchoObject):
             super().__init__(
                 OrderedDict(
                     [
-                        ("voting_account", ObjectId(kwargs["voting_account"], "account")),
                         ("delegating_account", ObjectId(kwargs["delegating_account"], "account")),
                         ("delegate_share", Uint16(kwargs["delegate_share"])),
-                        ("num_committee", Uint16(kwargs["num_committee"])),
-                        ("votes", Set([VoteId(o) for o in kwargs["votes"]])),
                         ("extensions", Set([])),
                     ]
                 )
