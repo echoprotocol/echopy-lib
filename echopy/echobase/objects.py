@@ -225,10 +225,6 @@ class AccountOptions(EchoObject):
         else:
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
-            kwargs["votes"] = list(set(kwargs["votes"]))
-            kwargs["votes"] = sorted(
-                kwargs["votes"], key=lambda x: float(x.split(":")[1])
-            )
             super().__init__(
                 OrderedDict(
                     [
