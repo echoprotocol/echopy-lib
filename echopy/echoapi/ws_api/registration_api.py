@@ -11,3 +11,6 @@ class RegistrationApi:
             'submit_registration_solution',
             [callback, name, active, echorand_key, nonce, rand_num]
         )
+
+    def get_registrar(self):
+        return self.db.rpcexec('get_registrar', [])
