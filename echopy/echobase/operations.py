@@ -30,6 +30,7 @@ from .objects import (
     ChainParameters,
     OpWrapper,
     BtcTransactionDetails,
+    P2shP2wsh,
 )
 
 from .objects import EchoObject
@@ -209,11 +210,13 @@ class AssetUpdateBitasset(EchoObject):
 
 class AssetUpdateFeedProducers(EchoObject):
     def detail(self, *args, **kwargs):
+        new_feed_producers = sorted([ObjectId(i, "account") for i in kwargs["new_feed_producers"]])
+        new_feed_producers = Set(new_feed_producers)
         result = OrderedDict(
             [
                 ("issuer", ObjectId(kwargs["issuer"], "account")),
                 ("asset_to_update", ObjectId(kwargs["asset_to_update"], "asset")),
-                ("new_feed_producers", Set([ObjectId(i, "account") for i in kwargs["new_feed_producers"]])),
+                ("new_feed_producers", new_feed_producers),
                 ("extensions", Set([])),
             ]
         )
@@ -315,8 +318,6 @@ class ProposalUpdate(EchoObject):
                                                     kwargs["active_approvals_to_remove"]])),
                 ("owner_approvals_to_add", Set([ObjectId(i, "account") for i in
                                                 kwargs["owner_approvals_to_add"]])),
-                ("owner_approvals_to_remove", Set([ObjectId(i, "account") for i in
-                                                   kwargs["owner_approvals_to_remove"]])),
                 ("key_approvals_to_add", Set([PublicKey(i) for i in kwargs["key_approvals_to_add"]])),
                 ("key_approvals_to_remove", Set([PublicKey(i) for i in kwargs["key_approvals_to_remove"]])),
                 ("extensions", Set([])),
@@ -790,15 +791,30 @@ class SidechainBtcAggregate(EchoObject):
                     [ObjectId(i, "btc_withdraw") for i in kwargs["withdrawals"]]
                 )),
                 ("transaction_id", Bytes(kwargs["transaction_id"], 32)),
-                ("sma_address", String(kwargs["sma_address"])),
+                ("sma_address", P2shP2wsh(kwargs["sma_address"])),
                 ("committee_member_ids_in_script", Set(
                     [ObjectId(i, "account") for i in kwargs["committee_member_ids_in_script"]]
                 )),
                 ("aggregation_out_value", Uint64(kwargs["aggregation_out_value"])),
                 ("previous_aggregation", Optional(previous_aggregation)),
+                ("cpfp_depth", Uint8(kwargs["cpfp_depth"])),
                 ("signatures", Map(
                     [[Uint32(i[0]), String(i[1])] for i in kwargs["signatures"]]
                 )),
+                ("extensions", Set([])),
+            ]
+        )
+        self.add_fee(result, kwargs)
+
+        return result
+
+
+class SidechainBtcApproveAggregate(EchoObject):
+    def detail(self, *args, **kwargs):
+        result = OrderedDict(
+            [
+                ("committee_member_id", ObjectId(kwargs["committee_member_id"], "account")),
+                ("transaction_id", Bytes(kwargs["transaction_id"], 32)),
                 ("extensions", Set([])),
             ]
         )
@@ -852,7 +868,6 @@ class CommitteeFrozenBalanceDeposit(EchoObject):
     def detail(self, *args, **kwargs):
         result = OrderedDict(
             [
-                ("committee_member", ObjectId(kwargs["committee_member"], "committee_member")),
                 ("committee_member_account", ObjectId(kwargs["committee_member_account"], "account")),
                 ("amount", Asset(kwargs["amount"])),
                 ("extensions", Set([])),
@@ -881,9 +896,8 @@ class BlockReward(EchoObject):
     def detail(self, *args, **kwargs):
         result = OrderedDict(
             [
-                ("rewards", Map(
-                    [[ObjectId(i[0], "account"), Int64(i[1])] for i in kwargs["rewards"]]
-                )),
+                ("reciever", ObjectId(kwargs["reciever"], "account")),
+                ("amount", Int64(kwargs["amount"])),
                 ("extensions", Set([])),
             ]
         )

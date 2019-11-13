@@ -337,6 +337,10 @@ class ObjectId:
     def __str__(self):
         return self.Id
 
+    def __lt__(self, other):
+        assert isinstance(other, ObjectId)
+        return self.Id < other.Id
+
 
 class FullObjectId:
 

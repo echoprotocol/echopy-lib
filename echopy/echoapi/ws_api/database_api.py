@@ -204,14 +204,14 @@ class DatabaseApi:
     def get_balance_objects(self, public_key):
         return self.db.rpcexec('get_balance_objects', [public_key])
 
-    def get_account_deposits(self, account_id):
-        return self.db.rpcexec('get_account_deposits', [account_id])
+    def get_account_deposits(self, account_id, deposits_type):
+        return self.db.rpcexec('get_account_deposits', [account_id, deposits_type])
 
-    def get_account_withdrawals(self, account_id):
-        return self.db.rpcexec('get_account_withdrawals', [account_id])
+    def get_account_withdrawals(self, account_id, withdrawals_type):
+        return self.db.rpcexec('get_account_withdrawals', [account_id, withdrawals_type])
 
-    def get_btc_addresses(self, account):
-        return self.db.rpcexec('get_btc_addresses', [account])
+    def get_btc_address(self, account):
+        return self.db.rpcexec('get_btc_address', [account])
 
     def get_btc_deposit_script(self, address):
         return self.db.rpcexec('get_btc_deposit_script', [address])
@@ -221,3 +221,6 @@ class DatabaseApi:
 
     def get_committee_frozen_balance(self, committee_member_id):
         return self.db.rpcexec('get_committee_frozen_balance', [committee_member_id])
+
+    def get_block_rewards(self, block_num):
+        return self.db.rpcexec('get_block_rewards', [block_num])
