@@ -4,7 +4,10 @@ class RegistrationApi:
         self.db = db
 
     def request_registration_task(self):
-        return self.db.rpcexec('request_registration_task', [])
+        return self.db.rpcexec(
+            'request_registration_task',
+            []
+        )
 
     def submit_registration_solution(self, callback, name, active, echorand_key, nonce, rand_num):
         return self.db.rpcexec(
@@ -13,4 +16,7 @@ class RegistrationApi:
         )
 
     def get_registrar(self):
-        return self.db.rpcexec('get_registrar', [])
+        return self.db.rpcexec(
+            'get_registrar',
+            []
+        )

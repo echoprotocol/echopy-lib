@@ -7,7 +7,6 @@ from .ws_api.network_api import NetworkApi
 from .ws_api.database_api import DatabaseApi
 from .ws_api.history_api import HistoryApi
 from .ws_api.registration_api import RegistrationApi
-from .ws_api.network_node_api import NetworkNodeApi
 
 
 class Api:
@@ -22,7 +21,6 @@ class Api:
         self.history = HistoryApi(self.ws.history_api)
         self.registration = RegistrationApi(self.ws.registration_api)
         self.login = LoginApi(self.ws.login_api)
-        self.network_node = NetworkNodeApi(self.ws.network_node_api)
 
     def disconnect(self):
         self.ws.disconnect()

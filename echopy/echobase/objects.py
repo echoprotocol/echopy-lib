@@ -412,7 +412,7 @@ class FeeSchedule(EchoObject):
             super().__init__(
                 OrderedDict(
                     [
-                        ("parameters", Set([feetypes.Fee_types(param) for param in kwargs["parameters"]])),
+                        ("parameters", Set([feetypes.FeeTypes(param) for param in kwargs["parameters"]])),
                         ("scale", Uint32(kwargs["scale"]))
                     ]
                 )

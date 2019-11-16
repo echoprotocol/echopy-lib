@@ -86,6 +86,7 @@ def get_optional(param, kwargs, object_class):
     return result
 
 
+# Asset Transfer
 class Transfer(EchoObject):
     def detail(self, *args, **kwargs):
 
@@ -103,6 +104,40 @@ class Transfer(EchoObject):
         return result
 
 
+class TransferToAddress(EchoObject):
+    def detail(self, *args, **kwargs):
+        result = OrderedDict(
+            [
+                ("from", ObjectId(kwargs["from"], "account")),
+                ("to", Bytes(kwargs["to"])),
+                ("amount", Asset(kwargs["amount"])),
+                ("extensions", Set([])),
+
+            ]
+        )
+        self.add_fee(result, kwargs)
+
+        return result
+
+
+class OverrideTransfer(EchoObject):
+    def detail(self, *args, **kwargs):
+
+        result = OrderedDict(
+            [
+                ("issuer", ObjectId(kwargs["issuer"], "account")),
+                ("from", ObjectId(kwargs["from"], "account")),
+                ("to", ObjectId(kwargs["to"], "account")),
+                ("amount", Asset(kwargs["amount"])),
+                ("extensions", Set([])),
+            ]
+        )
+        self.add_fee(result, kwargs)
+
+        return result
+
+
+# Account Management
 class AccountCreate(EchoObject):
     def detail(self, *args, **kwargs):
         result = OrderedDict(
@@ -155,6 +190,22 @@ class AccountWhitelist(EchoObject):
         return result
 
 
+class AccountAddressCreate(EchoObject):
+    def detail(self, *args, **kwargs):
+        result = OrderedDict(
+            [
+                ("owner", ObjectId(kwargs["owner"], "account")),
+                ("label", String(kwargs["label"])),
+                ("extensions", Set([])),
+
+            ]
+        )
+        self.add_fee(result, kwargs)
+
+        return result
+
+
+# Asset Management
 class AssetCreate(EchoObject):
     def detail(self, *args, **kwargs):
         bitasset_opts = get_optional("bitasset_opts", kwargs, BitAssetOptions)
@@ -210,13 +261,11 @@ class AssetUpdateBitasset(EchoObject):
 
 class AssetUpdateFeedProducers(EchoObject):
     def detail(self, *args, **kwargs):
-        new_feed_producers = sorted([ObjectId(i, "account") for i in kwargs["new_feed_producers"]])
-        new_feed_producers = Set(new_feed_producers)
         result = OrderedDict(
             [
                 ("issuer", ObjectId(kwargs["issuer"], "account")),
                 ("asset_to_update", ObjectId(kwargs["asset_to_update"], "asset")),
-                ("new_feed_producers", new_feed_producers),
+                ("new_feed_producers", Set([ObjectId(i, "account") for i in kwargs["new_feed_producers"]])),
                 ("extensions", Set([])),
             ]
         )
@@ -285,6 +334,21 @@ class AssetPublishFeed(EchoObject):
         return result
 
 
+class AssetClaimFees(EchoObject):
+    def detail(self, *args, **kwargs):
+        result = OrderedDict(
+            [
+                ("issuer", ObjectId(kwargs["issuer"], "account")),
+                ("amount_to_claim", Asset(kwargs["amount_to_claim"])),
+                ("extensions", Set([])),
+            ]
+        )
+        self.add_fee(result, kwargs)
+
+        return result
+
+
+# Proposals
 class ProposalCreate(EchoObject):
     def detail(self, *args, **kwargs):
         review_period_seconds = get_optional("review_period_seconds", kwargs, Uint32)
@@ -316,8 +380,6 @@ class ProposalUpdate(EchoObject):
                                                  kwargs["active_approvals_to_add"]])),
                 ("active_approvals_to_remove", Set([ObjectId(i, "account") for i in
                                                     kwargs["active_approvals_to_remove"]])),
-                ("owner_approvals_to_add", Set([ObjectId(i, "account") for i in
-                                                kwargs["owner_approvals_to_add"]])),
                 ("key_approvals_to_add", Set([PublicKey(i) for i in kwargs["key_approvals_to_add"]])),
                 ("key_approvals_to_remove", Set([PublicKey(i) for i in kwargs["key_approvals_to_remove"]])),
                 ("extensions", Set([])),
@@ -343,6 +405,7 @@ class ProposalDelete(EchoObject):
         return result
 
 
+# Committee Member
 class CommitteeMemberCreate(EchoObject):
     def detail(self, *args, **kwargs):
         result = OrderedDict(
@@ -394,6 +457,61 @@ class CommitteeMemberUpdateGlobalParameters(EchoObject):
         return result
 
 
+class CommitteeMemberActivate(EchoObject):
+    def detail(self, *args, **kwargs):
+        result = OrderedDict(
+            [
+                ("committee_to_activate", ObjectId(kwargs["committee_to_activate"], "committee_member")),
+                ("extensions", Set([])),
+            ]
+        )
+        self.add_fee(result, kwargs)
+
+        return result
+
+
+class CommitteeMemberDeactivate(EchoObject):
+    def detail(self, *args, **kwargs):
+        result = OrderedDict(
+            [
+                ("committee_to_deactivate", ObjectId(kwargs["committee_to_deactivate"], "committee_member")),
+                ("extensions", Set([])),
+            ]
+        )
+        self.add_fee(result, kwargs)
+
+        return result
+
+
+class CommitteeFrozenBalanceDeposit(EchoObject):
+    def detail(self, *args, **kwargs):
+        result = OrderedDict(
+            [
+                ("committee_member_account", ObjectId(kwargs["committee_member_account"], "account")),
+                ("amount", Asset(kwargs["amount"])),
+                ("extensions", Set([])),
+            ]
+        )
+        self.add_fee(result, kwargs)
+
+        return result
+
+
+class CommitteeFrozenBalanceWithdraw(EchoObject):
+    def detail(self, *args, **kwargs):
+        result = OrderedDict(
+            [
+                ("committee_member_account", ObjectId(kwargs["committee_member_account"], "account")),
+                ("amount", Asset(kwargs["amount"])),
+                ("extensions", Set([])),
+            ]
+        )
+        self.add_fee(result, kwargs)
+
+        return result
+
+
+# Vesting Balances
 class VestingBalanceCreate(EchoObject):
     def detail(self, *args, **kwargs):
         result = OrderedDict(
@@ -425,6 +543,7 @@ class VestingBalanceWithdraw(EchoObject):
         return result
 
 
+# Balance Object
 class BalanceClaim(EchoObject):
     def detail(self, *args, **kwargs):
         result = OrderedDict(
@@ -441,37 +560,34 @@ class BalanceClaim(EchoObject):
         return result
 
 
-class OverrideTransfer(EchoObject):
+class BalanceFreeze(EchoObject):
     def detail(self, *args, **kwargs):
-
         result = OrderedDict(
             [
-                ("issuer", ObjectId(kwargs["issuer"], "account")),
-                ("from", ObjectId(kwargs["from"], "account")),
-                ("to", ObjectId(kwargs["to"], "account")),
+                ("account", ObjectId(kwargs["account"], "account")),
+                ("amount", Asset(kwargs["amount"])),
+                ("duration", Uint16(kwargs["duration"])),
+                ("extensions", Set([])),
+            ]
+        )
+        self.add_fee(result, kwargs)
+
+        return result
+
+
+class BalanceUnfreeze(EchoObject):
+    def detail(self, *args, **kwargs):
+        result = OrderedDict(
+            [
+                ("account", ObjectId(kwargs["account"], "account")),
                 ("amount", Asset(kwargs["amount"])),
                 ("extensions", Set([])),
             ]
         )
-        self.add_fee(result, kwargs)
-
         return result
 
 
-class AssetClaimFees(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("issuer", ObjectId(kwargs["issuer"], "account")),
-                ("amount_to_claim", Asset(kwargs["amount_to_claim"])),
-                ("extensions", Set([])),
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
+# Contracts
 class ContractCreate(EchoObject):
     def detail(self, *args, **kwargs):
         supported_asset_id = get_optional("supported_asset_id", kwargs, partial(ObjectId, type_verify="asset"))
@@ -507,58 +623,16 @@ class ContractCall(EchoObject):
         return result
 
 
-class AccountAddressCreate(EchoObject):
+class ContractUpdate(EchoObject):
     def detail(self, *args, **kwargs):
+        new_owner = get_optional("new_owner", kwargs, partial(ObjectId, type_verify="account"))
         result = OrderedDict(
             [
-                ("owner", ObjectId(kwargs["owner"], "account")),
-                ("label", String(kwargs["label"])),
+                ("sender", ObjectId(kwargs["sender"], "account")),
+                ("contract", ObjectId(kwargs["contract"], "contract")),
+                ("new_owner", Optional(new_owner)),
                 ("extensions", Set([])),
 
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
-class TransferToAddress(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("from", ObjectId(kwargs["from"], "account")),
-                ("to", Bytes(kwargs["to"])),
-                ("amount", Asset(kwargs["amount"])),
-                ("extensions", Set([])),
-
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
-class SidechainEthCreateAddress(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("account", ObjectId(kwargs["account"], "account")),
-                ("extensions", Set([])),
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
-class SidechainEthWithdraw(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("account", ObjectId(kwargs["account"], "account")),
-                ("eth_addr", Bytes(kwargs["eth_addr"], 20)),
-                ("value", Uint64(kwargs["value"])),
-                ("extensions", Set([])),
             ]
         )
         self.add_fee(result, kwargs)
@@ -599,13 +673,12 @@ class ContractWhitelist(EchoObject):
         return result
 
 
-class SidechainIssue(EchoObject):
+# Sidechain (Ethereum)
+class SidechainEthCreateAddress(EchoObject):
     def detail(self, *args, **kwargs):
         result = OrderedDict(
             [
-                ("value", Asset(kwargs["value"])),
                 ("account", ObjectId(kwargs["account"], "account")),
-                ("deposit_id", ObjectId(kwargs["deposit_id"], "deposit_eth")),
                 ("extensions", Set([])),
             ]
         )
@@ -614,13 +687,15 @@ class SidechainIssue(EchoObject):
         return result
 
 
-class SidechainBurn(EchoObject):
+class SidechainEthApproveAddress(EchoObject):
     def detail(self, *args, **kwargs):
         result = OrderedDict(
             [
-                ("value", Asset(kwargs["value"])),
+                ("committee_member_id", ObjectId(kwargs["committee_member_id"], "account")),
+                ("malicious_committeemen", Set(
+                    [ObjectId(i, "account") for i in kwargs["malicious_committeemen"]])),
                 ("account", ObjectId(kwargs["account"], "account")),
-                ("withdraw_id", ObjectId(kwargs["withdraw_id"], "withdraw_eth")),
+                ("eth_addr", Bytes(kwargs["eth_addr"], 20)),
                 ("extensions", Set([])),
             ]
         )
@@ -629,16 +704,15 @@ class SidechainBurn(EchoObject):
         return result
 
 
-class ContractUpdate(EchoObject):
+class SidechainEthDeposit(EchoObject):
     def detail(self, *args, **kwargs):
-        new_owner = get_optional("new_owner", kwargs, partial(ObjectId, type_verify="account"))
         result = OrderedDict(
             [
-                ("sender", ObjectId(kwargs["sender"], "account")),
-                ("contract", ObjectId(kwargs["contract"], "contract")),
-                ("new_owner", Optional(new_owner)),
+                ("committee_member_id", ObjectId(kwargs["committee_member_id"], "account")),
+                ("deposit_id", Uint64(kwargs["deposit_id"])),
+                ("account", ObjectId(kwargs["account"], "account")),
+                ("value", Uint64(kwargs["value"])),
                 ("extensions", Set([])),
-
             ]
         )
         self.add_fee(result, kwargs)
@@ -646,6 +720,36 @@ class ContractUpdate(EchoObject):
         return result
 
 
+class SidechainEthWithdraw(EchoObject):
+    def detail(self, *args, **kwargs):
+        result = OrderedDict(
+            [
+                ("account", ObjectId(kwargs["account"], "account")),
+                ("eth_addr", Bytes(kwargs["eth_addr"], 20)),
+                ("value", Uint64(kwargs["value"])),
+                ("extensions", Set([])),
+            ]
+        )
+        self.add_fee(result, kwargs)
+
+        return result
+
+
+class SidechainEthApproveWithdraw(EchoObject):
+    def detail(self, *args, **kwargs):
+        result = OrderedDict(
+            [
+                ("committee_member_id", ObjectId(kwargs["committee_member_id"], "account")),
+                ("withdraw_id", Uint64(kwargs["account"])),
+                ("extensions", Set([])),
+            ]
+        )
+        self.add_fee(result, kwargs)
+
+        return result
+
+
+# Sidechain (ERC20)
 class SidechainErc20RegisterToken(EchoObject):
     def detail(self, *args, **kwargs):
         result = OrderedDict(
@@ -655,6 +759,26 @@ class SidechainErc20RegisterToken(EchoObject):
                 ("name", String(kwargs["name"])),
                 ("symbol", String(kwargs["symbol"])),
                 ("decimals", Uint8(kwargs["decimals"])),
+                ("extensions", Set([])),
+
+            ]
+        )
+        self.add_fee(result, kwargs)
+
+        return result
+
+
+class SidechainErc20DepositToken(EchoObject):
+    def detail(self, *args, **kwargs):
+        result = OrderedDict(
+            [
+                ("committee_member_id", ObjectId(kwargs["committee_member_id"], "account")),
+                ("malicious_committeemen", Set(
+                    [ObjectId(i, "account") for i in kwargs["malicious_committeemen"]])),
+                ("account", ObjectId(kwargs["account"], "account")),
+                ("eth_addr", Bytes(kwargs["eth_addr"], 20)),
+                ("value", String(kwargs["value"])),
+                ("transaction_hash", Bytes(kwargs["transaction_hash"], 32)),
                 ("extensions", Set([])),
 
             ]
@@ -680,6 +804,22 @@ class SidechainErc20WithdrawToken(EchoObject):
         return result
 
 
+class SidechainErc20ApproveTokenWithdraw(EchoObject):
+    def detail(self, *args, **kwargs):
+        result = OrderedDict(
+            [
+                ("committee_member_id", ObjectId(kwargs["committee_member_id"], "account")),
+                ("withdraw_id", Uint64(kwargs["withdraw_id"])),
+                ("extensions", Set([])),
+
+            ]
+        )
+        self.add_fee(result, kwargs)
+
+        return result
+
+
+# Sidechain (Bitcoin)
 class SidechainBtcCreateAddress(EchoObject):
     def detail(self, *args, **kwargs):
         result = OrderedDict(
@@ -760,20 +900,6 @@ class SidechainBtcWithdraw(EchoObject):
         return result
 
 
-class SidechainBtcApproveWithdraw(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("committee_member_id", ObjectId(kwargs["committee_member_id"], "account")),
-                ("withdraw_id", ObjectId(kwargs["withdraw_id"], "btc_withdraw")),
-                ("extensions", Set([])),
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
 class SidechainBtcAggregate(EchoObject):
     def detail(self, *args, **kwargs):
         previous_aggregation = get_optional(
@@ -815,89 +941,6 @@ class SidechainBtcApproveAggregate(EchoObject):
             [
                 ("committee_member_id", ObjectId(kwargs["committee_member_id"], "account")),
                 ("transaction_id", Bytes(kwargs["transaction_id"], 32)),
-                ("extensions", Set([])),
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
-class BalanceFreeze(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("account", ObjectId(kwargs["account"], "account")),
-                ("amount", Asset(kwargs["amount"])),
-                ("duration", Uint16(kwargs["duration"])),
-                ("extensions", Set([])),
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
-class CommitteeMemberActivate(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("committee_to_activate", ObjectId(kwargs["committee_to_activate"], "committee_member")),
-                ("extensions", Set([])),
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
-class CommitteeMemberDeactivate(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("committee_to_deactivate", ObjectId(kwargs["committee_to_deactivate"], "committee_member")),
-                ("extensions", Set([])),
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
-class CommitteeFrozenBalanceDeposit(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("committee_member_account", ObjectId(kwargs["committee_member_account"], "account")),
-                ("amount", Asset(kwargs["amount"])),
-                ("extensions", Set([])),
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
-class CommitteeFrozenBalanceWithdraw(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("committee_member_account", ObjectId(kwargs["committee_member_account"], "account")),
-                ("amount", Asset(kwargs["amount"])),
-                ("extensions", Set([])),
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
-class BlockReward(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("reciever", ObjectId(kwargs["reciever"], "account")),
-                ("amount", Int64(kwargs["amount"])),
                 ("extensions", Set([])),
             ]
         )

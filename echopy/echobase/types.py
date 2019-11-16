@@ -222,6 +222,7 @@ class Bool(Uint8):
 class Set(Array):
     def __init__(self, d):
         super().__init__(d)
+        self.data = sorted(self.data)
 
 
 class FixedArray:
