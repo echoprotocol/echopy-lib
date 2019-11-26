@@ -128,7 +128,7 @@ class FeeTypes(StaticVariant):
             operations["vesting_balance_withdraw"]: DefaultFee,
             operations["balance_claim"]: NoFee,
             operations["balance_freeze"]: DefaultFee,
-            operations["balance_unfreeze"]: DefaultFee,
+            operations["balance_unfreeze"]: NoFee,
             operations["contract_create"]: DefaultFee,
             operations["contract_call"]: DefaultFee,
             operations["contract_internal_create"]: NoFee,

@@ -222,7 +222,9 @@ class Bool(Uint8):
 class Set(Array):
     def __init__(self, d):
         super().__init__(d)
-        self.data = sorted(self.data)
+
+    def __bytes__(self):
+        return bytes(self.length) + b"".join(sorted([bytes(a) for a in self.data]))
 
 
 class FixedArray:

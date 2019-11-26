@@ -434,26 +434,10 @@ class EchorandConfig(EchoObject):
                         ("_time_net_256b", Uint32(kwargs["_time_net_256b"])),
                         ("_creator_count", Uint32(kwargs["_creator_count"])),
                         ("_verifier_count", Uint32(kwargs["_verifier_count"])),
-                        ("_ok_treshold", Uint32(kwargs["_ok_treshold"])),
+                        ("_ok_threshold", Uint32(kwargs["_ok_threshold"])),
                         ("_max_bba_steps", Uint32(kwargs["_max_bba_steps"])),
                         ("_gc1_delay", Uint32(kwargs["_gc1_delay"])),
                         ("_round_attempts", Uint32(kwargs["_round_attempts"])),
-                    ]
-                )
-            )
-
-
-class Fines(EchoObject):
-    def __init__(self, *args, **kwargs):
-        if isArgsThisClass(self, args):
-            self.data = args[0].data
-        else:
-            if len(args) == 1 and len(kwargs) == 0:
-                kwargs = args[0]
-            super().__init__(
-                OrderedDict(
-                    [
-                        ("_eth_addr", Int64(kwargs["_eth_addr"]))
                     ]
                 )
             )
@@ -500,7 +484,7 @@ class SidechainConfig(EchoObject):
                         ("erc20_withdraw_topic", Bytes(kwargs["erc20_withdraw_topic"], 32)),
                         ("ETH_asset_id", ObjectId(kwargs["ETH_asset_id"], "asset")),
                         ("BTC_asset_id", ObjectId(kwargs["BTC_asset_id"], "asset")),
-                        ("fines", Fines(kwargs["fines"])),
+                        ("fines", EthAddress(kwargs["fines"])),
                         ("gas_price", Uint64(kwargs["gas_price"])),
                         ("satoshis_per_byte", Uint32(kwargs["satoshis_per_byte"])),
                         ("coefficient_waiting_blocks", Uint32(kwargs["coefficient_waiting_blocks"]))
