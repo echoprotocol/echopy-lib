@@ -44,7 +44,7 @@ class SignedTransactionType(EchoObject):
                 ("expiration", PointInTime(kwargs['expiration'])),
                 ("operations", Array([StaticVariant(op_id, op) for op_id, op in kwargs['operations']])),
                 ("extensions", Set([])),
-                ("signatures", Array([Bytes(signature) for signature in kwargs['signatures']])),
+                ("signatures", Array([Bytes(signature, 64) for signature in kwargs['signatures']])),
             ]
         )
 

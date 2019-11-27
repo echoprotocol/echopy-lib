@@ -109,7 +109,7 @@ class TransferToAddress(EchoObject):
         result = OrderedDict(
             [
                 ("from", ObjectId(kwargs["from"], "account")),
-                ("to", Bytes(kwargs["to"])),
+                ("to", Bytes(kwargs["to"], 20)),
                 ("amount", Asset(kwargs["amount"])),
                 ("extensions", Set([])),
 
@@ -412,8 +412,8 @@ class CommitteeMemberCreate(EchoObject):
             [
                 ("committee_member_account", ObjectId(kwargs["committee_member_account"], "account")),
                 ("url", String(kwargs["url"])),
-                ("eth_address", Bytes(kwargs["eth_address"], 20)),
-                ("btc_public_key", Bytes(kwargs["btc_public_key"])),
+                ("eth_address", Bytes(kwargs["eth_address"])),
+                ("btc_public_key", Bytes(kwargs["btc_public_key"], 33)),
                 ("deposit", Asset(kwargs["deposit"])),
                 ("extensions", Set([])),
             ]
@@ -426,8 +426,8 @@ class CommitteeMemberCreate(EchoObject):
 class CommitteeMemberUpdate(EchoObject):
     def detail(self, *args, **kwargs):
         new_url = get_optional("new_url", kwargs, String)
-        new_eth_address = get_optional("new_eth_address", kwargs, partial(Bytes, length=20))
-        new_btc_public_key = get_optional("new_btc_public_key", kwargs, Bytes)
+        new_eth_address = get_optional("new_eth_address", kwargs, partial(Bytes))
+        new_btc_public_key = get_optional("new_btc_public_key", kwargs, partial(Bytes, length=33))
 
         result = OrderedDict(
             [
@@ -687,60 +687,13 @@ class SidechainEthCreateAddress(EchoObject):
         return result
 
 
-class SidechainEthApproveAddress(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("committee_member_id", ObjectId(kwargs["committee_member_id"], "account")),
-                ("malicious_committeemen", Set(
-                    [ObjectId(i, "account") for i in kwargs["malicious_committeemen"]])),
-                ("account", ObjectId(kwargs["account"], "account")),
-                ("eth_addr", Bytes(kwargs["eth_addr"], 20)),
-                ("extensions", Set([])),
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
-class SidechainEthDeposit(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("committee_member_id", ObjectId(kwargs["committee_member_id"], "account")),
-                ("deposit_id", Uint64(kwargs["deposit_id"])),
-                ("account", ObjectId(kwargs["account"], "account")),
-                ("value", Uint64(kwargs["value"])),
-                ("extensions", Set([])),
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
 class SidechainEthWithdraw(EchoObject):
     def detail(self, *args, **kwargs):
         result = OrderedDict(
             [
                 ("account", ObjectId(kwargs["account"], "account")),
-                ("eth_addr", Bytes(kwargs["eth_addr"], 20)),
+                ("eth_addr", Bytes(kwargs["eth_addr"])),
                 ("value", Uint64(kwargs["value"])),
-                ("extensions", Set([])),
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
-class SidechainEthApproveWithdraw(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("committee_member_id", ObjectId(kwargs["committee_member_id"], "account")),
-                ("withdraw_id", Uint64(kwargs["account"])),
                 ("extensions", Set([])),
             ]
         )
@@ -755,30 +708,10 @@ class SidechainErc20RegisterToken(EchoObject):
         result = OrderedDict(
             [
                 ("account", ObjectId(kwargs["account"], "account")),
-                ("eth_addr", Bytes(kwargs["eth_addr"], 20)),
+                ("eth_addr", Bytes(kwargs["eth_addr"])),
                 ("name", String(kwargs["name"])),
                 ("symbol", String(kwargs["symbol"])),
                 ("decimals", Uint8(kwargs["decimals"])),
-                ("extensions", Set([])),
-
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
-class SidechainErc20DepositToken(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("committee_member_id", ObjectId(kwargs["committee_member_id"], "account")),
-                ("malicious_committeemen", Set(
-                    [ObjectId(i, "account") for i in kwargs["malicious_committeemen"]])),
-                ("account", ObjectId(kwargs["account"], "account")),
-                ("eth_addr", Bytes(kwargs["eth_addr"], 20)),
-                ("value", String(kwargs["value"])),
-                ("transaction_hash", Bytes(kwargs["transaction_hash"], 32)),
                 ("extensions", Set([])),
 
             ]
@@ -793,25 +726,10 @@ class SidechainErc20WithdrawToken(EchoObject):
         result = OrderedDict(
             [
                 ("account", ObjectId(kwargs["account"], "account")),
-                ("to", Bytes(kwargs["to"], 20)),
+                ("to", Bytes(kwargs["to"])),
                 ("erc20_token", ObjectId(kwargs["erc20_token"], "erc20_token")),
                 ("value", String(kwargs["value"])),
                 ("extensions", Set([])),
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
-class SidechainErc20ApproveTokenWithdraw(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("committee_member_id", ObjectId(kwargs["committee_member_id"], "account")),
-                ("withdraw_id", Uint64(kwargs["withdraw_id"])),
-                ("extensions", Set([])),
-
             ]
         )
         self.add_fee(result, kwargs)
@@ -833,58 +751,6 @@ class SidechainBtcCreateAddress(EchoObject):
         return result
 
 
-class SidechainBtcCreateIntermediateDeposit(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("committee_member_id", ObjectId(kwargs["committee_member_id"], "account")),
-                ("account", ObjectId(kwargs["account"], "account")),
-                ("btc_address_id", ObjectId(kwargs["btc_address_id"], "btc_address")),
-                ("tx_info", BtcTransactionDetails(kwargs["tx_info"])),
-                ("extensions", Set([])),
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
-class SidechainBtcIntermediateDeposit(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("committee_member_id", ObjectId(kwargs["committee_member_id"], "account")),
-                ("intermediate_address_id", ObjectId(
-                    kwargs["intermediate_address_id"],
-                    "btc_intermediate_deposit"
-                )),
-                ("signature", String(kwargs["signature"])),
-                ("extensions", Set([])),
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
-class SidechainBtcDeposit(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("committee_member_id", ObjectId(kwargs["committee_member_id"], "account")),
-                ("account", ObjectId(kwargs["account"], "account")),
-                ("intermediate_deposit_id", ObjectId(
-                    kwargs["intermediate_deposit_id"],
-                    "btc_intermediate_deposit"
-                )),
-                ("tx_info", BtcTransactionDetails(kwargs["tx_info"])),
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
 class SidechainBtcWithdraw(EchoObject):
     def detail(self, *args, **kwargs):
         result = OrderedDict(
@@ -892,55 +758,6 @@ class SidechainBtcWithdraw(EchoObject):
                 ("account", ObjectId(kwargs["account"], "account")),
                 ("btc_addr", String(kwargs["btc_addr"])),
                 ("value", Uint64(kwargs["value"])),
-                ("extensions", Set([])),
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
-class SidechainBtcAggregate(EchoObject):
-    def detail(self, *args, **kwargs):
-        previous_aggregation = get_optional(
-            "previous_aggregation",
-            kwargs,
-            partial(ObjectId, type_verify="btc_aggregating")
-        )
-        result = OrderedDict(
-            [
-                ("committee_member_id", ObjectId(kwargs["committee_member_id"], "account")),
-                ("deposits", Set(
-                    [ObjectId(i, "btc_deposit") for i in kwargs["deposits"]]
-                )),
-                ("withdrawals", Set(
-                    [ObjectId(i, "btc_withdraw") for i in kwargs["withdrawals"]]
-                )),
-                ("transaction_id", Bytes(kwargs["transaction_id"], 32)),
-                ("sma_address", P2shP2wsh(kwargs["sma_address"])),
-                ("committee_member_ids_in_script", Set(
-                    [ObjectId(i, "account") for i in kwargs["committee_member_ids_in_script"]]
-                )),
-                ("aggregation_out_value", Uint64(kwargs["aggregation_out_value"])),
-                ("previous_aggregation", Optional(previous_aggregation)),
-                ("cpfp_depth", Uint8(kwargs["cpfp_depth"])),
-                ("signatures", Map(
-                    [[Uint32(i[0]), String(i[1])] for i in kwargs["signatures"]]
-                )),
-                ("extensions", Set([])),
-            ]
-        )
-        self.add_fee(result, kwargs)
-
-        return result
-
-
-class SidechainBtcApproveAggregate(EchoObject):
-    def detail(self, *args, **kwargs):
-        result = OrderedDict(
-            [
-                ("committee_member_id", ObjectId(kwargs["committee_member_id"], "account")),
-                ("transaction_id", Bytes(kwargs["transaction_id"], 32)),
                 ("extensions", Set([])),
             ]
         )

@@ -97,6 +97,23 @@ class FeeTypes(StaticVariant):
                                 ]
                             )
                         )
+
+        class Erc20RegisterToken(EchoObject):
+            def __init__(self, *args, **kwargs):
+                    if isArgsThisClass(self, args):
+                        self.data = args[0].data
+                    else:
+                        if len(args) == 1 and len(kwargs) == 0:
+                            kwargs = args[0]
+                        super().__init__(
+                            OrderedDict(
+                                [
+                                    ("fee", Uint64(kwargs["fee"])),
+                                    ("pool_fee", Uint64(kwargs["pool_fee"])),
+                                ]
+                            )
+                        )
+
         ops = {
             operations["transfer"]: DefaultFee,
             operations["transfer_to_address"]: DefaultFee,
@@ -142,14 +159,14 @@ class FeeTypes(StaticVariant):
             operations["sidechain_eth_deposit"]: DefaultFee,
             operations["sidechain_eth_withdraw"]: DefaultFee,
             operations["sidechain_eth_approve_withdraw"]: DefaultFee,
-            operations["sidechain_issue"]: NoFee,
-            operations["sidechain_burn"]: NoFee,
-            operations["sidechain_erc20_register_token"]: DefaultFee,
+            operations["sidechain_issue"]: DefaultFee,
+            operations["sidechain_burn"]: DefaultFee,
+            operations["sidechain_erc20_register_token"]: Erc20RegisterToken,
             operations["sidechain_erc20_deposit_token"]: DefaultFee,
             operations["sidechain_erc20_withdraw_token"]: DefaultFee,
             operations["sidechain_erc20_approve_token_withdraw"]: DefaultFee,
-            operations["sidechain_erc20_issue"]: NoFee,
-            operations["sidechain_erc20_burn"]: NoFee,
+            operations["sidechain_erc20_issue"]: DefaultFee,
+            operations["sidechain_erc20_burn"]: DefaultFee,
             operations["sidechain_btc_create_address"]: DefaultFee,
             operations["sidechain_btc_create_intermediate_deposit"]: DefaultFee,
             operations["sidechain_btc_intermediate_deposit"]: DefaultFee,

@@ -120,28 +120,6 @@ class ObjectId(ObjectIdParent):
     object_types = object_type
 
 
-class Memo(EchoObject):
-    def __init__(self, *args, **kwargs):
-        if isArgsThisClass(self, args):
-            self.data = args[0].data
-        else:
-            if len(args) == 1 and len(kwargs) == 0:
-                kwargs = args[0]
-            if "message" in kwargs and kwargs["message"]:
-                super().__init__(
-                    OrderedDict(
-                        [
-                            ("from", PublicKey(kwargs["from"], prefix='ECHO')),
-                            ("to", PublicKey(kwargs["to"], prefix='ECHO')),
-                            ("nonce", Uint64(int(kwargs["nonce"]))),
-                            ("message", Bytes(kwargs["message"])),
-                        ]
-                    )
-                )
-            else:
-                super().__init__(None)
-
-
 class Price(EchoObject):
     def __init__(self, *args, **kwargs):
         if isArgsThisClass(self, args):
@@ -469,14 +447,14 @@ class SidechainConfig(EchoObject):
             super().__init__(
                 OrderedDict(
                     [
-                        ("eth_contract_address", Bytes(kwargs["eth_contract_address"], 20)),
+                        ("eth_contract_address", Bytes(kwargs["eth_contract_address"])),
                         ("eth_committee_update_method", EthMethod(kwargs["eth_committee_update_method"])),
                         ("eth_gen_address_method", EthMethod(kwargs["eth_gen_address_method"])),
                         ("eth_withdraw_method", EthMethod(kwargs["eth_withdraw_method"])),
                         ("eth_update_addr_method", EthMethod(kwargs["eth_update_addr_method"])),
                         ("eth_withdraw_token_method", EthMethod(kwargs["eth_withdraw_token_method"])),
                         ("eth_collect_tokens_method", EthMethod(kwargs["eth_collect_tokens_method"])),
-                        ("eth_committee_updated_topic", Bytes(kwargs["eth_committee_updated_topic"])),
+                        ("eth_committee_updated_topic", Bytes(kwargs["eth_committee_updated_topic"], 32)),
                         ("eth_gen_address_topic", Bytes(kwargs["eth_gen_address_topic"], 32)),
                         ("eth_deposit_topic", Bytes(kwargs["eth_deposit_topic"], 32)),
                         ("eth_withdraw_topic", Bytes(kwargs["eth_withdraw_topic"], 32)),
