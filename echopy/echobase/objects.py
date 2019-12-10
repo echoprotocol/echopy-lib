@@ -452,6 +452,7 @@ class SidechainConfig(EchoObject):
                         ("eth_gen_address_method", EthMethod(kwargs["eth_gen_address_method"])),
                         ("eth_withdraw_method", EthMethod(kwargs["eth_withdraw_method"])),
                         ("eth_update_addr_method", EthMethod(kwargs["eth_update_addr_method"])),
+                        ("eth_update_contract_address", EthMethod(kwargs["eth_update_contract_address"])),
                         ("eth_withdraw_token_method", EthMethod(kwargs["eth_withdraw_token_method"])),
                         ("eth_collect_tokens_method", EthMethod(kwargs["eth_collect_tokens_method"])),
                         ("eth_committee_updated_topic", Bytes(kwargs["eth_committee_updated_topic"], 32)),
@@ -465,7 +466,9 @@ class SidechainConfig(EchoObject):
                         ("fines", EthAddress(kwargs["fines"])),
                         ("gas_price", Uint64(kwargs["gas_price"])),
                         ("satoshis_per_byte", Uint32(kwargs["satoshis_per_byte"])),
-                        ("coefficient_waiting_blocks", Uint32(kwargs["coefficient_waiting_blocks"]))
+                        ("coefficient_waiting_blocks", Uint32(kwargs["coefficient_waiting_blocks"])),
+                        ("btc_deposit_withdrawal_min", Uint64(kwargs["btc_deposit_withdrawal_min"])),
+                        ("btc_deposit_withdrawal_fee", Uint64(kwargs["btc_deposit_withdrawal_fee"]))
                     ]
                 )
             )
@@ -558,7 +561,8 @@ class ChainParameters(EchoObject):
                             Uint64(kwargs["committee_frozen_balance_to_activate"])),
                         ("committee_maintenance_intervals_to_deposit",
                             Uint64(kwargs["committee_maintenance_intervals_to_deposit"])),
-                        ("committee_freeze_duration_seconds", Uint32(kwargs["committee_freeze_duration_seconds"])),
+                        ("committee_balance_unfreeze_duration_seconds",
+                            Uint32(kwargs["committee_balance_unfreeze_duration_seconds"])),
 
                         ("x86_64_maximum_contract_size", Uint64(kwargs["x86_64_maximum_contract_size"])),
 

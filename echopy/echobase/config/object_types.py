@@ -15,11 +15,11 @@ class ObjectTypes:
         self.CONTRACT = 11
         self.CONTRACT_RESULT = 12
         self.ETH_ADDRESS = 13
-        self.DEPOSIT_ETH = 14
-        self.WITHDRAW_ETH = 15
+        self.ETH_DEPOSIT = 14
+        self.ETH_WITHDRAW = 15
         self.ERC20_TOKEN = 16
-        self.DEPOSIT_ERC20_TOKEN = 17
-        self.WITHDRAW_ERC20_TOKEN = 18
+        self.ERC20_DEPOSIT_TOKEN = 17
+        self.ERC20_WITHDRAW_TOKEN = 18
         self.BTC_ADDRESS = 19
         self.BTC_INTERMEDIATE_DEPOSIT = 20
         self.BTC_DEPOSIT = 21

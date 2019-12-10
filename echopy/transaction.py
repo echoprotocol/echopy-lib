@@ -278,14 +278,9 @@ class Transaction:
                 timeformat = "%Y-%m-%dT%H:%M:%S%Z"
                 return ceil(timegm(time.strptime((iso + "UTC"), timeformat)))
 
-            head_block_time_iso = dynamic_global_chain_data['time']
-            head_block_time_seconds = iso_to_seconds(head_block_time_iso)
             now_iso = seconds_to_iso(datetime.now(timezone.utc).timestamp())
             now_seconds = iso_to_seconds(now_iso)
-            expired = now_seconds - head_block_time_seconds > 30
-            self.expiration = seconds_to_iso(head_block_time_seconds + 3) if expired\
-                else (seconds_to_iso(now_seconds + 3) if now_seconds > head_block_time_seconds
-                      else seconds_to_iso(head_block_time_seconds + 3))
+            self.expiration = seconds_to_iso(now_seconds + 300)
 
         _transaction = TransactionType(
             ref_block_num=self.ref_block_num,

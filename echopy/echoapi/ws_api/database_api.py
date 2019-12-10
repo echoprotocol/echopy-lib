@@ -66,12 +66,6 @@ class DatabaseApi:
             [block_num]
         )
 
-    def get_block_rewards(self, block_num):
-        return self.db.rpcexec(
-            'get_block_rewards',
-            [block_num]
-        )
-
     def get_transaction(self, block_num, trx_in_block):
         return self.db.rpcexec(
             'get_transaction',
@@ -196,7 +190,7 @@ class DatabaseApi:
             [contract_ids]
         )
 
-    def get_contract_logs(self, contracts=None, topics=None, from_block=None, to_block=None):
+    def get_contract_logs(self, callback, contracts=None, topics=None, from_block=None, to_block=None):
         opts = {}
         if contracts is not None:
             opts["contracts"] = contracts
@@ -209,7 +203,7 @@ class DatabaseApi:
 
         return self.db.rpcexec(
             'get_contract_logs',
-            [opts]
+            [callback, opts]
         )
 
     def subscribe_contracts(self, contracts_ids):
@@ -218,10 +212,16 @@ class DatabaseApi:
             [contracts_ids]
         )
 
-    def subscribe_contract_logs(self, callback, contract_id):
+    def subscribe_contract_logs(self, callback_id, callback, contract_id):
         return self.db.rpcexec(
             'subscribe_contract_logs',
-            [callback, contract_id]
+            [callback_id, callback, contract_id]
+        )
+
+    def unsubscribe_contract_logs(self, callback_id):
+        return self.db.rpcexec(
+            'unsubscribe_contract_logs',
+            [callback_id]
         )
 
     def get_contract_result(self, contract_result_id):

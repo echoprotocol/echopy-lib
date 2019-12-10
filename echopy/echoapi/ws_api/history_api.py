@@ -25,3 +25,9 @@ class HistoryApi:
             'get_contract_history',
             [contract, stop, limit, start]
         )
+
+    def get_relative_contract_history(self, contract, stop=0, limit=100, start=0):
+        return self.db.rpcexec(
+            'get_relative_contract_history',
+            [contract, stop, limit, start]
+        )
