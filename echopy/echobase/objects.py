@@ -431,7 +431,7 @@ class EthAddress(EchoObject):
             super().__init__(
                 OrderedDict(
                     [
-                        ("generate_eth_address", Int64(kwargs["generate_eth_address"]))
+                        ("create_eth_address", Int64(kwargs["create_eth_address"]))
                     ]
                 )
             )
