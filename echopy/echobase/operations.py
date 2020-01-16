@@ -766,4 +766,16 @@ class SidechainBtcWithdraw(EchoObject):
         return result
 
 
+class EvmAddressRegister(EchoObject):
+    def detail(self, *args, **kwargs):
+        result = OrderedDict(
+            [
+                ("owner", ObjectId(kwargs["owner"], "account")),
+                ("evm_address", Bytes(kwargs["evm_address"])),
+                ("extensions", Set([])),
+            ]
+        )
+        self.add_fee(result, kwargs)
+
+
 fill_classmaps()

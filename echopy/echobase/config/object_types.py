@@ -25,3 +25,4 @@ class ObjectTypes:
         self.BTC_DEPOSIT = 21
         self.BTC_WITHDRAW = 22
         self.BTC_AGGREGATING = 23
+        self.EVM_ADDRESS = 24

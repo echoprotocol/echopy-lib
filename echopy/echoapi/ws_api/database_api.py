@@ -171,6 +171,12 @@ class DatabaseApi:
             [address]
         )
 
+    def get_evm_addresses(self, account_id):
+        return self.db.rpcexec(
+            'get_evm_addresses',
+            [account_id]
+        )
+
     def get_account_count(self):
         return self.db.rpcexec(
             'get_account_count',

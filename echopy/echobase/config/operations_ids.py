@@ -66,3 +66,4 @@ class OperationIds:
         self.SIDECHAIN_BTC_AGGREGATE = 62
         self.SIDECHAIN_BTC_APPROVE_AGGREGATE = 63
         self.BLOCK_REWARD = 64
+        self.EVM_ADDRESS_REGISTER = 65
