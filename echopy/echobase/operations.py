@@ -744,6 +744,7 @@ class SidechainBtcCreateAddress(EchoObject):
             [
                 ("account", ObjectId(kwargs["account"], "account")),
                 ("backup_address", String(kwargs["backup_address"])),
+                ("extensions", Set([])),
             ]
         )
         self.add_fee(result, kwargs)
@@ -776,6 +777,8 @@ class EvmAddressRegister(EchoObject):
             ]
         )
         self.add_fee(result, kwargs)
+
+        return result
 
 
 fill_classmaps()
