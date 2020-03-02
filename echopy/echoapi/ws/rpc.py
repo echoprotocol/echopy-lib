@@ -100,6 +100,8 @@ class Rpc:
                 raise RPCError(ret["error"]["detail"])
             else:
                 raise RPCError(ret["error"]["message"])
+        elif "method" in ret:
+            return ret["method"]
         else:
             return ret["result"]
 
