@@ -49,7 +49,7 @@ class SimpleWebsocket(Rpc):
     """ RPC Calls
     """
 
-    def rpcexec(self, payload):
+    def rpcexec(self, payload, recv=True):
         """ Execute a call by sending the payload
         """
         if not self.ws:
@@ -61,13 +61,15 @@ class SimpleWebsocket(Rpc):
         # We need to lock because we need to wait for websocket
         # response but don't want to allow other threads to send
         # requests (that might take less time) to disturb
+        ret = '{"result": null}'
         self.__lock.acquire()
 
         # Send over websocket
         try:
             self.ws.send(json.dumps(payload, ensure_ascii=False).encode("utf8"))
             # Receive from websocket
-            ret = self.ws.recv()
+            if recv:
+                ret = self.ws.recv()
 
         finally:
             # Release lock

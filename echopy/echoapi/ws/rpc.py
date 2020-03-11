@@ -130,7 +130,10 @@ class Rpc:
                 'id': self.get_request_id(),
             }
             log.debug('{}{}{} {}'.format('\x1b[1;32m', '>>>', '\x1b[0m', query))
-            r = self.rpcexec(query)
+            r = self.rpcexec(
+                query,
+                name != 'broadcast_transaction_with_callback'
+            )
             message = self.parse_response(r)
             return message
 
