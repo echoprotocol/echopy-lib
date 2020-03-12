@@ -132,7 +132,7 @@ class Transaction:
     @property
     def finalized(self):
         return self._ref_block_num is not None and self._ref_block_prefix is not None\
-            and self.chain_id is not None and self.has_all_fees
+            and self.chain_id is not None  # todo: and self.has_all_fees
 
     @property
     def api(self):
@@ -286,19 +286,16 @@ class Transaction:
         if self.ref_block_num is None or self.ref_block_prefix is None:
             global_chain_data = self._get_dynamic_global_chain_data('2.1.0')
             ref_block_prefix = self.bytes_to_int(
-                sorted(
-                    bytearray(decode(global_chain_data['head_block_id'], 'hex')[4:8]),
-                    reverse=True
-                )
+                reversed(bytearray(decode(global_chain_data['head_block_id'], 'hex')[4:8]))
             )
-            self.ref_block_num = global_chain_data['head_block_number'] & 0xffff,
+            self.ref_block_num = global_chain_data['head_block_number'] & 0xffff
             self.ref_block_prefix = ref_block_prefix
 
     def sign(self, _private_key=None):
         if _private_key is not None:
             self.add_signer(_private_key)
 
-        if self.check_not_finalized():
+        if not self.finalized:
             self.set_global_chain_data()
 
             if not self.has_all_fees:
