@@ -132,7 +132,7 @@ class Transaction:
     @property
     def finalized(self):
         return self._ref_block_num is not None and self._ref_block_prefix is not None\
-            and self.chain_id is not None  # todo: and self.has_all_fees
+            and self.chain_id is not None and self.has_all_fees
 
     @property
     def api(self):
@@ -160,7 +160,7 @@ class Transaction:
     @property
     def has_all_fees(self):
         for op in self._operations:
-            if 'fee' not in op or 'amount' not in op['fee']:
+            if 'fee' not in op[1] or 'amount' not in op[1]['fee']:
                 return False
         return True
 
@@ -184,6 +184,9 @@ class Transaction:
 
         if type(operation_id) is not int:
             raise Exception('unknown operation {}'.format(name))
+
+        if not isinstance(props, dict):
+            raise Exception('argument "props" is not a dict')
 
         operation = [operation_id, operation_class(props)]
         self._operations.append(operation)
