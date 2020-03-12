@@ -131,7 +131,7 @@ class ReconnectionWebsocket:
         self._registration = EchoApi(self.make_query, 'registration')
         self._asset = EchoApi(self.make_query, 'asset')
 
-        self._login = EchoApi(self.make_query, 'login', ["", ""])
+        self._login = EchoApi(self.make_query, 'login')
         self._login.api_id = 1
         self._network_node = EchoApi(self.make_query, 'network_node')
 

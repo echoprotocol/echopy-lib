@@ -14,6 +14,7 @@ from codecs import decode
 from datetime import timezone, datetime
 from calendar import timegm
 import time
+import string
 
 from .echobase.crypto import Crypto
 
@@ -59,17 +60,55 @@ class Transaction:
         self._signatures = []
         self._finalized = False
         self._expiration = None
+        self._ref_block_num = None
+        self._ref_block_prefix = None
+        self._chain_id = None
         self._crypto = Crypto
+
+    @staticmethod
+    def bytes_to_int(_bytes):
+        result = 0
+        for b in _bytes:
+            result = result * 256 + int(b)
+        return result
 
     @property
     def ref_block_num(self):
-        self.check_finalized()
         return self._ref_block_num
+
+    @ref_block_num.setter
+    def ref_block_num(self, value):
+        if not isinstance(value, int):
+            raise Exception('ref_block_num is not a int instance')
+        if value < 0 or value > 0xffff:
+            raise Exception('ref_block_num is not safe')
+        self._ref_block_num = value
 
     @property
     def ref_block_prefix(self):
-        self.check_finalized()
         return self._ref_block_prefix
+
+    @ref_block_prefix.setter
+    def ref_block_prefix(self, value):
+        if isinstance(value, str) and all(symbol in string.hexdigits for symbol in set(value)):
+            self._ref_block_prefix = self.bytes_to_int(bytes.fromhex(value)[:4])
+            return
+        if isinstance(value, int) and value > 0 and value < 2**32:
+            self._ref_block_prefix = value
+            return
+        raise Exception('invalid ref_block_prefix format')
+
+    @property
+    def chain_id(self):
+        return self._chain_id
+
+    @chain_id.setter
+    def chain_id(self, value):
+        if isinstance(value, str) and all(symbol in string.hexdigits for symbol in set(value))\
+                and len(value) == 64:
+            self._chain_id = value
+            return
+        raise Exception('invalid chain_id format or length')
 
     @property
     def operations(self):
@@ -92,26 +131,29 @@ class Transaction:
 
     @property
     def finalized(self):
-        return self._finalized
+        return self._ref_block_num is not None and self._ref_block_prefix is not None\
+            and self.chain_id is not None and self.has_all_fees
 
     @property
     def api(self):
+        if not self._api:
+            raise Exception('Api instance does not exist, check your connection')
         return self._api
 
     @api.setter
     def api(self, value):
         if not isinstance(value, Api):
-            raise Exception('value is not a Api instance')
+            raise Exception('api is not a Api instance')
         self._api = value
 
     @property
     def expiration(self):
         if self._expiration:
-            return copy(self._expiration)
+            return self._expiration
 
     @expiration.setter
     def expiration(self, value):
-        if (type(value) is not str) or not (len(value.split('-')) == 3):
+        if not isinstance(value, str) or not (len(value.split('-')) == 3):
             raise Exception('expiration is not ISO time format')
         self._expiration = value
 
@@ -184,7 +226,7 @@ class Transaction:
             if ('asset_id' in op['fee']) and ('amount' in op['fee']):
                 continue
 
-            if op['fee']['asset_id'] == '1.3.0':
+            if op['fee']['asset_id'] == echo_asset_id:
                 default_asset_indices.append(index)
                 default_asset_operations.append([op_id, op])
             else:
@@ -226,7 +268,6 @@ class Transaction:
         return self
 
     def add_signer(self, private):
-        self.check_not_finalized()
         private_key = PrivateKey(private)
         private_key_hex = repr(private_key)
         if private_key_hex in self._signers:
@@ -236,37 +277,35 @@ class Transaction:
         return self
 
     def _get_dynamic_global_chain_data(self, dynamic_global_object_id):
-        return self.api.database.get_objects(object_ids=[dynamic_global_object_id])
+        return self.api.database.get_objects(object_ids=[dynamic_global_object_id])[0]
 
     def _get_chain_id(self):
         return self.api.database.get_chain_id()
 
+    def set_global_chain_data(self):
+        if self.ref_block_num is None or self.ref_block_prefix is None:
+            global_chain_data = self._get_dynamic_global_chain_data('2.1.0')
+            ref_block_prefix = self.bytes_to_int(
+                sorted(
+                    bytearray(decode(global_chain_data['head_block_id'], 'hex')[4:8]),
+                    reverse=True
+                )
+            )
+            self.ref_block_num = global_chain_data['head_block_number'] & 0xffff,
+            self.ref_block_prefix = ref_block_prefix
+
     def sign(self, _private_key=None):
-        self.check_not_finalized()
         if _private_key is not None:
             self.add_signer(_private_key)
 
-        if not self.has_all_fees:
-            self.set_required_fees()
+        if self.check_not_finalized():
+            self.set_global_chain_data()
 
-        dynamic_global_chain_data = self._get_dynamic_global_chain_data(dynamic_global_object_id='2.1.0')[0]
+            if not self.has_all_fees:
+                self.set_required_fees()
 
-        chain_id = self._get_chain_id()
-
-        self.check_not_finalized()
-        self._finalized = True
-
-        self._ref_block_num = dynamic_global_chain_data['head_block_number'] & 0xffff
-
-        def bytes_to_int(bytes):
-            result = 0
-            for b in bytes:
-                result = result * 256 + int(b)
-            return result
-
-        little_endian = bytearray(decode(dynamic_global_chain_data['head_block_id'], 'hex')[4:8])
-        little_endian.reverse()
-        self._ref_block_prefix = bytes_to_int(little_endian)
+            if self.chain_id is None:
+                self.chain_id = self._get_chain_id()
 
         if self.expiration is None:
 
@@ -290,7 +329,7 @@ class Transaction:
             extensions=[]
         )
         transaction_buffer = bytes(_transaction)
-        chain_buffer = bytes.fromhex(chain_id)
+        chain_buffer = bytes.fromhex(self.chain_id)
         self._signatures = list(map(lambda signer: self._crypto.sign_message(chain_buffer + transaction_buffer,
                                     signer).hex(), self._signers))
 
