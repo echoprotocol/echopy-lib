@@ -268,7 +268,7 @@ def is_operation_id(v):
     return is_uint8(v) and v < 49
 
 
-def is_echo_rand_key(v, echoRandPrefix='DET'):
+def is_echo_rand_key(v, echoRandPrefix='ECHO'):
     if not is_string(v) or len(v) != 44 + len(echoRandPrefix):  # config.ECHORAND_KEY_LENGTH = 44
         return False
     prefix = v[0:len(echoRandPrefix)]

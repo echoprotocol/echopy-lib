@@ -2,7 +2,7 @@ pyyaml
 dateutils
 ecdsa
 websockets
-async-promises
+promise
 pylibscrypt
 pycryptodome
 appdirs

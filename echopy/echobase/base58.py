@@ -18,38 +18,28 @@ class Base58(Prefix):
     the library.
     """
 
-    def __init__(self, data, prefix=None):
+    def __init__(self, data, prefix=None, private=False):
         self.set_prefix(prefix)
+        self._private = private
         if isinstance(data, Base58):
             data = repr(data)
         if all(c in string.hexdigits for c in data):
             self._hex = data
-        elif data[0] == "5" or data[0] == "6":
-            self._hex = base58CheckDecode(data)
-        elif data[0] == "K" or data[0] == "L":
-            raise NotImplementedError(
-                "Private Keys starting with L or K are not supported!"
-            )
-        elif data[: len(self.prefix)] == self.prefix:
-            self._hex = gphBase58CheckDecode(data[len(self.prefix):])
         else:
-            raise ValueError("Error loading Base58 object")
+            if self.prefix is not None and data[: len(self.prefix)] == self.prefix:
+                data = data[len(self.prefix):]
+            self._hex = base58CheckDecode(data) if self._private else base58decode(data)
 
     def __format__(self, _format):
-        if _format.upper() == "WIF":
-            return base58CheckEncode(0x80, self._hex)
-        elif _format.upper() == "ENCWIF":
-            return base58encode(self._hex)
-        elif _format.upper() == "BTC":
-            return base58CheckEncode(0x00, self._hex)
-        else:
-            return _format.upper() + str(self)
+        return str(self) if _format == 'WIF' else _format.upper() + str(self)
 
     def __repr__(self):
         return self._hex
 
     def __str__(self):
-        return gphBase58CheckEncode(self._hex)
+        if self._private:
+            return base58CheckEncode(0x80, self._hex)
+        return base58encode(self._hex)
 
     def __bytes__(self):
         return unhexlify(self._hex)
@@ -126,17 +116,3 @@ def base58CheckDecode(s):
     checksum = doublesha256(dec)[:4]
     assert s[-4:] == checksum
     return dec[2:]
-
-
-def gphBase58CheckEncode(s):
-    checksum = ripemd160(s)[:4]
-    result = s + hexlify(checksum).decode("ascii")
-    return base58encode(result)
-
-
-def gphBase58CheckDecode(s):
-    s = unhexlify(base58decode(s))
-    dec = hexlify(s[:-4]).decode("ascii")
-    checksum = ripemd160(dec)[:4]
-    assert s[-4:] == checksum
-    return dec

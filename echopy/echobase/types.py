@@ -2,16 +2,6 @@
 import json
 import struct
 import time
-from .validation import (
-    is_uint64,
-    is_uint32,
-    is_uint16,
-    is_uint8,
-    is_int64,
-    is_bytes,
-    is_string,
-    is_ripemd160
-)
 from calendar import timegm
 from binascii import hexlify, unhexlify
 from .objecttypes import object_type
@@ -130,12 +120,15 @@ class String:
 
 
 class Bytes:
-    def __init__(self, d):
-        self.data = d
+    def __init__(self, d, length=None):
+        self.data = str(d)
+        if length is not None:
+            assert len(d) == length * 2
+        self.length = length
 
     def __bytes__(self):
         d = unhexlify(bytes(self.data, "utf-8"))
-        return varint(len(d)) + d
+        return varint(len(d)) + d if self.length is None else d
 
     def __str__(self):
         return str(self.data)
@@ -230,6 +223,9 @@ class Set(Array):
     def __init__(self, d):
         super().__init__(d)
 
+    def __bytes__(self):
+        return bytes(self.length) + b"".join(sorted([bytes(a) for a in self.data]))
+
 
 class FixedArray:
     pass
@@ -261,8 +257,8 @@ class Optional:
 
 
 class StaticVariant:
-    def __init__(self, d, type_id):
-        self.data = d
+    def __init__(self, type_id, data):
+        self.data = data
         self.type_id = type_id
 
     def __bytes__(self):
@@ -343,6 +339,10 @@ class ObjectId:
 
     def __str__(self):
         return self.Id
+
+    def __lt__(self, other):
+        assert isinstance(other, ObjectId)
+        return self.Id < other.Id
 
 
 class FullObjectId:

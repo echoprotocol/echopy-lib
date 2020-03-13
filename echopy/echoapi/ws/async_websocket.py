@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
-import ssl
 import json
 import logging
-from async_promises import Promise
+from promise import Promise
 import asyncio
 import websockets
 from websockets import ConnectionClosed
-from .exceptions import RPCError, NumRetriesReached
-from .echoapi import EchoApi, register_echo_api
+from .exceptions import RPCError
+from .echoapi import register_echo_api
 
 log = logging.getLogger(__name__)
 
@@ -22,6 +21,20 @@ class AsyncWebsocket:
         self._loop = None
         self.ws = None
 
+    @property
+    def debug(self):
+        return self._debug
+
+    @debug.setter
+    def debug(self, debug):
+        self._debug = debug
+        if debug is not False:
+            logging.basicConfig(
+                level=logging.DEBUG,
+                format='\n{}%(levelname)s:{} %(asctime)s - %(message)s'.format('\x1b[1;33m', '\x1b[0m'),
+                datefmt='%d-%b-%y %H:%M:%S'
+            )
+
     def get_request_id(self, increment=True):
         if increment:
             self.increment_request_id()
@@ -33,10 +46,12 @@ class AsyncWebsocket:
     async def listen(self):
         while True:
             res = json.loads(await self.ws.recv())
-            self.promises[res['id']](res)
+            if 'id' in res:
+                self.promises[res['id']](res)
 
-    async def connect(self, url):
+    async def connect(self, url, debug=False):
         self.url = url
+        self.debug = debug
         log.debug("Trying to connect to node %s" % self.url)
         self._request_id = 0
         self._loop = asyncio.get_event_loop()
@@ -68,9 +83,10 @@ class AsyncWebsocket:
                 raise RPCError(res["error"]["detail"])
             else:
                 raise RPCError(res["error"]["message"])
+        elif "method" in res:
+            return res["method"]
         else:
             return res['result']
-
 
     async def make_query(self, name, params, *args, **kwargs):
         if self.url:
@@ -83,11 +99,13 @@ class AsyncWebsocket:
 
         promise = Promise(self._save_promise)
 
+        _id = self.get_request_id(increment=False)
+
         payload = {
             'method': 'call',
             'params': [api_id, name, params],
             'jsonrpc': '2.0',
-            'id': self.get_request_id(increment=False)
+            'id': _id
         }
         while True:
             try:
@@ -102,6 +120,7 @@ class AsyncWebsocket:
             except ConnectionClosed:
                 await self.connect(self.url)
 
+        del self.promises[_id]
         return res
 
     async def register_apis(self):

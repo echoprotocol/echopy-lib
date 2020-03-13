@@ -34,7 +34,7 @@ class ApiConfig:
         self.order_book_default_depth = 50
         self.order_book_max_depth = 50
 
-        self.start_operation_history_id = '1.11.0'
-        self.stop_operation_history_id = '1.11.0'
+        self.start_operation_history_id = '1.10.0'
+        self.stop_operation_history_id = '1.10.0'
 
         self.expiration_max_lag_seconds = 30

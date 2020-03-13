@@ -9,6 +9,6 @@ class EchoApi:
         return res
 
 
-async def register_echo_api(ws, api_name, params=["", ""], api=1):
-    api_id = await ws.make_query(api_name, params, api=api)
+async def register_echo_api(ws, api_name):
+    api_id = await ws.make_query(api_name, ["", ""] if api_name == 'login' else [], api=1)
     return EchoApi(ws, api_name, api_id)

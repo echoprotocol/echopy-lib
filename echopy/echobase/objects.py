@@ -7,147 +7,25 @@ from .types import (
     Uint16,
     Uint32,
     Uint64,
-    Varint32,
     Int64,
     String,
     Bytes,
-    Void,
     Array,
     PointInTime,
-    Signature,
     Bool,
     Set,
-    FixedArray,
     Optional,
     StaticVariant,
     Map,
-    Id,
     VoteId,
     JsonObj,
 )
 from .types import ObjectId as ObjectIdParent
-from .chains import known_chains
 from .objecttypes import object_type
 from .account import PublicKey
-from .chains import default_prefix
-from .operationids import operations
 
 
-class Operation(list):
-    """ The superclass for an operation. This class used to instanciate an
-        operation, identify the operationid/name and serialize the operation
-        into bytes.
-    """
-
-    module = "echobase.operations"
-    fromlist = ["operations"]
-    operations = operations
-
-    def __init__(self, op, **kwargs):
-        list.__init__(self, [0, EchoObject()])
-
-        if isinstance(op, list) and len(op) == 2:
-            self._setidanename(op[0])
-            self.set(**op[1])
-
-        elif isinstance(op, str) or isinstance(op, int):
-            self._setidanename(op)
-            if kwargs:
-                self.set(**kwargs)
-
-        elif isinstance(op, EchoObject):
-            self._loadEchoObject(op)
-
-        else:
-            raise ValueError("Unknown format for Operation({})".format(type(op)))
-
-    @property
-    def id(self):
-        return self[0]
-
-    @id.setter
-    def id(self, value):
-        assert isinstance(value, int)
-        self[0] = value
-
-    @property
-    def operation(self):
-        return self[1]
-
-    @operation.setter
-    def operation(self, value):
-        assert isinstance(value, dict)
-        self[1] = value
-
-    @property
-    def op(self):
-        return self[1]
-
-    def set(self, **data):
-        try:
-            class_ = self._class()
-        except Exception:
-            raise NotImplementedError("Unimplemented Operation %s" % self.name)
-        self.operation = class_(**data)
-
-    def _setidanename(self, identifier):
-        if isinstance(identifier, int):
-            self.id = int(identifier)
-            self.name = self.getOperationNameForId(self.id)
-        else:
-            assert identifier in self.ops
-            self.id = self.getOperationIdForName(identifier)
-            self.name = identifier
-
-    @property
-    def opId(self):
-        return self.id
-
-    @property
-    def class_name(self):
-        return self.name[0].upper() + self.name[1:]
-
-    def _loadEchoObject(self, op):
-        assert isinstance(op, EchoObject)
-        self.operation = op
-        self.name = op.__class__.__name__.lower()
-        self.id = self.getOperationIdForName(self.name)
-
-    def __bytes__(self):
-        return bytes(Id(self.id)) + bytes(self.op)
-
-    def __str__(self):
-        return json.dumps(self.__json__())
-
-    def __json__(self):
-        return [self.id, self.op.json()]
-
-    def _get_class(self, name):
-        module = __import__(self.module, fromlist=self.fromlist)
-        class_ = getattr(module, name)
-        return class_
-
-    def _class(self):
-        return self._get_class(self.class_name)
-
-    @property
-    def ops(self):
-        if callable(self.operations):
-            return self.operations()
-        else:
-            return self.operations
-
-    def getOperationIdForName(self, name):
-        return self.ops[name]
-
-    def getOperationNameForId(self, i):
-        for key in self.ops:
-            if int(self.ops[key]) is int(i):
-                return key
-        raise ValueError("Unknown Operation ID %d" % i)
-
-    toJson = __json__
-    json = __json__
+default_prefix = "ECHO"
 
 
 class EchoObject(OrderedDict):
@@ -169,7 +47,8 @@ class EchoObject(OrderedDict):
         if len(self) is 0:
             return bytes()
         b = b""
-        for name, value in self.items():
+        for name in self.keys():
+            value = self[name]
             if isinstance(value, str):
                 b += bytes(value, "utf-8")
             else:
@@ -216,35 +95,29 @@ class EchoObject(OrderedDict):
     json = __json__
 
 
-class ObjectId(ObjectIdParent):
-    """ Need to overwrite a few attributes to load proper object_types from
-        ECHO
-    """
-
-    object_types = object_type
-
-
-class Memo(EchoObject):
+class OpWrapper(EchoObject):
     def __init__(self, *args, **kwargs):
         if isArgsThisClass(self, args):
             self.data = args[0].data
         else:
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
-            prefix = default_prefix
-            if "message" in kwargs and kwargs["message"]:
-                super().__init__(
-                    OrderedDict(
-                        [
-                            ("from", PublicKey(kwargs["from"], prefix=prefix)),
-                            ("to", PublicKey(kwargs["to"], prefix=prefix)),
-                            ("nonce", Uint64(int(kwargs["nonce"]))),
-                            ("message", Bytes(kwargs["message"])),
-                        ]
-                    )
+            super().__init__(
+
+                OrderedDict(
+                    [
+                        ("op", StaticVariant(kwargs["op"][0], kwargs["op"][1])),
+                    ]
                 )
-            else:
-                super().__init__(None)
+            )
+
+
+class ObjectId(ObjectIdParent):
+    """ Need to overwrite a few attributes to load proper object_types from
+        ECHO
+    """
+
+    object_types = object_type
 
 
 class Price(EchoObject):
@@ -291,15 +164,15 @@ class Permission(EchoObject):
         if isArgsThisClass(self, args):
             self.data = args[0].data
         else:
-            prefix = default_prefix
-
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
+
             kwargs["key_auths"] = sorted(
                 kwargs["key_auths"],
-                key=lambda x: PublicKey(x[0], prefix=prefix),
+                key=lambda x: PublicKey(x[0], prefix='ECHO'),
                 reverse=False,
             )
+
             account_auths = Map(
                 [
                     [ObjectId(e[0], "account"), Uint16(e[1])]
@@ -308,17 +181,16 @@ class Permission(EchoObject):
             )
             key_auths = Map(
                 [
-                    [PublicKey(e[0], prefix=prefix), Uint16(e[1])]
+                    [PublicKey(e[0]), Uint16(e[1])]
                     for e in kwargs["key_auths"]
                 ]
             )
             super().__init__(
                 OrderedDict(
                     [
-                        ("weight_threshold", Uint32(int(kwargs["weight_threshold"]))),
+                        ("weight_threshold", Uint32(kwargs["weight_threshold"])),
                         ("account_auths", account_auths),
                         ("key_auths", key_auths),
-                        ("extensions", Set([])),
                     ]
                 )
             )
@@ -326,29 +198,16 @@ class Permission(EchoObject):
 
 class AccountOptions(EchoObject):
     def __init__(self, *args, **kwargs):
-        prefix = default_prefix
-
         if isArgsThisClass(self, args):
             self.data = args[0].data
         else:
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
-            kwargs["votes"] = list(set(kwargs["votes"]))
-            kwargs["votes"] = sorted(
-                kwargs["votes"], key=lambda x: float(x.split(":")[1])
-            )
             super().__init__(
                 OrderedDict(
                     [
-                        ("memo_key", PublicKey(kwargs["memo_key"], prefix=prefix)),
-                        (
-                            "voting_account",
-                            ObjectId(kwargs["voting_account"], "account"),
-                        ),
                         ("delegating_account", ObjectId(kwargs["delegating_account"], "account")),
-                        ("num_witness", Uint16(kwargs["num_witness"])),
-                        ("num_committee", Uint16(kwargs["num_committee"])),
-                        ("votes", Array([VoteId(o) for o in kwargs["votes"]])),
+                        ("delegate_share", Uint16(kwargs["delegate_share"])),
                         ("extensions", Set([])),
                     ]
                 )
@@ -366,14 +225,12 @@ class AssetOptions(EchoObject):
                 OrderedDict(
                     [
                         ("max_supply", Int64(kwargs["max_supply"])),
-                        ("market_fee_percent", Uint16(kwargs["market_fee_percent"])),
-                        ("max_market_fee", Int64(kwargs["max_market_fee"])),
                         ("issuer_permissions", Uint16(kwargs["issuer_permissions"])),
                         ("flags", Uint16(kwargs["flags"])),
                         ("core_exchange_rate", Price(kwargs["core_exchange_rate"])),
                         (
                             "whitelist_authorities",
-                            Array(
+                            Set(
                                 [
                                     ObjectId(x, "account")
                                     for x in kwargs["whitelist_authorities"]
@@ -382,28 +239,10 @@ class AssetOptions(EchoObject):
                         ),
                         (
                             "blacklist_authorities",
-                            Array(
+                            Set(
                                 [
                                     ObjectId(x, "account")
                                     for x in kwargs["blacklist_authorities"]
-                                ]
-                            ),
-                        ),
-                        (
-                            "whitelist_markets",
-                            Array(
-                                [
-                                    ObjectId(x, "asset")
-                                    for x in kwargs["whitelist_markets"]
-                                ]
-                            ),
-                        ),
-                        (
-                            "blacklist_markets",
-                            Array(
-                                [
-                                    ObjectId(x, "asset")
-                                    for x in kwargs["blacklist_markets"]
                                 ]
                             ),
                         ),
@@ -426,18 +265,6 @@ class BitAssetOptions(EchoObject):
                     [
                         ("feed_lifetime_sec", Uint32(kwargs["feed_lifetime_sec"])),
                         ("minimum_feeds", Uint8(kwargs["minimum_feeds"])),
-                        (
-                            "force_settlement_delay_sec",
-                            Uint32(kwargs["force_settlement_delay_sec"]),
-                        ),
-                        (
-                            "force_settlement_offset_percent",
-                            Uint16(kwargs["force_settlement_offset_percent"]),
-                        ),
-                        (
-                            "maximum_force_settlement_volume",
-                            Uint16(kwargs["maximum_force_settlement_volume"]),
-                        ),
                         (
                             "short_backing_asset",
                             ObjectId(kwargs["short_backing_asset"], "asset"),
@@ -509,7 +336,7 @@ class VestingPolicyInitializer(StaticVariant):
             data = CddVestingPolicyInitializer(o[1])
         else:
             raise Exception("Unknown vesting_policy_initializer")
-        super().__init__(data, _id)
+        super().__init__(_id, data)
 
 
 class WorkerInitializer(StaticVariant):
@@ -549,12 +376,12 @@ class WorkerInitializer(StaticVariant):
             data = BurnWorkerInitializer(o[1])
         else:
             raise Exception("Unknown Worker_initializer")
-        super().__init__(data, id)
+        super().__init__(_id, data)
 
 
 class FeeSchedule(EchoObject):
     def __init__(self, *args, **kwargs):
-        from .feetypes import Fee_types
+        from echopy.echobase import feetypes
         if isArgsThisClass(self, args):
             self.data = args[0].data
         else:
@@ -563,11 +390,12 @@ class FeeSchedule(EchoObject):
             super().__init__(
                 OrderedDict(
                     [
-                        ("parameters", Set([Fee_types(param) for param in kwargs["parameters"]])),
+                        ("parameters", Set([feetypes.FeeTypes(param) for param in kwargs["parameters"]])),
                         ("scale", Uint32(kwargs["scale"]))
                     ]
                 )
             )
+
 
 class EchorandConfig(EchoObject):
     def __init__(self, *args, **kwargs):
@@ -579,13 +407,31 @@ class EchorandConfig(EchoObject):
             super().__init__(
                 OrderedDict(
                     [
-                        ("time_net_1mb", Uint32(kwargs["time_net_1mb"])),
-                        ("time_net_256b", Uint32(kwargs["time_net_256b"])),
-                        ("creator_count", Uint32(kwargs["creator_count"])),
-                        ("verifier_count", Uint32(kwargs["verifier_count"])),
-                        ("ok_treshold", Uint32(kwargs["ok_treshold"])),
-                        ("max_bba_steps", Uint32(kwargs["max_bba_steps"])),
-                        ("gc1_delay", Uint32(kwargs["gc1_delay"]))
+                        ("_time_generate", Uint32(kwargs["_time_generate"])),
+                        ("_time_net_1mb", Uint32(kwargs["_time_net_1mb"])),
+                        ("_time_net_256b", Uint32(kwargs["_time_net_256b"])),
+                        ("_creator_count", Uint32(kwargs["_creator_count"])),
+                        ("_verifier_count", Uint32(kwargs["_verifier_count"])),
+                        ("_ok_threshold", Uint32(kwargs["_ok_threshold"])),
+                        ("_max_bba_steps", Uint32(kwargs["_max_bba_steps"])),
+                        ("_gc1_delay", Uint32(kwargs["_gc1_delay"])),
+                        ("_round_attempts", Uint32(kwargs["_round_attempts"])),
+                    ]
+                )
+            )
+
+
+class EthAddress(EchoObject):
+    def __init__(self, *args, **kwargs):
+        if isArgsThisClass(self, args):
+            self.data = args[0].data
+        else:
+            if len(args) == 1 and len(kwargs) == 0:
+                kwargs = args[0]
+            super().__init__(
+                OrderedDict(
+                    [
+                        ("create_eth_address", Int64(kwargs["create_eth_address"]))
                     ]
                 )
             )
@@ -601,14 +447,66 @@ class SidechainConfig(EchoObject):
             super().__init__(
                 OrderedDict(
                     [
-                        ("echo_contract_id", ObjectId(kwargs["echo_contract_id"], "contract")),
-                        ("echo_vote_method", String(kwargs["echo_vote_method"])),
-                        ("echo_sign_method", String(kwargs["echo_sign_method"])),
-                        ("echo_transfer_topic", String(kwargs["echo_transfer_topic"])),
-                        ("echo_transfer_ready_topic", String(kwargs["echo_transfer_ready_topic"])),
-                        ("eth_contract_address", String(kwargs["eth_contract_address"])),
-                        ("eth_committee_method", String(kwargs["eth_committee_method"])),
-                        ("eth_transfer_topic", String(kwargs["eth_transfer_topic"]))
+                        ("eth_contract_address", Bytes(kwargs["eth_contract_address"])),
+                        ("eth_committee_update_method", EthMethod(kwargs["eth_committee_update_method"])),
+                        ("eth_gen_address_method", EthMethod(kwargs["eth_gen_address_method"])),
+                        ("eth_withdraw_method", EthMethod(kwargs["eth_withdraw_method"])),
+                        ("eth_update_addr_method", EthMethod(kwargs["eth_update_addr_method"])),
+                        ("eth_update_contract_address", EthMethod(kwargs["eth_update_contract_address"])),
+                        ("eth_withdraw_token_method", EthMethod(kwargs["eth_withdraw_token_method"])),
+                        ("eth_collect_tokens_method", EthMethod(kwargs["eth_collect_tokens_method"])),
+                        ("eth_committee_updated_topic", Bytes(kwargs["eth_committee_updated_topic"], 32)),
+                        ("eth_gen_address_topic", Bytes(kwargs["eth_gen_address_topic"], 32)),
+                        ("eth_deposit_topic", Bytes(kwargs["eth_deposit_topic"], 32)),
+                        ("eth_withdraw_topic", Bytes(kwargs["eth_withdraw_topic"], 32)),
+                        ("erc20_deposit_topic", Bytes(kwargs["erc20_deposit_topic"], 32)),
+                        ("erc20_withdraw_topic", Bytes(kwargs["erc20_withdraw_topic"], 32)),
+                        ("ETH_asset_id", ObjectId(kwargs["ETH_asset_id"], "asset")),
+                        ("BTC_asset_id", ObjectId(kwargs["BTC_asset_id"], "asset")),
+                        ("fines", EthAddress(kwargs["fines"])),
+                        ("gas_price", Uint64(kwargs["gas_price"])),
+                        ("satoshis_per_byte", Uint32(kwargs["satoshis_per_byte"])),
+                        ("coefficient_waiting_blocks", Uint32(kwargs["coefficient_waiting_blocks"])),
+                        ("btc_deposit_withdrawal_min", Uint64(kwargs["btc_deposit_withdrawal_min"])),
+                        ("btc_deposit_withdrawal_fee", Uint64(kwargs["btc_deposit_withdrawal_fee"]))
+                    ]
+                )
+            )
+
+
+class Erc20Config(EchoObject):
+    def __init__(self, *args, **kwargs):
+        if isArgsThisClass(self, args):
+            self.data = args[0].data
+        else:
+            if len(args) == 1 and len(kwargs) == 0:
+                kwargs = args[0]
+            super().__init__(
+                OrderedDict(
+                    [
+                        ("contract_code", String(kwargs["contract_code"])),
+                        ("create_token_fee", Uint64(kwargs["create_token_fee"])),
+                        ("transfer_topic", Bytes(kwargs["transfer_topic"], 32)),
+                        ("check_balance_method", EthMethod(kwargs["check_balance_method"])),
+                        ("burn_method", EthMethod(kwargs["burn_method"])),
+                        ("issue_method", EthMethod(kwargs["issue_method"])),
+                    ]
+                )
+            )
+
+
+class EthMethod(EchoObject):
+    def __init__(self, *args, **kwargs):
+        if isArgsThisClass(self, args):
+            self.data = args[0].data
+        else:
+            if len(args) == 1 and len(kwargs) == 0:
+                kwargs = args[0]
+            super().__init__(
+                OrderedDict(
+                    [
+                        ("method", String(kwargs["method"])),
+                        ("gas", Uint64(kwargs["gas"]))
                     ]
                 )
             )
@@ -642,37 +540,77 @@ class ChainParameters(EchoObject):
                 OrderedDict(
                     [
                         ("current_fees", FeeSchedule(kwargs["current_fees"])),
-                        ("block_interval", Uint8(kwargs["block_interval"])),
                         ("maintenance_interval", Uint32(kwargs["maintenance_interval"])),
-                        ("maintenance_skip_slots", Uint8(kwargs["maintenance_skip_slots"])),
+                        ("maintenance_duration_seconds", Uint8(kwargs["maintenance_duration_seconds"])),
                         ("committee_proposal_review_period", Uint32(kwargs["committee_proposal_review_period"])),
                         ("maximum_transaction_size", Uint32(kwargs["maximum_transaction_size"])),
                         ("maximum_block_size", Uint32(kwargs["maximum_block_size"])),
                         ("maximum_time_until_expiration", Uint32(kwargs["maximum_time_until_expiration"])),
                         ("maximum_proposal_lifetime", Uint32(kwargs["maximum_proposal_lifetime"])),
-                        ("maximum_asset_whitelist_authorities", Uint8(kwargs["maximum_asset_whitelist_authorities"])),
+                        ("maximum_asset_whitelist_authorities", Uint8(
+                            kwargs["maximum_asset_whitelist_authorities"]
+                        )),
                         ("maximum_asset_feed_publishers", Uint8(kwargs["maximum_asset_feed_publishers"])),
-                        ("maximum_witness_count", Uint16(kwargs["maximum_witness_count"])),
-                        ("maximum_committee_count", Uint16(kwargs["maximum_committee_count"])),
                         ("maximum_authority_membership", Uint16(kwargs["maximum_authority_membership"])),
-                        ("reserve_percent_of_fee", Uint16(kwargs["reserve_percent_of_fee"])),
-                        ("network_percent_of_fee", Uint16(kwargs["network_percent_of_fee"])),
-                        ("lifetime_referrer_percent_of_fee", Uint16(kwargs["lifetime_referrer_percent_of_fee"])),
-                        ("cashback_vesting_period_seconds", Uint32(kwargs["cashback_vesting_period_seconds"])),
-                        ("cashback_vesting_threshold", Int64(kwargs["cashback_vesting_threshold"])),
-                        ("count_non_member_votes", Bool(kwargs["count_non_member_votes"])),
-                        ("allow_non_member_whitelists", Bool(kwargs["allow_non_member_whitelists"])),
-                        ("witness_pay_per_block", Int64(kwargs["witness_pay_per_block"])),
-                        ("worker_budget_per_day", Int64(kwargs["worker_budget_per_day"])),
-                        ("max_predicate_opcode", Uint16(kwargs["max_predicate_opcode"])),
-                        ("fee_liquidation_threshold", Int64(kwargs["fee_liquidation_threshold"])),
-                        ("accounts_per_fee_scale", Uint16(kwargs["accounts_per_fee_scale"])),
-                        ("account_fee_scale_bitshifts", Uint8(kwargs["account_fee_scale_bitshifts"])),
                         ("max_authority_depth", Uint8(kwargs["max_authority_depth"])),
+
+                        ("block_emission_amount", Int64(kwargs["block_emission_amount"])),
+                        ("block_producer_reward_ratio", Uint16(kwargs["block_producer_reward_ratio"])),
+
+                        ("committee_frozen_balance_to_activate",
+                            Uint64(kwargs["committee_frozen_balance_to_activate"])),
+                        ("committee_maintenance_intervals_to_deposit",
+                            Uint64(kwargs["committee_maintenance_intervals_to_deposit"])),
+                        ("committee_balance_unfreeze_duration_seconds",
+                            Uint32(kwargs["committee_balance_unfreeze_duration_seconds"])),
+
+                        ("x86_64_maximum_contract_size", Uint64(kwargs["x86_64_maximum_contract_size"])),
+
+                        ("frozen_balances_multipliers", Map(
+                            [[Uint16(e[0]), Uint32(e[1])] for e in kwargs["frozen_balances_multipliers"]]
+                        )),
+
                         ("echorand_config", EchorandConfig(kwargs["echorand_config"])),
                         ("sidechain_config", SidechainConfig(kwargs["sidechain_config"])),
+                        ("erc20_config", Erc20Config(kwargs["erc20_config"])),
+
                         ("gas_price", GasPrice(kwargs["gas_price"])),
                         ("extensions", Set([])),
+                    ]
+                )
+            )
+
+
+class BtcTransactionDetails(EchoObject):
+    def __init__(self, *args, **kwargs):
+        if isArgsThisClass(self, args):
+            self.data = args[0].data
+        else:
+            if len(args) == 1 and len(kwargs) == 0:
+                kwargs = args[0]
+            super().__init__(
+                OrderedDict(
+                    [
+                        ("block_number", Uint64(kwargs["block_number"])),
+                        ("tx_id", String(kwargs["tx_id"])),
+                        ("index", Uint32(kwargs["index"])),
+                        ("amount", Uint64(kwargs["amount"])),
+                    ]
+                )
+            )
+
+
+class P2shP2wsh(EchoObject):
+    def __init__(self, *args, **kwargs):
+        if isArgsThisClass(self, args):
+            self.data = args[0].data
+        else:
+            if len(args) == 1 and len(kwargs) == 0:
+                kwargs = args[0]
+            super().__init__(
+                OrderedDict(
+                    [
+                        ("address", String(kwargs["address"])),
                     ]
                 )
             )

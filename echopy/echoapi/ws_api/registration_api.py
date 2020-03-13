@@ -3,5 +3,20 @@ class RegistrationApi:
     def __init__(self, db):
         self.db = db
 
-    async def register_account(self, name, owner_key, active_key, memo_key, echorand_key):
-        return await self.db.rpcexec('register_account', [name, owner_key, active_key, memo_key, echorand_key])
+    async def request_registration_task(self):
+        return await self.db.rpcexec(
+            'request_registration_task',
+            []
+        )
+
+    async def submit_registration_solution(self, callback, name, active, echorand_key, nonce, rand_num):
+        return await self.db.rpcexec(
+            'submit_registration_solution',
+            [callback, name, active, echorand_key, nonce, rand_num]
+        )
+
+    async def get_registrar(self):
+        return await self.db.rpcexec(
+            'get_registrar',
+            []
+        )
