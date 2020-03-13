@@ -14,7 +14,6 @@ from codecs import decode
 from datetime import timezone, datetime
 from calendar import timegm
 import time
-import string
 
 from .echobase.crypto import Crypto
 
@@ -66,6 +65,14 @@ class Transaction:
         self._crypto = Crypto
 
     @staticmethod
+    def is_hex(s):
+        try:
+            int(s, 16)
+            return True
+        except ValueError:
+            return False
+
+    @staticmethod
     def bytes_to_int(_bytes):
         result = 0
         for b in _bytes:
@@ -90,7 +97,7 @@ class Transaction:
 
     @ref_block_prefix.setter
     def ref_block_prefix(self, value):
-        if isinstance(value, str) and all(symbol in string.hexdigits for symbol in set(value)):
+        if isinstance(value, str) and self.is_hex(value):
             self._ref_block_prefix = self.bytes_to_int(bytes.fromhex(value)[:4])
             return
         if isinstance(value, int) and value > 0 and value < 2**32:
@@ -104,8 +111,7 @@ class Transaction:
 
     @chain_id.setter
     def chain_id(self, value):
-        if isinstance(value, str) and all(symbol in string.hexdigits for symbol in set(value))\
-                and len(value) == 64:
+        if isinstance(value, str) and self.is_hex(value) and len(value) == 64:
             self._chain_id = value
             return
         raise Exception('invalid chain_id format or length')
@@ -320,6 +326,8 @@ class Transaction:
             now_iso = seconds_to_iso(datetime.now(timezone.utc).timestamp())
             now_seconds = iso_to_seconds(now_iso)
             self.expiration = seconds_to_iso(now_seconds + 300)
+
+        self.check_finalized()
 
         _transaction = TransactionType(
             ref_block_num=self.ref_block_num,
