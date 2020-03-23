@@ -15,7 +15,7 @@ class Echo:
     def solve_registration_task(self, block_id, rand_num, difficulty):
         return solve_registration_task(block_id, rand_num, difficulty)
 
-    def register_account(self, callback, name, active, echorand):
+    def register_account(self, callback, name, active, echorand, evm_address=None):
         if self.api.ws.connection is None:
             raise AttributeError("Connection is needed: use 'connect' method for connecting to node")
         task = self.api.registration.request_registration_task()
@@ -29,6 +29,7 @@ class Echo:
             name,
             active,
             echorand,
+            evm_address,
             nonce,
             task["rand_num"]
         )

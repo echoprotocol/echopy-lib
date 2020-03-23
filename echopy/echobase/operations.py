@@ -140,12 +140,14 @@ class OverrideTransfer(EchoObject):
 # Account Management
 class AccountCreate(EchoObject):
     def detail(self, *args, **kwargs):
+        evm_address = get_optional("evm_address", kwargs, Bytes)
         result = OrderedDict(
             [
                 ("registrar", ObjectId(kwargs["registrar"], "account")),
                 ("name", String(kwargs["name"])),
                 ("active", Permission(kwargs["active"])),
                 ("echorand_key", PublicKey(kwargs["echorand_key"])),
+                ("evm_address", Optional(evm_address)),
                 ("options", AccountOptions(kwargs["options"])),
                 ("extensions", Set([])),
             ]
