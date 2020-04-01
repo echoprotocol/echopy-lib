@@ -327,7 +327,7 @@ class AssetPublishFeed(EchoObject):
             [
                 ("publisher", ObjectId(kwargs["publisher"], "account")),
                 ("asset_id", ObjectId(kwargs["asset_id"], "asset")),
-                ("feed", PriceFeed(kwargs["feed"])),
+                ("core_exchange_rate", Price(kwargs["core_exchange_rate"])),
                 ("extensions", Set([])),
             ]
         )
