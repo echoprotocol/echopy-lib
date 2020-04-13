@@ -65,6 +65,9 @@ ops = [
     "sidechain_btc_aggregate",
     "sidechain_btc_approve_aggregate",
     "block_reward",
-    "evm_address_register"
+    "evm_address_register",
+    "did_create",
+    "did_update",
+    "did_delete"
 ]
 operations = {o: ops.index(o) for o in ops}

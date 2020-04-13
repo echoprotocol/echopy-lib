@@ -5,5 +5,6 @@ __all__ = [
     "history_api",
     "login_api",
     "network_api",
-    "registration_api"
+    "registration_api",
+    "did_api"
 ]

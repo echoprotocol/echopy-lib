@@ -25,3 +25,4 @@ object_type["btc_deposit"] = 21
 object_type["btc_withdraw"] = 22
 object_type["btc_aggregating"] = 23
 object_type["evm_address"] = 24
+object_type["did"] = 25

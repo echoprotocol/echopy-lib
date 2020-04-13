@@ -783,4 +783,46 @@ class EvmAddressRegister(EchoObject):
         return result
 
 
+class DidCreate(EchoObject):
+    def detail(self, *args, **kwargs):
+        result = OrderedDict(
+            [
+                ("registrar", ObjectId(kwargs["registrar"], "account")),
+                ("essence", ObjectId(kwargs["essence"])),
+                ("public_keys", Set([String(i) for i in kwargs["public_keys"]])),
+            ]
+        )
+        self.add_fee(result, kwargs)
+
+        return result
+
+
+class DidUpdate(EchoObject):
+    def detail(self, *args, **kwargs):
+        result = OrderedDict(
+            [
+                ("registrar", ObjectId(kwargs["registrar"], "account")),
+                ("did_identifier", String(kwargs["did_identifier"])),
+                ("pub_keys_to_delete", Set([String(i) for i in kwargs["pub_keys_to_delete"]])),
+                ("pub_keys_to_add", Set([String(i) for i in kwargs["pub_keys_to_add"]])),
+            ]
+        )
+        self.add_fee(result, kwargs)
+
+        return result
+
+
+class DidDelete(EchoObject):
+    def detail(self, *args, **kwargs):
+        result = OrderedDict(
+            [
+                ("registrar", ObjectId(kwargs["registrar"], "account")),
+                ("did_identifier", String(kwargs["did_identifier"])),
+            ]
+        )
+        self.add_fee(result, kwargs)
+
+        return result
+
+
 fill_classmaps()
