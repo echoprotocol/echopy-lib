@@ -141,7 +141,6 @@ class OverrideTransfer(EchoObject):
 class AccountCreate(EchoObject):
     def detail(self, *args, **kwargs):
         evm_address = get_optional("evm_address", kwargs, Bytes)
-
         result = OrderedDict(
             [
                 ("registrar", ObjectId(kwargs["registrar"], "account")),
@@ -328,7 +327,7 @@ class AssetPublishFeed(EchoObject):
             [
                 ("publisher", ObjectId(kwargs["publisher"], "account")),
                 ("asset_id", ObjectId(kwargs["asset_id"], "asset")),
-                ("feed", PriceFeed(kwargs["feed"])),
+                ("core_exchange_rate", Price(kwargs["core_exchange_rate"])),
                 ("extensions", Set([])),
             ]
         )
@@ -777,6 +776,48 @@ class EvmAddressRegister(EchoObject):
                 ("owner", ObjectId(kwargs["owner"], "account")),
                 ("evm_address", Bytes(kwargs["evm_address"])),
                 ("extensions", Set([])),
+            ]
+        )
+        self.add_fee(result, kwargs)
+
+        return result
+
+
+class DidCreate(EchoObject):
+    def detail(self, *args, **kwargs):
+        result = OrderedDict(
+            [
+                ("registrar", ObjectId(kwargs["registrar"], "account")),
+                ("essence", ObjectId(kwargs["essence"])),
+                ("public_keys", Set([String(i) for i in kwargs["public_keys"]])),
+            ]
+        )
+        self.add_fee(result, kwargs)
+
+        return result
+
+
+class DidUpdate(EchoObject):
+    def detail(self, *args, **kwargs):
+        result = OrderedDict(
+            [
+                ("registrar", ObjectId(kwargs["registrar"], "account")),
+                ("did_identifier", String(kwargs["did_identifier"])),
+                ("pub_keys_to_delete", Set([String(i) for i in kwargs["pub_keys_to_delete"]])),
+                ("pub_keys_to_add", Set([String(i) for i in kwargs["pub_keys_to_add"]])),
+            ]
+        )
+        self.add_fee(result, kwargs)
+
+        return result
+
+
+class DidDelete(EchoObject):
+    def detail(self, *args, **kwargs):
+        result = OrderedDict(
+            [
+                ("registrar", ObjectId(kwargs["registrar"], "account")),
+                ("did_identifier", String(kwargs["did_identifier"])),
             ]
         )
         self.add_fee(result, kwargs)

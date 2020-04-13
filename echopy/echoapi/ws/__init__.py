@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from .async_websocket import AsyncWebsocket
 
+
 class WS(AsyncWebsocket):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -32,6 +33,10 @@ class WS(AsyncWebsocket):
     @property
     def network_node_api(self):
         return self._network_node
+
+    @property
+    def did_api(self):
+        return self._did_api
 
 __all__ = [
     "echoapi",

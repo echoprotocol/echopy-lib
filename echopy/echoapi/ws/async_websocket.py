@@ -129,7 +129,22 @@ class AsyncWebsocket:
             considered default. The requirement to register to APIs has been
             removed in some systems.
         """
-        apis = ['database', 'network_broadcast', 'history', 'registration', 'asset', 'login', 'network_node']
+        apis = [
+            'database',
+            'network_broadcast',
+            'history',
+            'registration',
+            'asset',
+            'login',
+            'network_node',
+            'did'
+        ]
         self._database, self._network_broadcast, self._history, self._registration, self._asset, self._login,\
-            self._network_node = await Promise.all([register_echo_api(self, api_unit) for api_unit in apis])
+            self._network_node, self._did = await Promise.all(
+                [
+                    register_echo_api(self, api_unit)
+                    for api_unit
+                    in apis
+                ]
+            )
         self._login.api_id = 1
