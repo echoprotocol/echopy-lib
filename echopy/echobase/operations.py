@@ -14,7 +14,8 @@ from .types import (
     Uint16,
     Uint32,
     Uint64,
-    Map
+    Map,
+    FullObjectId
 )
 
 from .objects import (
@@ -788,7 +789,7 @@ class DidCreate(EchoObject):
         result = OrderedDict(
             [
                 ("registrar", ObjectId(kwargs["registrar"], "account")),
-                ("essence", ObjectId(kwargs["essence"])),
+                ("essence", FullObjectId(kwargs["essence"])),
                 ("public_keys", Set([String(i) for i in kwargs["public_keys"]])),
             ]
         )
