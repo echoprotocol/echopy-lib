@@ -35,6 +35,8 @@ def variable_buffer(s):
 
 
 def JsonObj(data):
+    if isinstance(data, Bytes):
+        return str(data)
     return json.loads(str(data))
 
 
