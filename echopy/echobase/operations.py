@@ -590,6 +590,20 @@ class BalanceUnfreeze(EchoObject):
         return result
 
 
+class RequestUnfreezeBalance(EchoObject):
+    def detail(self, *args, **kwargs):
+        result = OrderedDict(
+            [
+                ("account", ObjectId(kwargs["account"], "account")),
+                ("objects_to_unfreeze", Array([ObjectId(i, "frozen_balance") for i in kwargs["objects_to_unfreeze"]])),
+                ("extensions", Set([])),
+            ]
+        )
+        self.add_fee(result, kwargs)
+
+        return result
+
+
 # Contracts
 class ContractCreate(EchoObject):
     def detail(self, *args, **kwargs):

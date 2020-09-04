@@ -21,7 +21,7 @@ class Api:
         self.network = NetworkApi(self.ws.network_api)
         self.history = HistoryApi(self.ws.history_api)
         self.registration = RegistrationApi(self.ws.registration_api)
-        self.did = DidApi(self.ws.did_api)
+        # self.did = DidApi(self.ws.did_api)
         self.login = LoginApi(self.ws.login_api)
 
     def disconnect(self):

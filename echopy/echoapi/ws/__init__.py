@@ -35,9 +35,9 @@ class WS(ReconnectionWebsocket):
     def network_node_api(self):
         return self._network_node
 
-    @property
-    def did_api(self):
-        return self._did
+    # @property
+    # def did_api(self):
+    #     return self._did
 
 
 __all__ = [
