@@ -529,6 +529,26 @@ class GasPrice(EchoObject):
             )
 
 
+class EconomyConfig(EchoObject):
+    def __init__(self, *args, **kwargs):
+        if isArgsThisClass(self, args):
+            self.data = args[0].data
+        else:
+            if len(args) == 1 and len(kwargs) == 0:
+                kwargs = args[0]
+            super().__init__(
+                OrderedDict(
+                    [
+                        ("blocks_in_interval", Uint64(kwargs["blocks_in_interval"])),
+                        ("maintenances_in_interval", Uint8(kwargs["maintenances_in_interval"])),
+                        ("block_emission_amount", Uint64(kwargs["block_emission_amount"])),
+                        ("block_producer_reward_ratio", Uint16(kwargs["block_producer_reward_ratio"])),
+                        ("pool_divider", Uint16(kwargs["pool_divider"])),
+                    ]
+                )
+            )
+
+
 class ChainParameters(EchoObject):
     def __init__(self, *args, **kwargs):
         if isArgsThisClass(self, args):
@@ -542,6 +562,7 @@ class ChainParameters(EchoObject):
                         ("current_fees", FeeSchedule(kwargs["current_fees"])),
                         ("maintenance_interval", Uint32(kwargs["maintenance_interval"])),
                         ("maintenance_duration_seconds", Uint8(kwargs["maintenance_duration_seconds"])),
+                        ("balance_unfreezing_time", Uint32(kwargs["balance_unfreezing_time"])),
                         ("committee_proposal_review_period", Uint32(kwargs["committee_proposal_review_period"])),
                         ("maximum_transaction_size", Uint32(kwargs["maximum_transaction_size"])),
                         ("maximum_block_size", Uint32(kwargs["maximum_block_size"])),
@@ -553,9 +574,6 @@ class ChainParameters(EchoObject):
                         ("maximum_asset_feed_publishers", Uint8(kwargs["maximum_asset_feed_publishers"])),
                         ("maximum_authority_membership", Uint16(kwargs["maximum_authority_membership"])),
                         ("max_authority_depth", Uint8(kwargs["max_authority_depth"])),
-
-                        ("block_emission_amount", Int64(kwargs["block_emission_amount"])),
-                        ("block_producer_reward_ratio", Uint16(kwargs["block_producer_reward_ratio"])),
 
                         ("committee_frozen_balance_to_activate",
                             Uint64(kwargs["committee_frozen_balance_to_activate"])),
@@ -575,6 +593,8 @@ class ChainParameters(EchoObject):
                         ("erc20_config", Erc20Config(kwargs["erc20_config"])),
 
                         ("gas_price", GasPrice(kwargs["gas_price"])),
+                        ("valid_fee_asset", Set([ObjectId(i, "asset") for i in kwargs["valid_fee_asset"]])),
+                        ("economy_config", EconomyConfig(kwargs["economy_config"])),
                         ("extensions", Set([])),
                     ]
                 )

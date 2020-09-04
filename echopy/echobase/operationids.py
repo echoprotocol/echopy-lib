@@ -31,6 +31,7 @@ ops = [
     "balance_claim",
     "balance_freeze",
     "balance_unfreeze",
+    "request_balance_unfreeze",
     "contract_create",
     "contract_call",
     "contract_internal_create",
