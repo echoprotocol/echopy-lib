@@ -590,7 +590,7 @@ class BalanceUnfreeze(EchoObject):
         return result
 
 
-class RequestUnfreezeBalance(EchoObject):
+class RequestBalanceUnfreeze(EchoObject):
     def detail(self, *args, **kwargs):
         result = OrderedDict(
             [
