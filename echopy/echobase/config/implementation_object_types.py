@@ -18,3 +18,4 @@ class ImplementationObjectTypes:
         self.ACCOUNT_ADDRESS = 14
         self.CONTRACT_POOL = 15
         self.MALICIOUS_COMMITTEEMEN = 16
+        self.INCENTIVES_POOL = 17

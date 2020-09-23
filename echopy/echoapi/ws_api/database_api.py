@@ -109,6 +109,18 @@ class DatabaseApi:
             []
         )
 
+    def get_git_revision(self):
+        return self.db.rpcexec(
+            'get_git_revision',
+            []
+        )
+
+    def get_incentives_info(self):
+        return self.dp.rpcexec(
+            'get_incentives_info',
+            []
+        )
+
     # Keys
     def get_key_references(self, keys):
         return self.db.rpcexec(

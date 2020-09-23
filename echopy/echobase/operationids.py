@@ -65,6 +65,7 @@ ops = [
     "sidechain_btc_withdraw",
     "sidechain_btc_aggregate",
     "sidechain_btc_approve_aggregate",
+    "sidechain_btc_block_process",
     "block_reward",
     "evm_address_register",
     "did_create",

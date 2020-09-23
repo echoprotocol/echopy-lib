@@ -66,8 +66,9 @@ class OperationIds:
         self.SIDECHAIN_BTC_WITHDRAW = 62
         self.SIDECHAIN_BTC_AGGREGATE = 63
         self.SIDECHAIN_BTC_APPROVE_AGGREGATE = 64
-        self.BLOCK_REWARD = 65
-        self.EVM_ADDRESS_REGISTER = 66
-        self.DID_CREATE = 67
-        self.DID_UPDATE = 68
-        self.DID_DELETE = 69
+        self.SIDECHAIN_BTC_BLOCK_PROCESS = 65
+        self.BLOCK_REWARD = 66
+        self.EVM_ADDRESS_REGISTER = 67
+        self.DID_CREATE = 68
+        self.DID_UPDATE = 69
+        self.DID_DELETE = 70

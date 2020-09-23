@@ -784,6 +784,20 @@ class SidechainBtcWithdraw(EchoObject):
         return result
 
 
+class SidechainBtcBlockProcess(EchoObject):
+    def detail(self, *args, **kwargs):
+        result = OrderedDict(
+            [
+                ("committee_member_id", ObjectId(kwargs["committee_member_id"], "account")),
+                ("block_number", Uint64(kwargs["block_number"])),
+                ("extensions", Set([])),
+            ]
+        )
+        self.add_fee(result, kwargs)
+
+        return result
+
+
 class EvmAddressRegister(EchoObject):
     def detail(self, *args, **kwargs):
         result = OrderedDict(
