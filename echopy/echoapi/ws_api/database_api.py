@@ -116,7 +116,7 @@ class DatabaseApi:
         )
 
     def get_incentives_info(self):
-        return self.dp.rpcexec(
+        return self.db.rpcexec(
             'get_incentives_info',
             []
         )
