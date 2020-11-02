@@ -3,7 +3,7 @@
 
 from setuptools import setup, find_packages
 
-VERSION = "0.1.69"
+VERSION = "0.1.70"
 packages = find_packages()
 packages.remove('test')
 
