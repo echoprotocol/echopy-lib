@@ -114,11 +114,17 @@ class DatabaseApi:
             'get_git_revision',
             []
         )
+    
+    def get_current_incentives_info(self):
+        return self.db.rpcexec(
+            'get_current_incentives_info',
+            []
+        )
 
-    def get_incentives_info(self):
+    def get_incentives_info(self, start_block, end_block):
         return self.db.rpcexec(
             'get_incentives_info',
-            []
+            [start_block, end_block]
         )
 
     # Keys
@@ -187,6 +193,12 @@ class DatabaseApi:
         return self.db.rpcexec(
             'get_evm_addresses',
             [account_id]
+        )
+
+    def get_account_address_by_label(self, account_name_or_id, label):
+        return self.db.rpcexec(
+            'get_account_address_by_label',
+            [account_name_or_id, label]
         )
 
     def get_account_count(self):

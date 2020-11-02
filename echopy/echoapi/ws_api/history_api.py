@@ -31,3 +31,9 @@ class HistoryApi:
             'get_relative_contract_history',
             [contract, stop, limit, start]
         )
+     
+    def get_account_address_history(self, address, start='1.6.0', stop='1.6.0', limit=100):
+        return self.db.rpcexec(
+            'get_account_address_history',
+            [address, start, stop, limit]
+        )
