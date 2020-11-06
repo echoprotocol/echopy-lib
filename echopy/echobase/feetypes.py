@@ -146,6 +146,7 @@ class FeeTypes(StaticVariant):
             operations["balance_claim"]: NoFee,
             operations["balance_freeze"]: DefaultFee,
             operations["balance_unfreeze"]: NoFee,
+            operations["request_balance_unfreeze"]: DefaultFee,
             operations["contract_create"]: DefaultFee,
             operations["contract_call"]: DefaultFee,
             operations["contract_internal_create"]: NoFee,
@@ -179,7 +180,14 @@ class FeeTypes(StaticVariant):
             operations["sidechain_btc_withdraw"]: DefaultFee,
             operations["sidechain_btc_aggregate"]: DefaultFee,
             operations["sidechain_btc_approve_aggregate"]: DefaultFee,
-            operations["block_reward"]: NoFee
+            operations["sidechain_stake_eth_update"]: DefaultFee,
+            operations["sidechain_stake_btc_create_script"]: DefaultFee,
+            operations["sidechain_stake_btc_update"]: DefaultFee
+            operations["block_reward"]: NoFee,
+            operations["evm_address_register"]: DefaultFee
+            operations["did_create"]: DefaultFee,
+            operations["did_update"]: DefaultFee,
+            operations["did_delete"]: DefaultFee
         }
 
         ops_key, params = o
