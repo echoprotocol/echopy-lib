@@ -494,6 +494,22 @@ class Erc20Config(EchoObject):
                 )
             )
 
+class StakeConfig(EchoObject):
+    def __init__(self, *args, **kwargs):
+        if isArgsThisClass(self, args):
+            self.data = args[0].data
+        else:
+            if len(args) == 1 and len(kwargs) == 0:
+                kwargs = args[0]
+            super().__init__(
+                OrderedDict(
+                    [
+                        ("contract_address", Bytes(kwargs["contract_address"])),
+                        ("balance_updated_topic", Bytes(kwargs["balance_updated_topic"])),
+                    ]
+                )
+            )
+
 
 class EthMethod(EchoObject):
     def __init__(self, *args, **kwargs):
@@ -591,8 +607,10 @@ class ChainParameters(EchoObject):
                         ("echorand_config", EchorandConfig(kwargs["echorand_config"])),
                         ("sidechain_config", SidechainConfig(kwargs["sidechain_config"])),
                         ("erc20_config", Erc20Config(kwargs["erc20_config"])),
+                        ("stake_sidechain_config", StakeConfig(kwargs["stake_sidechain_config"])),
 
                         ("gas_price", GasPrice(kwargs["gas_price"])),
+                        ("consensus_assets", Set([ObjectId(i, "asset") for i in kwargs["consensus_assets"]])),
                         ("valid_fee_asset", Set([ObjectId(i, "asset") for i in kwargs["valid_fee_asset"]])),
                         ("economy_config", EconomyConfig(kwargs["economy_config"])),
                         ("extensions", Set([])),
