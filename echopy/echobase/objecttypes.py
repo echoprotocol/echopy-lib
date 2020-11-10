@@ -26,3 +26,6 @@ object_type["btc_withdraw"] = 22
 object_type["btc_aggregating"] = 23
 object_type["evm_address"] = 24
 object_type["did"] = 25
+object_type["stake_btc_script"] = 26
+object_type["stake_btc_vout"] = 27
+object_type["stake_eth_update"] = 28

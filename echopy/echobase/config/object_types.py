@@ -25,6 +25,8 @@ class ObjectTypes:
         self.BTC_DEPOSIT = 21
         self.BTC_WITHDRAW = 22
         self.BTC_AGGREGATING = 23
-        self.BTC_BLOCK = 24
-        self.EVM_ADDRESS = 25
-        self.DID = 26
+        self.EVM_ADDRESS = 24
+        self.DID = 25
+        self.STAKE_BTC_SCRIPT = 26
+        self.STAKE_BTC_VOUT = 27
+        self.STAKE_ETH_UPDATE = 28
