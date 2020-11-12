@@ -15,7 +15,8 @@ from .types import (
     Uint32,
     Uint64,
     Map,
-    FullObjectId
+    FullObjectId,
+    Sha256
 )
 
 from .objects import (
@@ -32,6 +33,7 @@ from .objects import (
     OpWrapper,
     BtcTransactionDetails,
     P2shP2wsh,
+    BtcTxInfo
 )
 
 from .objects import EchoObject
@@ -776,6 +778,53 @@ class SidechainBtcWithdraw(EchoObject):
                 ("account", ObjectId(kwargs["account"], "account")),
                 ("btc_addr", String(kwargs["btc_addr"])),
                 ("value", Uint64(kwargs["value"])),
+                ("extensions", Set([])),
+            ]
+        )
+        self.add_fee(result, kwargs)
+
+        return result
+
+
+class SidechainStakeEthUpdate(EchoObject):
+    def detail(self, *args, **kwargs):
+        result = OrderedDict(
+            [
+                ("committee_member_id", ObjectId(kwargs["committee_member_id"], "account")),
+                ("asset_id", ObjectId(kwargs["asset_id"], "asset"))
+                ("current_balance", Uint64(kwargs["current_balance"])),
+                ("account", ObjectId(kwargs["account"], "account")),
+                ("transaction_hash", Sha256(kwargs["transaction_hash"])),
+                ("extensions", Set([])),
+            ]
+        )
+        self.add_fee(result, kwargs)
+
+        return result
+
+
+class SidechainStakeBtcCreateScript(EchoObject):
+    def detail(self, *args, **kwargs):
+        result = OrderedDict(
+            [
+                ("account", ObjectId(kwargs["account"], "account")),
+                ("pubkey_hash", Ripemd160(kwargs["pubkey_hash"])),
+                ("extensions", Set([])),
+            ]
+        )
+        self.add_fee(result, kwargs)
+
+        return result
+
+
+class SidechainStakeBtcUpdateOperation(EchoObject):
+    def detail(self, *args, **kwargs):
+        result = OrderedDict(
+            [
+                ("committee_member_id", ObjectId(kwargs["committee_member_id"], "account")),
+                ("owner", ObjectId(kwargs["owner"], "account")),
+                ("btc_tx_info", BtcTxInfo(kwargs["btc_tx_info"]))
+                ("is_vin", Bool(kwargs["current_balance"])),
                 ("extensions", Set([])),
             ]
         )
