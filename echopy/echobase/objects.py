@@ -652,3 +652,38 @@ class P2shP2wsh(EchoObject):
                     ]
                 )
             )
+
+
+class BtcTxInfo(EchoObject):
+    def __init__(self, *args, **kwargs):
+        if isArgsThisClass(self, args):
+            self.data = args[0].data
+        else:
+            if len(args) == 1 and len(kwargs) == 0:
+                kwargs = args[0]
+            super().__init__(
+                OrderedDict(
+                    [
+                        ("block_number", Uint64(kwargs["block_number"])),
+                        ("out", BtcTxInfoOut(kwargs['out']))
+                    ]
+                )
+            )
+
+
+class BtcTxInfoOut(EchoObject):
+    def __init__(self, *args, **kwargs):
+        if isArgsThisClass(self, args):
+            self.data = args[0].data
+        else:
+            if len(args) == 1 and len(kwargs) == 0:
+                kwargs = args[0]
+            super().__init__(
+                OrderedDict(
+                    [
+                        ("tx_id", Sha256(kwargs["tx_id"])),
+                        ("index", Uint32(kwargs["index"])),
+                        ("amount", Uint64(kwargs["amount"]))
+                    ]
+                )
+            )
