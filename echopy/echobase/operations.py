@@ -16,7 +16,8 @@ from .types import (
     Uint64,
     Map,
     FullObjectId,
-    Sha256
+    Sha256,
+    Ripemd160
 )
 
 from .objects import (
@@ -824,7 +825,7 @@ class SidechainStakeBtcUpdateOperation(EchoObject):
                 ("committee_member_id", ObjectId(kwargs["committee_member_id"], "account")),
                 ("owner", ObjectId(kwargs["owner"], "account")),
                 ("btc_tx_info", BtcTxInfo(kwargs["btc_tx_info"]))
-                ("is_vin", Bool(kwargs["current_balance"])),
+                ("is_vin", Bool(kwargs["is_vin"])),
                 ("extensions", Set([])),
             ]
         )
