@@ -19,6 +19,7 @@ from .types import (
     Map,
     VoteId,
     JsonObj,
+    Sha256
 )
 from .types import ObjectId as ObjectIdParent
 from .objecttypes import object_type
