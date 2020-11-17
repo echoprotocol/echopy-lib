@@ -15,7 +15,7 @@ class Echo:
     def solve_registration_task(self, block_id, rand_num, difficulty):
         return solve_registration_task(block_id, rand_num, difficulty)
 
-    def register_account(self, callback, name, active, echorand, evm_address=None):
+    async def register_account(self, callback, name, active, echorand, evm_address=None):
         if self.api.ws.connection is None:
             raise AttributeError("Connection is needed: use 'connect' method for connecting to node")
         task = self.api.registration.request_registration_task()
@@ -24,7 +24,7 @@ class Echo:
             task["rand_num"],
             task["difficulty"]
         )
-        return self.api.registration.submit_registration_solution(
+        return await self.api.registration.submit_registration_solution(
             callback,
             name,
             active,
@@ -37,8 +37,8 @@ class Echo:
     def create_transaction(self):
         return Transaction(self.api)
 
-    def connect(self, url, debug=False):
-        self.api.connect(url, debug)
+    async def connect(self, url, debug=False):
+        await self.api.connect(url, debug)
 
-    def disconnect(self):
-        self.api.disconnect()
+    async def disconnect(self):
+        await self.api.disconnect()

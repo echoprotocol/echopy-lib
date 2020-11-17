@@ -35,14 +35,7 @@ from .objects import (
     BtcTransactionDetails,
     P2shP2wsh,
     BtcTxInfo
-)
-
-from .objects import EchoObject
-from .account import PublicKey
-
 from .operationids import operations
-from functools import partial
-
 
 class_idmap = {}
 class_namemap = {}
@@ -465,6 +458,10 @@ class CommitteeMemberUpdateGlobalParameters(EchoObject):
 
 class CommitteeMemberActivate(EchoObject):
     def detail(self, *args, **kwargs):
+        new_url = get_optional("new_url", kwargs, String)
+        new_eth_address = get_optional("new_eth_address", kwargs, partial(Bytes))
+        new_btc_public_key = get_optional("new_btc_public_key", kwargs, partial(Bytes, length=33))
+
         result = OrderedDict(
             [
                 ("committee_to_activate", ObjectId(kwargs["committee_to_activate"], "committee_member")),
@@ -677,6 +674,7 @@ class ContractFundPool(EchoObject):
 
 class ContractWhitelist(EchoObject):
     def detail(self, *args, **kwargs):
+        new_owner = get_optional("new_owner", kwargs, partial(ObjectId, type_verify="account"))
         result = OrderedDict(
             [
                 ("sender", ObjectId(kwargs["sender"], "account")),

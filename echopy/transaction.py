@@ -198,14 +198,14 @@ class Transaction:
         self._operations.append(operation)
         return self
 
-    def _get_required_fees(self, operations, asset_id=echo_asset_id):
-        return self.api.database.get_required_fees(operations, asset_id)
+    async def _get_required_fees(self, operations, asset_id=echo_asset_id):
+        return await self.api.database.get_required_fees(operations, asset_id)
 
-    def _get_fee_pool(self, asset_id):
-        dynamic_asset_data_id = self.api.database.get_objects([asset_id])[0]['dynamic_asset_data_id']
-        return self.api.database.get_objects([dynamic_asset_data_id])[0]['fee_pool']
+    async def _get_fee_pool(self, asset_id):
+        dynamic_asset_data_id = (await self.api.database.get_objects([asset_id]))[0]['dynamic_asset_data_id']
+        return (await self.api.database.get_objects([dynamic_asset_data_id]))[0]['fee_pool']
 
-    def set_required_fees(self, asset_id=echo_asset_id):
+    async def set_required_fees(self, asset_id=echo_asset_id):
         self.check_not_finalized()
 
         if not len(self.operations):
@@ -248,7 +248,7 @@ class Transaction:
                 non_default_asset_operations[asset_group].append([op_id, op])
 
         if len(default_asset_operations):
-            fees = self._get_required_fees(default_asset_operations)
+            fees = await self._get_required_fees(default_asset_operations)
             for i, fee in enumerate(fees):
                 if isinstance(fee, list):
                     fee = fee[0]
@@ -259,8 +259,8 @@ class Transaction:
 
         for asset_group in non_default_asset_operations:
             ops = non_default_asset_operations[asset_group]
-            fees = self._get_required_fees(ops, asset_group)
-            fee_pool = self._get_fee_pool(asset_group)
+            fees = await self._get_required_fees(ops, asset_group)
+            fee_pool = await self._get_fee_pool(asset_group)
 
             total_fees = 0
             for i, fee in enumerate(fees):
@@ -285,33 +285,33 @@ class Transaction:
         self._signers.append(private_key_hex)
         return self
 
-    def _get_dynamic_global_chain_data(self, dynamic_global_object_id):
-        return self.api.database.get_objects(object_ids=[dynamic_global_object_id])[0]
+    async def _get_dynamic_global_chain_data(self, dynamic_global_object_id):
+        return (await self.api.database.get_objects(object_ids=[dynamic_global_object_id]))[0]
 
-    def _get_chain_id(self):
-        return self.api.database.get_chain_id()
+    async def _get_chain_id(self):
+        return await self.api.database.get_chain_id()
 
-    def set_global_chain_data(self):
+    async def set_global_chain_data(self):
         if self.ref_block_num is None or self.ref_block_prefix is None:
-            global_chain_data = self._get_dynamic_global_chain_data('2.1.0')
+            global_chain_data = await self._get_dynamic_global_chain_data('2.1.0')
             ref_block_prefix = self.bytes_to_int(
                 reversed(bytearray(decode(global_chain_data['head_block_id'], 'hex')[4:8]))
             )
             self.ref_block_num = global_chain_data['head_block_number'] & 0xffff
             self.ref_block_prefix = ref_block_prefix
 
-    def sign(self, _private_key=None):
+    async def sign(self, _private_key=None):
         if _private_key is not None:
             self.add_signer(_private_key)
 
         if not self.finalized:
-            self.set_global_chain_data()
+            await self.set_global_chain_data()
 
             if not self.has_all_fees:
-                self.set_required_fees()
+                await self.set_required_fees()
 
             if self.chain_id is None:
-                self.chain_id = self._get_chain_id()
+                self.chain_id = await self._get_chain_id()
 
         if self.expiration is None:
 
@@ -353,13 +353,13 @@ class Transaction:
             signatures=self._signatures
         )
 
-    def _get_potential_signatures(self, tr):
-        return self.api.database.get_potential_signatures(tr)
+    async def _get_potential_signatures(self, tr):
+        return await self.api.database.get_potential_signatures(tr)
 
-    def _get_potential_address_signatures(self, tr):
-        return self.api.database.get_potential_address_signatures(tr)
+    async def _get_potential_address_signatures(self, tr):
+        return await self.api.database.get_potential_address_signatures(tr)
 
-    def get_potential_signatures(self):
+    async def get_potential_signatures(self):
         if self.finalized:
             transaction_object = self.transaction_object
         else:
@@ -377,15 +377,15 @@ class Transaction:
                 extensions=[]
             )
 
-        public_keys = self._get_potential_signatures(transaction_object.json())
-        addresses = self._get_potential_address_signatures(transaction_object.json())
+        public_keys = await self._get_potential_signatures(transaction_object.json())
+        addresses = await self._get_potential_address_signatures(transaction_object.json())
 
         return public_keys, addresses
 
-    def broadcast(self, callback=None):
+    async def broadcast(self, callback=None):
         if not self.finalized:
-            self.sign()
+            await self.sign()
         transaction_object = self.transaction_object
         if callback is None:
-            return self.api.network.broadcast_transaction_synchronous(transaction_object.json())
-        return self.api.network.broadcast_transaction_with_callback(transaction_object.json(), callback)
+            return await self.api.network.broadcast_transaction_synchronous(transaction_object.json())
+        return await self.api.network.broadcast_transaction_with_callback(transaction_object.json(), callback)

@@ -611,10 +611,7 @@ class ChainParameters(EchoObject):
                         ("stake_sidechain_config", StakeConfig(kwargs["stake_sidechain_config"])),
 
                         ("gas_price", GasPrice(kwargs["gas_price"])),
-                        ("consensus_assets", Set([ObjectId(i, "asset") for i in kwargs["consensus_assets"]])),
                         ("valid_fee_asset", Set([ObjectId(i, "asset") for i in kwargs["valid_fee_asset"]])),
-                        ("economy_config", EconomyConfig(kwargs["economy_config"])),
-                        ("extensions", Set([])),
                     ]
                 )
             )

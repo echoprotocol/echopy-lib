@@ -8,15 +8,20 @@ This library provides api blockchain methods.
 from echopy import Echo
 
 url = 'ws://127.0.0.1:9000'
-echo_asset_id = '1.3.0'
+asset_id = '1.3.0'
+start = 0
+limit = 10
+try:
+    echo = Echo()
+    await echo.connect(url)
 
-echo = Echo()
-echo.connect(url)
+    all_asset_holders = await echo.api.asset.get_all_asset_holders()
+    holders_count = await echo.api.asset.get_asset_holders_count(asset_id=asset_id)
+    asset_holders = await echo.api.asset.get_asset_holders(asset_id=asset_id, start=start, limit)
 
-all_asset_holders = echo.api.asset.get_all_asset_holders()
-echo_asset_holders_count = echo.api.asset.get_asset_holders_count(asset_id=echo_asset_id)
-
-echo.disconnect()
+    await echo.disconnect()
+except Exception as e:
+    raise
 ```
 
 #### Database Api
@@ -25,17 +30,19 @@ echo.disconnect()
 from echopy import Echo
 
 url = 'ws://127.0.0.1:9000'
-object_ids = ['1.2.0', '1.3.0']
-block_num = 1
+ids = ['1.3.1', '1.3.2']
+block_num = 200
+try:
+    echo = Echo()
+    await echo.connect(url)
 
-echo = Echo()
-echo.connect(url)
+    objects = await echo.api.database.get_objects(ids=ids)
+    block_header = await echo.api.database.get_block_header(block_num=block_num)
+    block = await echo.api.database.get_block(block_num=block_num)
 
-objects = echo.api.database.get_objects(object_ids=object_ids)
-block_header = echo.api.database.get_block_header(block_num=block_num)
-block = echo.api.database.get_block(block_num=block_num)
-
-echo.disconnect()
+    await echo.disconnect()
+except Exception as e:
+    raise	
 ```
 
 #### History Api
@@ -45,22 +52,22 @@ from echopy import Echo
 
 url = 'ws://127.0.0.1:9000'
 account = '1.2.16'
-stop = '1.6.0'
-limit = 100
-start = '1.6.0'
+account_stop = '1.11.0'
+account_limit = 100
+account_start = '1.11.0'
+try:
+    echo = Echo()
+    await echo.connect(url)
 
-echo = Echo()
-echo.connect(url)
+    relative_account_history = await echo.api.history.get_relative_account_history(account=account)
+    account_history = await echo.api.history.get_account_history(account=account,
+                                                                 stop=account_stop,
+                                                                 limit=account_limit,
+                                                                 start=account_start)
 
-relative_account_history = echo.api.history.get_relative_account_history(account=account)
-account_history = echo.api.history.get_account_history(
-    account=account,
-    stop=stop,
-    limit=limit,
-    start=start
-)
-
-echo.disconnect()
+    await echo.disconnect()
+except Exception as e:
+    raise	
 ```
 
 #### Network Api
@@ -69,14 +76,16 @@ echo.disconnect()
 from echopy import Echo
 
 url = 'ws://127.0.0.1:9000'
+signed_transaction = '2.7.1'
+try:
+    echo = Echo()
+    await echo.connect(url)
 
-echo = Echo()
-echo.connect(url)
+    await echo.api.network_broadcast.broadcast_transaction(signed_transaction=signed_transaction)
 
-signed_transaction = '<your signed transaction>'
-echo.api.network.broadcast_transaction(signed_transaction=signed_transaction)
-
-echo.disconnect()
+    await echo.disconnect()
+except Exception as e:
+    raise
 ```
 
 #### Registration Api
@@ -86,43 +95,24 @@ from echopy import Echo
 
 url = 'ws://127.0.0.1:9000'
 name = 'test123'
+owner_key = 'ECHO6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV'
+active_key = 'ECHO6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV'
+memo_key = 'ECHO6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV'
+echorand_key = 'DETDvHDsAfk2M8LhYcxLZTbrNJRWT3UH5zxdaWimWc6uZkH'
 
-echo = Echo()
-echo.connect(url)
+try:
+    echo = Echo()
+    await echo.connect(url)
 
-brain_key = echo.brain_key()
-public_key = brain_key.get_public_key_base58()
+    await echo.api.registration.register_account(name=name,
+                                                 owner_key=owner_key,
+                                                 active_key=active_key,
+                                                 memo_key=memo_key,
+                                                 echorand_key=echorand_key)
 
-registrar_account = echo.api.registration.get_registrar()
-
-# 1. Account registration (step-by-step actions):
-registration_task = echo.api.registration.request_registration_task()
-
-nonce = echo.solve_registration_task(
-    block_id=registration_task['block_id'],
-    rand_num=registration_task['rand_num'],
-    difficulty=registration_task['difficulty']
-)
-
-registration_result = echo.api.registration.submit_registration_solution(
-    callback='1',
-    name=name,
-    active=public_key,
-    echorand_key=public_key,
-    nonce=nonce,
-    rand_num=registration_task['rand_num']
-)
-
-# 2. Simple account registration:
-
-registration_result = echo.register_account(
-    callback='1',
-    name=name,
-    active=public_key,
-    echorand=public_key
-)
-
-echo.disconnect()                                    
+    await echo.disconnect()
+except Exception as e:
+    raise                                           
 ```
 
 ---
