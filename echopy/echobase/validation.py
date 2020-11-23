@@ -35,8 +35,7 @@ def is_object_id(v):
 
 
 def is_string(v):
-    if type(v) != str:
-        raise ValueError("Entered value is not string")
+    return isinstance(v, str)
 
 
 def is_account_id(v):
@@ -219,7 +218,7 @@ def is_int64(v):
 
 
 def is_asset_name(v):
-    return bool(v is not None and len(v.split(".")) <= 2 and len(v) >= 3 and len(v) <= 16 and re.match('^[A-Z][A-Z\d\.]*[A-Z]$', v))
+    return bool(v is not None and len(v.split(".")) <= 2 and len(v) >= 3 and len(v) <= 16 and re.match(r'^[A-Z][A-Z\d\.]*[A-Z]$', v))
 
 NAME_MIN_LENGTH = 3
 NAME_MAX_LENGTH = 63
@@ -236,7 +235,7 @@ def is_account_name(v):
     ref = v.split(".")
 
     for label in ref:
-        if not bool(re.match('^[a-z][a-z0-9-]*[a-z\d]$', label)) or bool(re.match('.*--.*', label)):
+        if not bool(re.match(r'^[a-z][a-z0-9-]*[a-z\d]$', label)) or bool(re.match(r'.*--.*', label)):
             return False
     return True
 

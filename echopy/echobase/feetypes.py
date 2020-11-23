@@ -182,9 +182,9 @@ class FeeTypes(StaticVariant):
             operations["sidechain_btc_approve_aggregate"]: DefaultFee,
             operations["sidechain_stake_eth_update"]: DefaultFee,
             operations["sidechain_stake_btc_create_script"]: DefaultFee,
-            operations["sidechain_stake_btc_update"]: DefaultFee
+            operations["sidechain_stake_btc_update"]: DefaultFee,
             operations["block_reward"]: NoFee,
-            operations["evm_address_register"]: DefaultFee
+            operations["evm_address_register"]: DefaultFee,
             operations["did_create"]: DefaultFee,
             operations["did_update"]: DefaultFee,
             operations["did_delete"]: DefaultFee

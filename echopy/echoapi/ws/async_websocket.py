@@ -31,7 +31,8 @@ class AsyncWebsocket:
         if debug is not False:
             logging.basicConfig(
                 level=logging.DEBUG,
-                format='\n{}%(levelname)s:{} %(asctime)s - %(message)s'.format('\x1b[1;33m', '\x1b[0m'),
+                format='\n{}%(levelname)s:{} %(asctime)s - %(message)s'.format(
+                    '\x1b[1;33m', '\x1b[0m'),
                 datefmt='%d-%b-%y %H:%M:%S'
             )
 
@@ -59,7 +60,8 @@ class AsyncWebsocket:
             self.ws = await websockets.connect(self.url, ssl=True)
         else:
             self.ws = await websockets.connect(self.url)
-        self._listen_future = asyncio.ensure_future(self.listen(), loop=self._loop)
+        self._listen_future = asyncio.ensure_future(
+            self.listen(), loop=self._loop)
         await self.register_apis()
 
     async def disconnect(self):
@@ -136,11 +138,11 @@ class AsyncWebsocket:
             'registration',
             'asset',
             'login',
-            'network_node',
-            'did'
+            'network_node'
+            # 'did'
         ]
         self._database, self._network_broadcast, self._history, self._registration, self._asset, self._login,\
-            self._network_node, self._did = await Promise.all(
+            self._network_node = await Promise.all(
                 [
                     register_echo_api(self, api_unit)
                     for api_unit

@@ -35,7 +35,14 @@ from .objects import (
     BtcTransactionDetails,
     P2shP2wsh,
     BtcTxInfo
+)
+
+from .objects import EchoObject
+from .account import PublicKey
+
 from .operationids import operations
+from functools import partial
+
 
 class_idmap = {}
 class_namemap = {}
